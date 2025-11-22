@@ -743,7 +743,6 @@ body::before {
 }
 
 /* === RESPONSIVE AMÉLIORÉ === */
-/* Remplacez votre section responsive par celle-ci dans style.css */
 
 /* === PETITS SMARTPHONES === */
 @media (max-width: 480px) {
