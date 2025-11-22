@@ -1540,24 +1540,3 @@ body::before {
         }
     }
 }
-
-/* Animation pulse pour attirer l'attention */
-.pulse-animation {
-    animation: pulse 1.5s infinite;
-    box-shadow: 0 0 20px rgba(76, 175, 80, 0.6);
-}
-
-@keyframes pulse {
-    0% {
-        transform: scale(1);
-        box-shadow: 0 0 20px rgba(76, 175, 80, 0.6);
-    }
-    50% {
-        transform: scale(1.05);
-        box-shadow: 0 0 30px rgba(76, 175, 80, 0.8);
-    }
-    100% {
-        transform: scale(1);
-        box-shadow: 0 0 20px rgba(76, 175, 80, 0.6);
-    }
-}
