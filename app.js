@@ -176,7 +176,8 @@ class RadioPlayerApp {
         this.renderRadios();
         this.renderFavorites();
         this.setupEventListeners();
-        this.setupSleepTimerUI();
+        this.setupSettingsPanel();
+        this.setupSleepTimer();
         this.setupPWA();
         this.checkNetworkStatus();
     }
@@ -926,118 +927,214 @@ class RadioPlayerApp {
         window.addEventListener('offline', () => {
             this.showToast('Connexion perdue');
         });
+		this.setupAutoResumeCheckbox();
     }
 
-        // === PWA ===
-    setupPWA() {
-        // Références de la bannière d'installation
+        // === PWA ET LECTURE AUTOMATIQUE ===
+setupPWA() {
+    // Installation PWA
+    let deferredPrompt;
+    
+    window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredPrompt = e;
+        console.log('PWA peut être installée');
+        
+        // Afficher la bannière d'installation
         const banner = document.getElementById('pwaInstallBanner');
-        const installBtn = document.getElementById('pwaInstallBtn');
-        const dismissBtn = document.getElementById('pwaDismissBtn');
+        if (banner) {
+            banner.style.display = 'flex';
+            
+            // Gérer le bouton installer
+            const installBtn = document.getElementById('pwaInstallBtn');
+            if (installBtn) {
+                installBtn.addEventListener('click', async () => {
+                    if (deferredPrompt) {
+                        deferredPrompt.prompt();
+                        const { outcome } = await deferredPrompt.userChoice;
+                        console.log(`Installation ${outcome}`);
+                        deferredPrompt = null;
+                        banner.style.display = 'none';
+                    }
+                });
+            }
+            
+            // Gérer le bouton plus tard
+            const laterBtn = document.getElementById('pwaLaterBtn');
+            if (laterBtn) {
+                laterBtn.addEventListener('click', () => {
+                    banner.style.display = 'none';
+                });
+            }
+        }
+    });
 
-        // Vérifier si la PWA est déjà ouverte en mode standalone
-        const isAlreadyInstalled =
-            window.matchMedia('(display-mode: standalone)').matches ||
-            window.navigator.standalone === true;
-
-        if (isAlreadyInstalled && banner) {
+    // Gérer l'installation
+    window.addEventListener('appinstalled', () => {
+        console.log('PWA installée');
+        this.showToast('Application installée avec succès!');
+        const banner = document.getElementById('pwaInstallBanner');
+        if (banner) {
             banner.style.display = 'none';
         }
+    });
 
-        // Événement émis quand l'installation est possible
-        window.addEventListener('beforeinstallprompt', (e) => {
-            // Empêche la bannière automatique du navigateur
-            e.preventDefault();
-            this.deferredPrompt = e;
-
-            const dismissed = localStorage.getItem('pwaInstallDismissed') === 'true';
-            const installed =
-                window.matchMedia('(display-mode: standalone)').matches ||
-                window.navigator.standalone === true;
-
-            // Affiche notre bannière personnalisée à l'ouverture
-            if (!dismissed && !installed && banner) {
-                banner.style.display = 'block';
-            }
-
-            console.log('PWA peut être installée');
-        });
-
-        // Clic sur le bouton "Installer"
-        if (installBtn) {
-            installBtn.addEventListener('click', async () => {
-                if (!this.deferredPrompt) {
-                    return;
-                }
-
-                // Affiche la popup système d'installation
-                this.deferredPrompt.prompt();
-
-                const choiceResult = await this.deferredPrompt.userChoice;
-
-                if (choiceResult.outcome === 'accepted') {
-                    console.log("L'utilisateur a accepté l'installation");
-                } else {
-                    console.log("L'utilisateur a refusé l'installation");
-                }
-
-                this.deferredPrompt = null;
-
-                if (banner) {
-                    banner.style.display = 'none';
-                }
-
-                // On ne repropose plus la bannière immédiatement
-                localStorage.setItem('pwaInstallDismissed', 'true');
-            });
-        }
-
-        // Clic sur le bouton "Plus tard"
-        if (dismissBtn) {
-            dismissBtn.addEventListener('click', () => {
-                if (banner) {
-                    banner.style.display = 'none';
-                }
-                localStorage.setItem('pwaInstallDismissed', 'true');
-            });
-        }
-
-        // Événement quand la PWA est installée
-        window.addEventListener('appinstalled', () => {
-            console.log('PWA installée');
-            this.showToast('Application installée avec succès !');
-            if (banner) {
-                banner.style.display = 'none';
-            }
-            localStorage.setItem('pwaInstallDismissed', 'true');
-        });
-
-                                // Reprendre la dernière radio au démarrage (si l'option est activée)
-        const lastStation = localStorage.getItem('lastStation');
-        if (this.autoResumeEnabled && lastStation) {
-            const station = this.stations.find(s => s.id === lastStation);
-            if (station) {
-                // On prépare le player, mais SANS lancer la lecture automatique
+    // === LECTURE AUTOMATIQUE AU DÉMARRAGE ===
+    // Vérifier si l'option est activée
+    const autoResume = localStorage.getItem('autoResumeRadio') === 'true';
+    const lastStation = localStorage.getItem('lastStation');
+    
+    if (autoResume && lastStation) {
+        const station = this.stations.find(s => s.id === lastStation);
+        if (station) {
+            // Attendre que la page soit complètement chargée
+            setTimeout(() => {
+                console.log('Reprise automatique de:', station.name);
+                
+                // Démarrer la lecture automatiquement
                 this.currentStation = station;
                 this.audioPlayer.src = station.url;
-
-                // On force l'état "en pause, prêt à lire"
-                this.isPlaying = false;
-                this.audioPlayer.pause();
-                this.stopVisualizer();
-
-                // Afficher le player avec les infos de la dernière radio
-                this.playerContainer.style.display = 'block';
-                this.playerContainer.classList.remove('minimized'); // player bien déployé
-                this.updatePlayerInfo();
-                this.updatePlayerUI();      // <-- met l'icône sur PLAY + texte "En pause"
-                this.updateRadioCards();
-
-                // Petit message pour l'utilisateur
-                this.showToast(`Prêt à reprendre : ${station.name}. Appuyez sur lecture pour démarrer.`);
-            }
+                
+                // Tentative de lecture automatique
+                const playPromise = this.audioPlayer.play();
+                
+                if (playPromise !== undefined) {
+                    playPromise.then(() => {
+                        // Lecture démarrée avec succès
+                        console.log('Lecture automatique démarrée');
+                        this.showToast(`Reprise de ${station.name}`);
+                        
+                        // Afficher le player
+                        this.playerContainer.style.display = 'block';
+                        this.updatePlayerInfo();
+                    }).catch(error => {
+                        console.log('Lecture automatique bloquée:', error);
+                        
+                        // Si la lecture automatique est bloquée (politique navigateur)
+                        // Préparer la radio mais attendre une interaction utilisateur
+                        this.currentStation = station;
+                        this.playerContainer.style.display = 'block';
+                        this.updatePlayerInfo();
+                        
+                        // Afficher un message pour informer l'utilisateur
+                        this.showToast(`${station.name} prête. Cliquez sur lecture pour démarrer.`);
+                        
+                        // Ajouter un écouteur pour démarrer au premier clic
+                        const startPlayback = () => {
+                            if (!this.isPlaying && this.currentStation) {
+                                this.audioPlayer.play().then(() => {
+                                    console.log('Lecture démarrée après interaction');
+                                }).catch(err => console.error('Erreur:', err));
+                            }
+                            // Retirer l'écouteur après le premier clic
+                            document.removeEventListener('click', startPlayback);
+                        };
+                        
+                        // Attendre le premier clic de l'utilisateur
+                        document.addEventListener('click', startPlayback);
+                    });
+                }
+            }, 1000); // Attendre 1 seconde après le chargement
         }
     }
+}
+
+// === GESTION DES PARAMÈTRES ===
+setupAutoResumeCheckbox() {
+    const checkbox = document.getElementById('autoResumeCheckbox');
+    if (checkbox) {
+        checkbox.checked = localStorage.getItem('autoResumeRadio') === 'true';
+        
+        checkbox.addEventListener('change', (e) => {
+            localStorage.setItem('autoResumeRadio', e.target.checked ? 'true' : 'false');
+            
+            if (e.target.checked) {
+                this.showToast('Reprise automatique activée');
+            } else {
+                this.showToast('Reprise automatique désactivée');
+            }
+        });
+    }
+}
+
+setupSleepTimer() {
+    const select = document.getElementById('sleepTimerSelect');
+    const cancelBtn = document.getElementById('cancelSleepTimer');
+    const status = document.getElementById('sleepTimerStatus');
+    
+    if (select) {
+        select.addEventListener('change', (e) => {
+            const minutes = parseInt(e.target.value);
+            
+            if (this.sleepTimer) {
+                clearTimeout(this.sleepTimer);
+                this.sleepTimer = null;
+            }
+            
+            if (minutes > 0) {
+                this.sleepTimer = setTimeout(() => {
+                    this.stopRadio();
+                    this.showToast('Radio arrêtée par le minuteur');
+                    select.value = '0';
+                    if (status) {
+                        status.style.display = 'none';
+                    }
+                }, minutes * 60 * 1000);
+                
+                if (status) {
+                    status.style.display = 'block';
+                    status.textContent = `Arrêt dans ${minutes} minutes`;
+                }
+                
+                this.showToast(`Minuteur: arrêt dans ${minutes} minutes`);
+            } else {
+                if (status) {
+                    status.style.display = 'none';
+                }
+            }
+        });
+    }
+    
+    if (cancelBtn) {
+        cancelBtn.addEventListener('click', () => {
+            if (this.sleepTimer) {
+                clearTimeout(this.sleepTimer);
+                this.sleepTimer = null;
+            }
+            if (select) {
+                select.value = '0';
+            }
+            if (status) {
+                status.style.display = 'none';
+            }
+            this.showToast('Minuteur annulé');
+        });
+    }
+}
+
+setupSettingsPanel() {
+    const settingsBtn = document.getElementById('settingsBtn');
+    const overlay = document.getElementById('settingsOverlay');
+    const closeBtn = document.getElementById('closeSettings');
+    
+    if (settingsBtn && overlay) {
+        settingsBtn.addEventListener('click', () => {
+            overlay.style.display = 'flex';
+        });
+        
+        if (closeBtn) {
+            closeBtn.addEventListener('click', () => {
+                overlay.style.display = 'none';
+            });
+        }
+        
+        overlay.addEventListener('click', (e) => {
+            if (e.target === overlay) {
+                overlay.style.display = 'none';
+            }
+        });
+    }
+}
 
     // === VÉRIFICATION RÉSEAU ===
     checkNetworkStatus() {
