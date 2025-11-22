@@ -172,15 +172,16 @@ class RadioPlayerApp {
 
         // === INITIALISATION ===
     init() {
-        this.setupAudioPlayer();
-        this.renderRadios();
-        this.renderFavorites();
-        this.setupEventListeners();
-        this.setupSettingsPanel();
-        this.setupSleepTimer();
-        this.setupPWA();
-        this.checkNetworkStatus();
-    }
+    this.setupAudioPlayer();
+    this.renderRadios();
+    this.renderFavorites();
+    this.setupEventListeners();
+    this.setupVolumeSlider();      // AJOUT
+    this.setupSettingsPanel();      // Paramètres
+    this.setupSleepTimer();         // Minuteur
+    this.setupPWA();               // PWA et lecture auto EN DERNIER
+    this.checkNetworkStatus();
+}
 
     // === CONFIGURATION AUDIO ===
     setupAudioPlayer() {
@@ -948,7 +949,7 @@ setupPWA() {
             // Gérer le bouton installer
             const installBtn = document.getElementById('pwaInstallBtn');
             if (installBtn) {
-                installBtn.addEventListener('click', async () => {
+                installBtn.onclick = async () => {
                     if (deferredPrompt) {
                         deferredPrompt.prompt();
                         const { outcome } = await deferredPrompt.userChoice;
@@ -956,20 +957,20 @@ setupPWA() {
                         deferredPrompt = null;
                         banner.style.display = 'none';
                     }
-                });
+                };
             }
             
-            // Gérer le bouton plus tard
+            // CORRECTION : Gérer le bouton "Plus tard"
             const laterBtn = document.getElementById('pwaLaterBtn');
             if (laterBtn) {
-                laterBtn.addEventListener('click', () => {
+                laterBtn.onclick = () => {
                     banner.style.display = 'none';
-                });
+                    console.log('Installation reportée');
+                };
             }
         }
     });
 
-    // Gérer l'installation
     window.addEventListener('appinstalled', () => {
         console.log('PWA installée');
         this.showToast('Application installée avec succès!');
@@ -979,62 +980,70 @@ setupPWA() {
         }
     });
 
-    // === LECTURE AUTOMATIQUE AU DÉMARRAGE ===
-    // Vérifier si l'option est activée
+    // === LECTURE AUTOMATIQUE VRAIMENT AUTOMATIQUE ===
     const autoResume = localStorage.getItem('autoResumeRadio') === 'true';
     const lastStation = localStorage.getItem('lastStation');
     
     if (autoResume && lastStation) {
         const station = this.stations.find(s => s.id === lastStation);
         if (station) {
-            // Attendre que la page soit complètement chargée
+            // Attendre un court instant pour que tout soit chargé
             setTimeout(() => {
-                console.log('Reprise automatique de:', station.name);
+                console.log('Tentative de reprise automatique de:', station.name);
                 
-                // Démarrer la lecture automatiquement
                 this.currentStation = station;
                 this.audioPlayer.src = station.url;
+                this.playerContainer.style.display = 'block';
+                this.updatePlayerInfo();
                 
-                // Tentative de lecture automatique
-                const playPromise = this.audioPlayer.play();
+                // Créer une fonction pour essayer de démarrer
+                const tryAutoPlay = () => {
+                    const playPromise = this.audioPlayer.play();
+                    
+                    if (playPromise !== undefined) {
+                        playPromise.then(() => {
+                            console.log('✅ Lecture automatique réussie');
+                            this.showToast(`Reprise automatique de ${station.name}`);
+                        }).catch(error => {
+                            console.log('⚠️ Lecture auto bloquée, préparation pour clic:', error.message);
+                            
+                            // Préparer pour démarrage au clic
+                            this.showToast(`${station.name} prête. Touchez l'écran pour démarrer.`);
+                            
+                            // Essayer au premier clic/touch
+                            const startOnInteraction = (e) => {
+                                // Ne pas interférer avec d'autres boutons
+                                if (e.target.closest('button')) return;
+                                
+                                if (!this.isPlaying && this.currentStation) {
+                                    this.audioPlayer.play()
+                                        .then(() => {
+                                            console.log('✅ Lecture démarrée après interaction');
+                                            this.showToast(`Lecture de ${station.name}`);
+                                        })
+                                        .catch(err => console.error('Erreur:', err));
+                                }
+                                
+                                // Retirer les écouteurs après succès
+                                document.removeEventListener('click', startOnInteraction);
+                                document.removeEventListener('touchstart', startOnInteraction);
+                            };
+                            
+                            // Écouter click ET touch
+                            document.addEventListener('click', startOnInteraction, { once: true });
+                            document.addEventListener('touchstart', startOnInteraction, { once: true });
+                        });
+                    }
+                };
                 
-                if (playPromise !== undefined) {
-                    playPromise.then(() => {
-                        // Lecture démarrée avec succès
-                        console.log('Lecture automatique démarrée');
-                        this.showToast(`Reprise de ${station.name}`);
-                        
-                        // Afficher le player
-                        this.playerContainer.style.display = 'block';
-                        this.updatePlayerInfo();
-                    }).catch(error => {
-                        console.log('Lecture automatique bloquée:', error);
-                        
-                        // Si la lecture automatique est bloquée (politique navigateur)
-                        // Préparer la radio mais attendre une interaction utilisateur
-                        this.currentStation = station;
-                        this.playerContainer.style.display = 'block';
-                        this.updatePlayerInfo();
-                        
-                        // Afficher un message pour informer l'utilisateur
-                        this.showToast(`${station.name} prête. Cliquez sur lecture pour démarrer.`);
-                        
-                        // Ajouter un écouteur pour démarrer au premier clic
-                        const startPlayback = () => {
-                            if (!this.isPlaying && this.currentStation) {
-                                this.audioPlayer.play().then(() => {
-                                    console.log('Lecture démarrée après interaction');
-                                }).catch(err => console.error('Erreur:', err));
-                            }
-                            // Retirer l'écouteur après le premier clic
-                            document.removeEventListener('click', startPlayback);
-                        };
-                        
-                        // Attendre le premier clic de l'utilisateur
-                        document.addEventListener('click', startPlayback);
-                    });
-                }
-            }, 1000); // Attendre 1 seconde après le chargement
+                // Essayer immédiatement
+                tryAutoPlay();
+                
+                // Sur mobile, certains navigateurs nécessitent un délai
+                // Essayer aussi après un court délai
+                setTimeout(tryAutoPlay, 500);
+                
+            }, 300); // Court délai pour laisser la page se charger
         }
     }
 }
@@ -1042,19 +1051,27 @@ setupPWA() {
 // === GESTION DES PARAMÈTRES ===
 setupAutoResumeCheckbox() {
     const checkbox = document.getElementById('autoResumeCheckbox');
-    if (checkbox) {
-        checkbox.checked = localStorage.getItem('autoResumeRadio') === 'true';
+    if (!checkbox) return;
+    
+    // Charger l'état sauvegardé
+    const isEnabled = localStorage.getItem('autoResumeRadio') === 'true';
+    checkbox.checked = isEnabled;
+    
+    // Gérer le changement
+    checkbox.onchange = (e) => {
+        const enabled = e.target.checked;
+        localStorage.setItem('autoResumeRadio', enabled ? 'true' : 'false');
         
-        checkbox.addEventListener('change', (e) => {
-            localStorage.setItem('autoResumeRadio', e.target.checked ? 'true' : 'false');
-            
-            if (e.target.checked) {
-                this.showToast('Reprise automatique activée');
-            } else {
-                this.showToast('Reprise automatique désactivée');
+        if (enabled) {
+            this.showToast('✅ Reprise automatique activée');
+            // Sauvegarder la station actuelle si elle existe
+            if (this.currentStation) {
+                localStorage.setItem('lastStation', this.currentStation.id);
             }
-        });
-    }
+        } else {
+            this.showToast('❌ Reprise automatique désactivée');
+        }
+    };
 }
 
 setupSleepTimer() {
@@ -1062,41 +1079,50 @@ setupSleepTimer() {
     const cancelBtn = document.getElementById('cancelSleepTimer');
     const status = document.getElementById('sleepTimerStatus');
     
-    if (select) {
-        select.addEventListener('change', (e) => {
-            const minutes = parseInt(e.target.value);
-            
-            if (this.sleepTimer) {
-                clearTimeout(this.sleepTimer);
-                this.sleepTimer = null;
-            }
-            
-            if (minutes > 0) {
-                this.sleepTimer = setTimeout(() => {
-                    this.stopRadio();
-                    this.showToast('Radio arrêtée par le minuteur');
-                    select.value = '0';
-                    if (status) {
-                        status.style.display = 'none';
-                    }
-                }, minutes * 60 * 1000);
-                
-                if (status) {
-                    status.style.display = 'block';
-                    status.textContent = `Arrêt dans ${minutes} minutes`;
-                }
-                
-                this.showToast(`Minuteur: arrêt dans ${minutes} minutes`);
-            } else {
+    if (!select) return;
+    
+    // Gérer le changement de sélection
+    select.onchange = (e) => {
+        const minutes = parseInt(e.target.value);
+        
+        // Annuler l'ancien timer
+        if (this.sleepTimer) {
+            clearTimeout(this.sleepTimer);
+            this.sleepTimer = null;
+        }
+        
+        if (minutes > 0) {
+            // Créer le nouveau timer
+            this.sleepTimer = setTimeout(() => {
+                this.stopRadio();
+                this.showToast('🌙 Radio arrêtée par le minuteur');
+                select.value = '0';
                 if (status) {
                     status.style.display = 'none';
                 }
+                this.sleepTimer = null;
+            }, minutes * 60 * 1000);
+            
+            // Afficher le statut
+            if (status) {
+                status.style.display = 'block';
+                status.innerHTML = `⏱️ Arrêt dans <strong>${minutes} minutes</strong>`;
+                status.style.color = '#ff6b6b';
             }
-        });
-    }
+            
+            this.showToast(`⏱️ Minuteur: arrêt dans ${minutes} minutes`);
+        } else {
+            // Minuteur désactivé
+            if (status) {
+                status.style.display = 'none';
+            }
+            this.showToast('Minuteur désactivé');
+        }
+    };
     
+    // Bouton annuler
     if (cancelBtn) {
-        cancelBtn.addEventListener('click', () => {
+        cancelBtn.onclick = () => {
             if (this.sleepTimer) {
                 clearTimeout(this.sleepTimer);
                 this.sleepTimer = null;
@@ -1107,9 +1133,37 @@ setupSleepTimer() {
             if (status) {
                 status.style.display = 'none';
             }
-            this.showToast('Minuteur annulé');
-        });
+            this.showToast('⏹️ Minuteur annulé');
+        };
     }
+}
+
+setupVolumeSlider() {
+    const volumeBtn = document.getElementById('volumeBtn');
+    const volumeContainer = document.getElementById('volumeSliderContainer');
+    
+    if (!volumeBtn || !volumeContainer) return;
+    
+    // Toggle affichage du slider au clic sur l'icône tune
+    volumeBtn.onclick = () => {
+        const isVisible = volumeContainer.style.display === 'flex';
+        volumeContainer.style.display = isVisible ? 'none' : 'flex';
+        
+        // Animation d'apparition
+        if (!isVisible) {
+            volumeContainer.style.opacity = '0';
+            setTimeout(() => {
+                volumeContainer.style.opacity = '1';
+            }, 10);
+        }
+    };
+    
+    // Cacher le slider si on clique ailleurs
+    document.addEventListener('click', (e) => {
+        if (!volumeBtn.contains(e.target) && !volumeContainer.contains(e.target)) {
+            volumeContainer.style.display = 'none';
+        }
+    });
 }
 
 setupSettingsPanel() {
@@ -1117,23 +1171,33 @@ setupSettingsPanel() {
     const overlay = document.getElementById('settingsOverlay');
     const closeBtn = document.getElementById('closeSettings');
     
-    if (settingsBtn && overlay) {
-        settingsBtn.addEventListener('click', () => {
-            overlay.style.display = 'flex';
-        });
-        
-        if (closeBtn) {
-            closeBtn.addEventListener('click', () => {
-                overlay.style.display = 'none';
-            });
-        }
-        
-        overlay.addEventListener('click', (e) => {
-            if (e.target === overlay) {
-                overlay.style.display = 'none';
-            }
-        });
+    if (!settingsBtn || !overlay) {
+        console.log('Elements settings non trouvés');
+        return;
     }
+    
+    // Ouvrir les paramètres
+    settingsBtn.onclick = () => {
+        overlay.style.display = 'flex';
+        console.log('Panneau ouvert');
+    };
+    
+    // CORRECTION : Fermer avec le bouton X
+    if (closeBtn) {
+        closeBtn.onclick = (e) => {
+            e.stopPropagation();
+            overlay.style.display = 'none';
+            console.log('Panneau fermé via X');
+        };
+    }
+    
+    // Fermer en cliquant sur l'overlay (pas sur le panneau)
+    overlay.onclick = (e) => {
+        if (e.target === overlay) {
+            overlay.style.display = 'none';
+            console.log('Panneau fermé via overlay');
+        }
+    };
 }
 
     // === VÉRIFICATION RÉSEAU ===
