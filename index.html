@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#1a2f4b">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>Radio Player Pro</title>
+    
+    <!-- Manifest PWA -->
+    <link rel="manifest" href="manifest.json">
+    
+    <!-- Icons -->
+    <link rel="apple-touch-icon" href="icons/icon-192.png">
+    <link rel="icon" type="image/png" href="icons/icon-192.png">
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="style.css">
+    
+    <!-- Material Icons -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+<body>
+    <!-- Bannière d'installation PWA -->
+<div id="pwaInstallBanner" class="pwa-install-banner">
+    <div style="display:flex; align-items:center; gap:12px;">
+        <span class="material-icons" aria-hidden="true">download</span>
+        <div style="flex:1;">
+            <div style="font-weight:600; font-size:0.95rem;">Installer l'application</div>
+            <div style="font-size:0.8rem; opacity:0.85;">
+                Ajoutez Radio Player Pro sur votre écran d'accueil pour un accès rapide.
+            </div>
+        </div>
+        <div style="display:flex; flex-direction:column; gap:4px;">
+            <button id="pwaInstallBtn" class="glass-button">
+                Installer
+            </button>
+            <button id="pwaDismissBtn" class="glass-button">
+                Plus tard
+            </button>
+        </div>
+    </div>
+</div>
+    <div class="app-container">
+        <!-- Header avec effet glass -->
+        <header class="app-header glass-effect">
+				<h1 class="app-title">
+			<span class="material-icons">radio</span>
+			Radio Player Pro
+			</h1>
+			<button class="settings-btn glass-button" id="settingsBtn">
+				<span class="material-icons">settings</span>
+				<!-- Petit indicateur de minuteur actif -->
+				<span id="sleepTimerIndicator" class="sleep-timer-indicator" aria-hidden="true"></span>
+			</button>
+        </header>
+
+        <!-- Onglets de navigation -->
+        <nav class="tab-navigation glass-effect">
+            <button class="tab-button active" data-tab="radios">
+                <span class="material-icons">radio</span>
+                <span>Radios</span>
+            </button>
+            <button class="tab-button" data-tab="favoris">
+                <span class="material-icons">favorite</span>
+                <span>Favoris</span>
+            </button>
+        </nav>
+
+        <!-- Conteneur des onglets -->
+        <div class="tabs-container">
+            <!-- Onglet Radios -->
+            <div class="tab-content active" id="radios-tab">
+                <div class="radios-grid" id="radiosGrid">
+                    <!-- Les radios seront ajoutées dynamiquement ici -->
+                </div>
+            </div>
+
+            <!-- Onglet Favoris -->
+            <div class="tab-content" id="favoris-tab">
+                <div class="favoris-container">
+                    <div class="favoris-empty" id="favorisEmpty">
+                        <span class="material-icons">favorite_border</span>
+                        <p>Aucun favori</p>
+                        <p class="favoris-hint">Appuyez longuement sur une radio pour l'ajouter aux favoris</p>
+                    </div>
+                    <div class="radios-grid" id="favorisGrid" style="display: none;">
+                        <!-- Les favoris seront ajoutés dynamiquement ici -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Player flottant amélioré avec effet glass -->
+        <div class="player-container glass-effect" id="playerContainer" style="display: none;">
+            <!-- Bouton pour minimiser/agrandir le player -->
+            <button class="toggle-player-btn glass-button" id="togglePlayerBtn">
+                <span class="material-icons">expand_more</span>
+            </button>
+            
+            <div class="player-info">
+                <img class="player-logo" id="playerLogo" src="" alt="">
+                <div class="player-details">
+                    <h3 class="player-title" id="playerTitle">--</h3>
+                    <p class="player-status" id="playerStatus">En pause</p>
+                </div>
+            </div>
+            
+            <!-- Visualiseur -->
+            <div class="visualizer" id="visualizer">
+                <div class="bar"></div>
+                <div class="bar"></div>
+                <div class="bar"></div>
+                <div class="bar"></div>
+                <div class="bar"></div>
+            </div>
+            
+                        <!-- Contrôles améliorés -->
+            <div class="player-controls">
+                <button class="control-btn glass-button" id="playPauseBtn">
+					<span class="material-icons">play_arrow</span>
+				</button>
+                
+                <button class="control-btn glass-button" id="muteBtn">
+                    <span class="material-icons">volume_up</span>
+                </button>
+                
+                <button class="control-btn glass-button danger" id="stopBtn">
+                    <span class="material-icons">stop</span>
+                </button>
+            </div>
+            
+            <!-- Slider de volume toujours visible quand le player est déployé -->
+            <div class="volume-slider-container" id="volumeSliderContainer" style="display: flex;">
+                <input type="range" class="volume-slider" id="volumeSlider" min="0" max="100" value="30">
+                <span class="volume-value">30%</span>
+            </div>
+        </div>
+
+        <!-- Menu contextuel pour les radios -->
+        <div class="context-menu glass-effect" id="contextMenu" style="display: none;">
+            <button class="context-menu-item" id="addToFavorites">
+                <span class="material-icons">favorite</span>
+                <span>Ajouter aux favoris</span>
+            </button>
+            <button class="context-menu-item" id="removeFromFavorites" style="display: none;">
+                <span class="material-icons">favorite_border</span>
+                <span>Retirer des favoris</span>
+            </button>
+            <button class="context-menu-item" id="shareRadio">
+                <span class="material-icons">share</span>
+                <span>Partager</span>
+            </button>
+        </div>
+
+        <!-- Toast notifications -->
+        <div class="toast" id="toast"></div>
+
+        <!-- Loading overlay -->
+        <div class="loading-overlay" id="loadingOverlay" style="display: none;">
+            <div class="loading-spinner"></div>
+        </div>
+    </div>
+    <!-- Panneau des paramètres -->
+<div id="settingsOverlay">
+    <div id="settingsPanel" class="glass-effect">
+        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:12px;">
+            <h2>
+                <span class="material-icons" aria-hidden="true">settings</span>
+                Paramètres du player
+            </h2>
+            <button id="settingsCloseBtn" class="glass-button">
+                <span class="material-icons">close</span>
+            </button>
+        </div>
+
+        <div style="font-size:0.85rem; display:flex; flex-direction:column; gap:12px;">
+            <!-- Minuteur de sommeil -->
+            <section>
+                <h3>Minuteur de sommeil</h3>
+                <p>
+                    La radio s’arrêtera automatiquement après la durée choisie.
+                </p>
+                <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
+                    <label for="sleepTimerSelect" style="white-space:nowrap;">Arrêt dans :</label>
+                    <select id="sleepTimerSelect">
+                        <option value="0">Désactivé</option>
+                        <option value="15">15 min</option>
+                        <option value="30">30 min</option>
+                        <option value="45">45 min</option>
+                        <option value="60">1 h</option>
+                        <option value="75">1 h 15</option>
+                        <option value="90">1 h 30</option>
+                        <option value="105">1 h 45</option>
+                        <option value="120">2 h</option>
+                    </select>
+                </div>
+                <div style="display:flex; gap:8px; margin-bottom:6px;">
+                    <button id="sleepTimerStartBtn" class="glass-button">
+                        Démarrer le minuteur
+                    </button>
+                    <button id="sleepTimerCancelBtn" class="glass-button">
+                        Annuler
+                    </button>
+                </div>
+                <p id="sleepTimerInfo">
+                    Aucun minuteur actif
+                </p>
+            </section>
+
+            <!-- Reprendre la dernière radio -->
+            <section>
+                <h3>Reprendre la dernière radio</h3>
+                <label style="display:flex; align-items:center; gap:8px; cursor:pointer;">
+                    <input type="checkbox" id="autoResumeCheckbox">
+                    <span>Reprendre automatiquement la dernière radio au démarrage</span>
+                </label>
+                <p>
+                    La dernière radio écoutée sera relancée quand vous ouvrez l’application.
+                </p>
+            </section>
+        </div>
+    </div>
+</div>
+
+    <!-- Audio element -->
+    <audio id="audioPlayer" preload="none"></audio>
+
+    <!-- Scripts -->
+    <script src="app.js"></script>
+    <script>
+        // Enregistrement du Service Worker
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('service-worker.js')
+                    .then(reg => console.log('Service Worker enregistré:', reg))
+                    .catch(err => console.error('Erreur Service Worker:', err));
+            });
+        }
+    </script>
+</body>
+</html>
