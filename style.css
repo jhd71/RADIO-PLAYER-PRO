@@ -742,7 +742,10 @@ body::before {
     }
 }
 
-/* === RESPONSIVE === */
+/* === RESPONSIVE AMÉLIORÉ === */
+/* Remplacez votre section responsive par celle-ci dans style.css */
+
+/* === PETITS SMARTPHONES === */
 @media (max-width: 480px) {
     .radios-grid {
         grid-template-columns: repeat(3, 1fr);
@@ -759,7 +762,7 @@ body::before {
         bottom: 2px;
     }
     
-    /* Ajuster le player sur petit écran */
+    /* Player minimisé */
     .player-container.minimized .player-info {
         gap: var(--spacing-sm);
     }
@@ -774,13 +777,77 @@ body::before {
     }
 }
 
+/* === TABLETTES ET PLUS === */
 @media (min-width: 768px) {
     .app-container {
-        max-width: initial;
+        max-width: 100%;  /* Changé de 'initial' à '100%' */
     }
     
+    /* 5 colonnes pour tablettes */
+    .radios-grid {
+        grid-template-columns: repeat(5, 1fr);
+    }
+}
+
+/* === ÉCRANS MOYENS === */
+@media (min-width: 1024px) {
+    /* 8 colonnes pour écrans moyens */
+    .radios-grid {
+        grid-template-columns: repeat(8, 1fr);
+    }
+}
+
+/* === GRANDS ÉCRANS === */
+@media (min-width: 1440px) {
+    /* 12 colonnes pour grands écrans */
     .radios-grid {
         grid-template-columns: repeat(12, 1fr);
+    }
+}
+
+/* === TRÈS GRANDS ÉCRANS === */
+@media (min-width: 1920px) {
+    /* 15 colonnes pour très grands écrans */
+    .radios-grid {
+        grid-template-columns: repeat(15, 1fr);
+    }
+    
+    .app-container {
+        max-width: 1800px;
+        margin: 0 auto;
+    }
+}
+
+/* === MODE PAYSAGE MOBILE === */
+@media (max-width: 768px) and (orientation: landscape) {
+    .radios-grid {
+        grid-template-columns: repeat(5, 1fr);
+        gap: var(--spacing-sm);
+    }
+    
+    .radio-logo {
+        width: 60%;
+        height: 60%;
+    }
+    
+    .radio-name {
+        font-size: 0.55rem;
+    }
+}
+
+/* === TRÈS PETITS ÉCRANS === */
+@media (max-width: 360px) {
+    .radios-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .radio-name {
+        font-size: 0.55rem;
+    }
+    
+    .radio-logo {
+        width: 75%;
+        height: 75%;
     }
 }
 
