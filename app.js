@@ -172,16 +172,14 @@ class RadioPlayerApp {
 
         // === INITIALISATION ===
     init() {
-    this.setupAudioPlayer();
-    this.renderRadios();
-    this.renderFavorites();
-    this.setupEventListeners();
-    this.setupVolumeSlider();      // AJOUT
-    this.setupSettingsPanel();      // Paramètres
-    this.setupSleepTimer();         // Minuteur
-    this.setupPWA();               // PWA et lecture auto EN DERNIER
-    this.checkNetworkStatus();
-}
+        this.setupAudioPlayer();
+        this.renderRadios();
+        this.renderFavorites();
+        this.setupEventListeners();
+        this.setupSleepTimerUI();
+        this.setupPWA();
+        this.checkNetworkStatus();
+    }
 
     // === CONFIGURATION AUDIO ===
     setupAudioPlayer() {
@@ -928,277 +926,118 @@ class RadioPlayerApp {
         window.addEventListener('offline', () => {
             this.showToast('Connexion perdue');
         });
-		this.setupAutoResumeCheckbox();
     }
 
-        // === PWA ET LECTURE AUTOMATIQUE ===
-setupPWA() {
-    // Installation PWA
-    let deferredPrompt;
-    
-    window.addEventListener('beforeinstallprompt', (e) => {
-        e.preventDefault();
-        deferredPrompt = e;
-        console.log('PWA peut être installée');
-        
-        // Afficher la bannière d'installation
+        // === PWA ===
+    setupPWA() {
+        // Références de la bannière d'installation
         const banner = document.getElementById('pwaInstallBanner');
-        if (banner) {
-            banner.style.display = 'flex';
-            
-            // Gérer le bouton installer
-            const installBtn = document.getElementById('pwaInstallBtn');
-            if (installBtn) {
-                installBtn.onclick = async () => {
-                    if (deferredPrompt) {
-                        deferredPrompt.prompt();
-                        const { outcome } = await deferredPrompt.userChoice;
-                        console.log(`Installation ${outcome}`);
-                        deferredPrompt = null;
-                        banner.style.display = 'none';
-                    }
-                };
-            }
-            
-            // CORRECTION : Gérer le bouton "Plus tard"
-            const laterBtn = document.getElementById('pwaLaterBtn');
-            if (laterBtn) {
-                laterBtn.onclick = () => {
-                    banner.style.display = 'none';
-                    console.log('Installation reportée');
-                };
-            }
-        }
-    });
+        const installBtn = document.getElementById('pwaInstallBtn');
+        const dismissBtn = document.getElementById('pwaDismissBtn');
 
-    window.addEventListener('appinstalled', () => {
-        console.log('PWA installée');
-        this.showToast('Application installée avec succès!');
-        const banner = document.getElementById('pwaInstallBanner');
-        if (banner) {
+        // Vérifier si la PWA est déjà ouverte en mode standalone
+        const isAlreadyInstalled =
+            window.matchMedia('(display-mode: standalone)').matches ||
+            window.navigator.standalone === true;
+
+        if (isAlreadyInstalled && banner) {
             banner.style.display = 'none';
         }
-    });
 
-    // === LECTURE AUTOMATIQUE VRAIMENT AUTOMATIQUE ===
-    const autoResume = localStorage.getItem('autoResumeRadio') === 'true';
-    const lastStation = localStorage.getItem('lastStation');
-    
-    if (autoResume && lastStation) {
-        const station = this.stations.find(s => s.id === lastStation);
-        if (station) {
-            // Attendre un court instant pour que tout soit chargé
-            setTimeout(() => {
-                console.log('Tentative de reprise automatique de:', station.name);
-                
+        // Événement émis quand l'installation est possible
+        window.addEventListener('beforeinstallprompt', (e) => {
+            // Empêche la bannière automatique du navigateur
+            e.preventDefault();
+            this.deferredPrompt = e;
+
+            const dismissed = localStorage.getItem('pwaInstallDismissed') === 'true';
+            const installed =
+                window.matchMedia('(display-mode: standalone)').matches ||
+                window.navigator.standalone === true;
+
+            // Affiche notre bannière personnalisée à l'ouverture
+            if (!dismissed && !installed && banner) {
+                banner.style.display = 'block';
+            }
+
+            console.log('PWA peut être installée');
+        });
+
+        // Clic sur le bouton "Installer"
+        if (installBtn) {
+            installBtn.addEventListener('click', async () => {
+                if (!this.deferredPrompt) {
+                    return;
+                }
+
+                // Affiche la popup système d'installation
+                this.deferredPrompt.prompt();
+
+                const choiceResult = await this.deferredPrompt.userChoice;
+
+                if (choiceResult.outcome === 'accepted') {
+                    console.log("L'utilisateur a accepté l'installation");
+                } else {
+                    console.log("L'utilisateur a refusé l'installation");
+                }
+
+                this.deferredPrompt = null;
+
+                if (banner) {
+                    banner.style.display = 'none';
+                }
+
+                // On ne repropose plus la bannière immédiatement
+                localStorage.setItem('pwaInstallDismissed', 'true');
+            });
+        }
+
+        // Clic sur le bouton "Plus tard"
+        if (dismissBtn) {
+            dismissBtn.addEventListener('click', () => {
+                if (banner) {
+                    banner.style.display = 'none';
+                }
+                localStorage.setItem('pwaInstallDismissed', 'true');
+            });
+        }
+
+        // Événement quand la PWA est installée
+        window.addEventListener('appinstalled', () => {
+            console.log('PWA installée');
+            this.showToast('Application installée avec succès !');
+            if (banner) {
+                banner.style.display = 'none';
+            }
+            localStorage.setItem('pwaInstallDismissed', 'true');
+        });
+
+                                // Reprendre la dernière radio au démarrage (si l'option est activée)
+        const lastStation = localStorage.getItem('lastStation');
+        if (this.autoResumeEnabled && lastStation) {
+            const station = this.stations.find(s => s.id === lastStation);
+            if (station) {
+                // On prépare le player, mais SANS lancer la lecture automatique
                 this.currentStation = station;
                 this.audioPlayer.src = station.url;
+
+                // On force l'état "en pause, prêt à lire"
+                this.isPlaying = false;
+                this.audioPlayer.pause();
+                this.stopVisualizer();
+
+                // Afficher le player avec les infos de la dernière radio
                 this.playerContainer.style.display = 'block';
+                this.playerContainer.classList.remove('minimized'); // player bien déployé
                 this.updatePlayerInfo();
-                
-                // Créer une fonction pour essayer de démarrer
-                const tryAutoPlay = () => {
-                    const playPromise = this.audioPlayer.play();
-                    
-                    if (playPromise !== undefined) {
-                        playPromise.then(() => {
-                            console.log('✅ Lecture automatique réussie');
-                            this.showToast(`Reprise automatique de ${station.name}`);
-                        }).catch(error => {
-                            console.log('⚠️ Lecture auto bloquée, préparation pour clic:', error.message);
-                            
-                            // Préparer pour démarrage au clic
-                            this.showToast(`${station.name} prête. Touchez l'écran pour démarrer.`);
-                            
-                            // Essayer au premier clic/touch
-                            const startOnInteraction = (e) => {
-                                // Ne pas interférer avec d'autres boutons
-                                if (e.target.closest('button')) return;
-                                
-                                if (!this.isPlaying && this.currentStation) {
-                                    this.audioPlayer.play()
-                                        .then(() => {
-                                            console.log('✅ Lecture démarrée après interaction');
-                                            this.showToast(`Lecture de ${station.name}`);
-                                        })
-                                        .catch(err => console.error('Erreur:', err));
-                                }
-                                
-                                // Retirer les écouteurs après succès
-                                document.removeEventListener('click', startOnInteraction);
-                                document.removeEventListener('touchstart', startOnInteraction);
-                            };
-                            
-                            // Écouter click ET touch
-                            document.addEventListener('click', startOnInteraction, { once: true });
-                            document.addEventListener('touchstart', startOnInteraction, { once: true });
-                        });
-                    }
-                };
-                
-                // Essayer immédiatement
-                tryAutoPlay();
-                
-                // Sur mobile, certains navigateurs nécessitent un délai
-                // Essayer aussi après un court délai
-                setTimeout(tryAutoPlay, 500);
-                
-            }, 300); // Court délai pour laisser la page se charger
+                this.updatePlayerUI();      // <-- met l'icône sur PLAY + texte "En pause"
+                this.updateRadioCards();
+
+                // Petit message pour l'utilisateur
+                this.showToast(`Prêt à reprendre : ${station.name}. Appuyez sur lecture pour démarrer.`);
+            }
         }
     }
-}
-
-// === GESTION DES PARAMÈTRES ===
-setupAutoResumeCheckbox() {
-    const checkbox = document.getElementById('autoResumeCheckbox');
-    if (!checkbox) return;
-    
-    // Charger l'état sauvegardé
-    const isEnabled = localStorage.getItem('autoResumeRadio') === 'true';
-    checkbox.checked = isEnabled;
-    
-    // Gérer le changement
-    checkbox.onchange = (e) => {
-        const enabled = e.target.checked;
-        localStorage.setItem('autoResumeRadio', enabled ? 'true' : 'false');
-        
-        if (enabled) {
-            this.showToast('✅ Reprise automatique activée');
-            // Sauvegarder la station actuelle si elle existe
-            if (this.currentStation) {
-                localStorage.setItem('lastStation', this.currentStation.id);
-            }
-        } else {
-            this.showToast('❌ Reprise automatique désactivée');
-        }
-    };
-}
-
-setupSleepTimer() {
-    const select = document.getElementById('sleepTimerSelect');
-    const cancelBtn = document.getElementById('cancelSleepTimer');
-    const status = document.getElementById('sleepTimerStatus');
-    
-    if (!select) return;
-    
-    // Gérer le changement de sélection
-    select.onchange = (e) => {
-        const minutes = parseInt(e.target.value);
-        
-        // Annuler l'ancien timer
-        if (this.sleepTimer) {
-            clearTimeout(this.sleepTimer);
-            this.sleepTimer = null;
-        }
-        
-        if (minutes > 0) {
-            // Créer le nouveau timer
-            this.sleepTimer = setTimeout(() => {
-                this.stopRadio();
-                this.showToast('🌙 Radio arrêtée par le minuteur');
-                select.value = '0';
-                if (status) {
-                    status.style.display = 'none';
-                }
-                this.sleepTimer = null;
-            }, minutes * 60 * 1000);
-            
-            // Afficher le statut
-            if (status) {
-                status.style.display = 'block';
-                status.innerHTML = `⏱️ Arrêt dans <strong>${minutes} minutes</strong>`;
-                status.style.color = '#ff6b6b';
-            }
-            
-            this.showToast(`⏱️ Minuteur: arrêt dans ${minutes} minutes`);
-        } else {
-            // Minuteur désactivé
-            if (status) {
-                status.style.display = 'none';
-            }
-            this.showToast('Minuteur désactivé');
-        }
-    };
-    
-    // Bouton annuler
-    if (cancelBtn) {
-        cancelBtn.onclick = () => {
-            if (this.sleepTimer) {
-                clearTimeout(this.sleepTimer);
-                this.sleepTimer = null;
-            }
-            if (select) {
-                select.value = '0';
-            }
-            if (status) {
-                status.style.display = 'none';
-            }
-            this.showToast('⏹️ Minuteur annulé');
-        };
-    }
-}
-
-setupVolumeSlider() {
-    const volumeBtn = document.getElementById('volumeBtn');
-    const volumeContainer = document.getElementById('volumeSliderContainer');
-    
-    if (!volumeBtn || !volumeContainer) return;
-    
-    // Toggle affichage du slider au clic sur l'icône tune
-    volumeBtn.onclick = () => {
-        const isVisible = volumeContainer.style.display === 'flex';
-        volumeContainer.style.display = isVisible ? 'none' : 'flex';
-        
-        // Animation d'apparition
-        if (!isVisible) {
-            volumeContainer.style.opacity = '0';
-            setTimeout(() => {
-                volumeContainer.style.opacity = '1';
-            }, 10);
-        }
-    };
-    
-    // Cacher le slider si on clique ailleurs
-    document.addEventListener('click', (e) => {
-        if (!volumeBtn.contains(e.target) && !volumeContainer.contains(e.target)) {
-            volumeContainer.style.display = 'none';
-        }
-    });
-}
-
-setupSettingsPanel() {
-    const settingsBtn = document.getElementById('settingsBtn');
-    const overlay = document.getElementById('settingsOverlay');
-    const closeBtn = document.getElementById('closeSettings');
-    
-    if (!settingsBtn || !overlay) {
-        console.log('Elements settings non trouvés');
-        return;
-    }
-    
-    // Ouvrir les paramètres
-    settingsBtn.onclick = () => {
-        overlay.style.display = 'flex';
-        console.log('Panneau ouvert');
-    };
-    
-    // CORRECTION : Fermer avec le bouton X
-    if (closeBtn) {
-        closeBtn.onclick = (e) => {
-            e.stopPropagation();
-            overlay.style.display = 'none';
-            console.log('Panneau fermé via X');
-        };
-    }
-    
-    // Fermer en cliquant sur l'overlay (pas sur le panneau)
-    overlay.onclick = (e) => {
-        if (e.target === overlay) {
-            overlay.style.display = 'none';
-            console.log('Panneau fermé via overlay');
-        }
-    };
-}
 
     // === VÉRIFICATION RÉSEAU ===
     checkNetworkStatus() {
