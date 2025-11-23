@@ -155,6 +155,8 @@ class RadioPlayerApp {
         this.sleepTimerId = null;
         this.sleepTimerEndTime = null;
         this.autoResumeEnabled = localStorage.getItem('autoResumeLastStation') === 'true';
+		this.autoResumeEnabled = localStorage.getItem('autoResumeLastStation') === 'true';
+        this.startOnFavorites = localStorage.getItem('startOnFavorites') === 'true';
         
         // === ÉLÉMENTS DOM ===
 
@@ -183,8 +185,9 @@ class RadioPlayerApp {
         this.setupEventListeners();
         this.setupSleepTimerUI();
         this.setupPWA();
-		this.setupCast();
+        this.setupCast();
         this.checkNetworkStatus();
+        this.applyStartupTab();
     }
 
      // === CONFIGURATION AUDIO ===
@@ -786,6 +789,43 @@ class RadioPlayerApp {
             });
         }
 
+// Gestion de la case "reprendre la dernière radio"
+        if (autoResumeCheckbox) {
+            autoResumeCheckbox.checked = this.autoResumeEnabled;
+            autoResumeCheckbox.addEventListener('change', (e) => {
+                this.autoResumeEnabled = e.target.checked;
+                localStorage.setItem(
+                    'autoResumeLastStation',
+                    this.autoResumeEnabled ? 'true' : 'false'
+                );
+
+                if (this.autoResumeEnabled) {
+                    this.showToast('Reprise automatique activée');
+                } else {
+                    this.showToast('Reprise automatique désactivée');
+                }
+            });
+        }
+
+        // Gestion de la case "démarrer sur favoris"
+        const startOnFavoritesCheckbox = document.getElementById('startOnFavoritesCheckbox');
+        if (startOnFavoritesCheckbox) {
+            startOnFavoritesCheckbox.checked = this.startOnFavorites;
+            startOnFavoritesCheckbox.addEventListener('change', (e) => {
+                this.startOnFavorites = e.target.checked;
+                localStorage.setItem(
+                    'startOnFavorites',
+                    this.startOnFavorites ? 'true' : 'false'
+                );
+
+                if (this.startOnFavorites) {
+                    this.showToast('Démarrage sur Favoris activé');
+                } else {
+                    this.showToast('Démarrage sur Radios');
+                }
+            });
+        }
+		
         // Restaurer un minuteur éventuellement déjà programmé
         this.restoreSleepTimerFromStorage();
     }
@@ -1024,7 +1064,10 @@ class RadioPlayerApp {
     }
 
     // === ÉVÉNEMENTS ===
-    setupEventListeners() {
+        setupEventListeners() {
+        // Swipe horizontal pour changer d'onglet
+        this.setupSwipeNavigation();
+        
         // Onglets
         document.querySelectorAll('.tab-button').forEach(button => {
             button.addEventListener('click', () => {
@@ -1251,6 +1294,76 @@ class RadioPlayerApp {
     checkNetworkStatus() {
         if (!navigator.onLine) {
             this.showToast('Mode hors ligne');
+        }
+    }
+	
+	// === APPLIQUER L'ONGLET DE DÉMARRAGE ===
+    applyStartupTab() {
+        if (this.startOnFavorites) {
+            // Activer l'onglet Favoris
+            document.querySelectorAll('.tab-button').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            
+            const favButton = document.querySelector('[data-tab="favoris"]');
+            const favContent = document.getElementById('favoris-tab');
+            
+            if (favButton && favContent) {
+                favButton.classList.add('active');
+                favContent.classList.add('active');
+            }
+        }
+    }
+	
+	// === NAVIGATION PAR SWIPE ===
+    setupSwipeNavigation() {
+        const tabsContainer = document.querySelector('.tabs-container');
+        if (!tabsContainer) return;
+
+        let touchStartX = 0;
+        let touchEndX = 0;
+        let isSwiping = false;
+
+        tabsContainer.addEventListener('touchstart', (e) => {
+            touchStartX = e.changedTouches[0].screenX;
+            isSwiping = true;
+        }, { passive: true });
+
+        tabsContainer.addEventListener('touchmove', (e) => {
+            if (!isSwiping) return;
+            touchEndX = e.changedTouches[0].screenX;
+        }, { passive: true });
+
+        tabsContainer.addEventListener('touchend', () => {
+            if (!isSwiping) return;
+            isSwiping = false;
+
+            const swipeDistance = touchEndX - touchStartX;
+            const minSwipeDistance = 50; // Distance minimale pour détecter un swipe
+
+            // Swipe vers la droite (afficher Radios)
+            if (swipeDistance > minSwipeDistance) {
+                this.switchToTab('radios');
+            }
+            // Swipe vers la gauche (afficher Favoris)
+            else if (swipeDistance < -minSwipeDistance) {
+                this.switchToTab('favoris');
+            }
+        }, { passive: true });
+    }
+
+    // === CHANGER D'ONGLET ===
+    switchToTab(tabName) {
+        // Retirer active de tous
+        document.querySelectorAll('.tab-button').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+        
+        // Activer le bon onglet
+        const button = document.querySelector(`[data-tab="${tabName}"]`);
+        const content = document.getElementById(`${tabName}-tab`);
+        
+        if (button && content) {
+            button.classList.add('active');
+            content.classList.add('active');
         }
     }
 }

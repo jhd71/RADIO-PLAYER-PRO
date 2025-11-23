@@ -1584,6 +1584,27 @@ body::before {
     }
 }
 
+/* ========================================
+   TRANSITION SWIPE POUR ONGLETS
+   ======================================== */
+.tabs-container {
+    touch-action: pan-y; /* Permet le scroll vertical mais détecte le swipe horizontal */
+}
+
+.tab-content {
+    transition: opacity 0.3s ease;
+}
+
+.tab-content:not(.active) {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.tab-content.active {
+    opacity: 1;
+    pointer-events: auto;
+}
+
 /* === FIX POUR IPHONE X ET PLUS === */
 @supports (padding-top: env(safe-area-inset-top)) {
     @media (max-width: 768px) {
