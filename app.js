@@ -192,8 +192,7 @@ class RadioPlayerApp {
     setupAudioPlayer() {
         this.audioPlayer.volume = this.volume;
         
-        // Créer l'égaliseur dès le départ (maintenant que CORS est réglé via proxy)
-        this.setupEqualizer();
+        // L'égaliseur sera créé à la demande (au premier clic sur le bouton)
         
         // Événements audio
         this.audioPlayer.addEventListener('play', () => {
@@ -239,8 +238,22 @@ class RadioPlayerApp {
 
     // === CONFIGURATION ÉGALISEUR ===
     setupEqualizer() {
+        // Si déjà initialisé, ne rien faire
+        if (this.equalizerFilters) {
+            console.log('Égaliseur déjà initialisé');
+            return true;
+        }
+
+        // Si aucune radio ne joue, impossible d'initialiser
+        if (!this.currentStation || !this.audioPlayer.src) {
+            return false;
+        }
+
         try {
+            // Créer le contexte audio
             this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            
+            // Créer la source depuis l'élément audio
             const source = this.audioContext.createMediaElementSource(this.audioPlayer);
             
             // Créer les filtres pour chaque bande
@@ -268,9 +281,14 @@ class RadioPlayerApp {
             }
             this.equalizerFilters[this.equalizerFilters.length - 1].connect(this.audioContext.destination);
 
-            console.log('Égaliseur initialisé');
+            console.log('✅ Égaliseur initialisé avec succès');
+            return true;
+            
         } catch (error) {
-            console.error('Erreur initialisation égaliseur:', error);
+            console.error('❌ Erreur initialisation égaliseur:', error);
+            this.equalizerFilters = null;
+            this.audioContext = null;
+            return false;
         }
     }
 
@@ -374,7 +392,7 @@ class RadioPlayerApp {
         // Nouvelle station
         this.currentStation = station;
         
-        // TEST: Utiliser l'URL directe SANS proxy pour vérifier
+        // Utiliser l'URL directe
         this.audioPlayer.src = station.url;
         
         this.audioPlayer.play().catch(error => {
@@ -1335,7 +1353,46 @@ class RadioPlayerApp {
 	// === TOGGLE ÉGALISEUR ===
     toggleEqualizer() {
         const panel = document.getElementById('equalizerPanel');
-        if (panel.style.display === 'none') {
+        
+        // Si le panneau est caché, on l'affiche
+        if (panel.style.display === 'none' || !panel.style.display) {
+            
+            // Vérifier qu'une radio est en cours
+            if (!this.currentStation) {
+                this.showToast('⚠️ Lancez d\'abord une radio');
+                return;
+            }
+            
+            // Initialiser l'égaliseur à la première ouverture
+            if (!this.equalizerFilters) {
+                const wasPlaying = this.isPlaying;
+                const currentTime = this.audioPlayer.currentTime;
+                
+                // Mettre en pause temporairement
+                if (wasPlaying) {
+                    this.audioPlayer.pause();
+                }
+                
+                const success = this.setupEqualizer();
+                
+                if (!success) {
+                    this.showToast('⚠️ Égaliseur non disponible pour cette radio');
+                    
+                    // Relancer si c'était en lecture
+                    if (wasPlaying) {
+                        this.audioPlayer.play();
+                    }
+                    return;
+                }
+                
+                // Relancer si c'était en lecture
+                if (wasPlaying) {
+                    this.audioPlayer.play();
+                }
+                
+                this.showToast('✅ Égaliseur activé !');
+            }
+            
             panel.style.display = 'block';
         } else {
             panel.style.display = 'none';
