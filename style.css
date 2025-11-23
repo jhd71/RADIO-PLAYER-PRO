@@ -314,19 +314,6 @@ body::before {
     box-shadow: 0 0 30px rgba(76, 175, 80, 0.3);
 }
 
-@keyframes pulse-glow {
-    0%, 100% {
-        box-shadow: 
-            0 0 20px rgba(124, 92, 255, 0.4),
-            0 4px 20px rgba(0, 0, 0, 0.3);
-    }
-    50% {
-        box-shadow: 
-            0 0 30px rgba(124, 92, 255, 0.6),
-            0 4px 25px rgba(0, 0, 0, 0.4);
-    }
-}
-
 .radio-card.playing::after {
     content: '';
     position: absolute;
