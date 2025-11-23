@@ -476,6 +476,13 @@ class RadioPlayerApp {
         const muteBtn = document.getElementById('muteBtn');
         const volumeSlider = document.getElementById('volumeSlider');
         const volumeContainer = document.getElementById('volumeSliderContainer');
+        
+        // Vérifier que les éléments existent
+        if (!muteBtn || !volumeSlider || !volumeContainer) {
+            console.warn('Éléments de volume non trouvés');
+            return;
+        }
+        
         const volumeValue = volumeContainer.querySelector('.volume-value');
         
         // Bouton Mute/Unmute
@@ -494,17 +501,25 @@ class RadioPlayerApp {
             
             this.volume = newVolume;
             this.audioPlayer.volume = this.volume;
-            volumeValue.textContent = `${e.target.value}%`;
+            
+            if (volumeValue) {
+                volumeValue.textContent = `${e.target.value}%`;
+            }
+            
             this.updateVolumeIcon();
         });
         
         // Initialiser le slider
         volumeSlider.value = this.volume * 100;
-        volumeValue.textContent = `${Math.round(this.volume * 100)}%`;
+        
+        if (volumeValue) {
+            volumeValue.textContent = `${Math.round(this.volume * 100)}%`;
+        }
+        
         this.updateVolumeIcon();
     }
 
-        toggleMute() {
+    toggleMute() {
         if (this.isMuted) {
             // Unmute
             this.isMuted = false;
@@ -522,22 +537,24 @@ class RadioPlayerApp {
         // Mettre à jour le slider
         const volumeSlider = document.getElementById('volumeSlider');
         const volumeValue = document.querySelector('.volume-value');
+        
         if (volumeSlider && volumeValue) {
             volumeSlider.value = this.isMuted ? 0 : this.volume * 100;
             volumeValue.textContent = `${Math.round(this.isMuted ? 0 : this.volume * 100)}%`;
         }
     }
 
-        updateMuteButton() {
+    updateMuteButton() {
         // Pour compatibilité avec l'ancien code
         this.updateVolumeIcon();
     }
 
-        updateVolumeIcon() {
+    updateVolumeIcon() {
         const muteBtn = document.getElementById('muteBtn');
         if (!muteBtn) return;
 
         const icon = muteBtn.querySelector('.material-icons');
+        if (!icon) return;
 
         if (this.isMuted || this.volume === 0) {
             icon.textContent = 'volume_off';
