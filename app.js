@@ -143,6 +143,7 @@ class RadioPlayerApp {
         this.isMuted = false;
         this.previousVolume = 0.3;
         this.audioContext = null;
+		this.equalizerFilters = null;
         this.playerMinimized = false;
         this.errorCount = 0;
 
@@ -191,10 +192,13 @@ class RadioPlayerApp {
     setupAudioPlayer() {
         this.audioPlayer.volume = this.volume;
         
+        // Créer le contexte audio et l'égaliseur
+        this.setupEqualizer();
+        
         // Événements audio
         this.audioPlayer.addEventListener('play', () => {
             this.isPlaying = true;
-            this.errorCount = 0; // Réinitialiser le compteur d'erreurs
+            this.errorCount = 0;
             this.updatePlayerUI();
             this.updateRadioCards();
             this.startVisualizer();
@@ -207,38 +211,67 @@ class RadioPlayerApp {
             this.stopVisualizer();
         });
 
-                this.audioPlayer.addEventListener('error', (e) => {
-            // Si on vient d'appuyer sur STOP, on ignore cette erreur
+        this.audioPlayer.addEventListener('error', (e) => {
             if (this.isStopping) {
                 this.isStopping = false;
                 return;
             }
 
-            // Éviter la boucle infinie d'erreurs
             this.errorCount++;
+            console.error('Erreur audio:', e);
+
+            if (this.errorCount >= 3) {
+                this.showToast('Impossible de lire cette radio');
+                this.stopRadio();
+            } else {
+                this.showToast('Erreur de lecture, nouvelle tentative...');
+                setTimeout(() => {
+                    if (this.currentStation && this.isPlaying) {
+                        this.audioPlayer.load();
+                        this.audioPlayer.play().catch(err => {
+                            console.error('Erreur replay:', err);
+                        });
+                    }
+                }, 2000);
+            }
+        });
+    }
+
+    // === CONFIGURATION ÉGALISEUR ===
+    setupEqualizer() {
+        try {
+            this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            const source = this.audioContext.createMediaElementSource(this.audioPlayer);
             
-            if (this.errorCount <= 1 && this.audioPlayer.src !== '') {
-                console.error('Erreur audio:', e);
-                this.showToast('Erreur de lecture. Vérifiez votre connexion.');
-                // Arrêter proprement sans déclencher de nouvelles erreurs
-                this.isPlaying = false;
-                this.audioPlayer.pause();
-                this.audioPlayer.src = '';
-                this.updatePlayerUI();
-                this.updateRadioCards();
-                this.stopVisualizer();
-            }
-        });
+            // Créer les filtres pour chaque bande
+            this.equalizerFilters = [
+                this.audioContext.createBiquadFilter(), // 60 Hz
+                this.audioContext.createBiquadFilter(), // 250 Hz
+                this.audioContext.createBiquadFilter(), // 1 kHz
+                this.audioContext.createBiquadFilter(), // 4 kHz
+                this.audioContext.createBiquadFilter()  // 14 kHz
+            ];
 
-        this.audioPlayer.addEventListener('waiting', () => {
-            document.getElementById('playerStatus').textContent = 'Chargement...';
-        });
+            // Configurer les fréquences
+            const frequencies = [60, 250, 1000, 4000, 14000];
+            this.equalizerFilters.forEach((filter, index) => {
+                filter.type = 'peaking';
+                filter.frequency.value = frequencies[index];
+                filter.Q.value = 1;
+                filter.gain.value = 0;
+            });
 
-        this.audioPlayer.addEventListener('canplay', () => {
-            if (this.isPlaying) {
-                document.getElementById('playerStatus').textContent = 'En lecture';
+            // Connecter en chaîne : source → filtres → destination
+            source.connect(this.equalizerFilters[0]);
+            for (let i = 0; i < this.equalizerFilters.length - 1; i++) {
+                this.equalizerFilters[i].connect(this.equalizerFilters[i + 1]);
             }
-        });
+            this.equalizerFilters[this.equalizerFilters.length - 1].connect(this.audioContext.destination);
+
+            console.log('Égaliseur initialisé');
+        } catch (error) {
+            console.error('Erreur initialisation égaliseur:', error);
+        }
     }
 
     // === RENDU DES RADIOS ===
@@ -1050,6 +1083,45 @@ class RadioPlayerApp {
             this.togglePlayerSize();
         });
 
+// Égaliseur
+        document.getElementById('equalizerBtn').addEventListener('click', () => {
+            this.toggleEqualizer();
+        });
+
+        document.getElementById('equalizerCloseBtn').addEventListener('click', () => {
+            document.getElementById('equalizerPanel').style.display = 'none';
+        });
+
+        // Sliders d'égaliseur
+        const eqSliders = document.querySelectorAll('.eq-slider');
+        eqSliders.forEach((slider, index) => {
+            slider.addEventListener('input', (e) => {
+                const value = parseFloat(e.target.value);
+                const valueDisplay = e.target.nextElementSibling;
+                valueDisplay.textContent = `${value > 0 ? '+' : ''}${value} dB`;
+                
+                if (this.equalizerFilters && this.equalizerFilters[index]) {
+                    this.equalizerFilters[index].gain.value = value;
+                }
+            });
+        });
+
+        // Préréglages
+        document.querySelectorAll('.preset-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                this.applyEQPreset(btn.dataset.preset);
+            });
+        });
+
+        // Reset égaliseur
+        document.getElementById('equalizerReset').addEventListener('click', () => {
+            this.applyEQPreset('flat');
+            document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('active'));
+            document.querySelector('[data-preset="flat"]').classList.add('active');
+        });
+		
         // Volume et Mute
         this.setupVolumeControl();
 
@@ -1238,6 +1310,40 @@ class RadioPlayerApp {
         if (!navigator.onLine) {
             this.showToast('Mode hors ligne');
         }
+    }
+	
+	// === TOGGLE ÉGALISEUR ===
+    toggleEqualizer() {
+        const panel = document.getElementById('equalizerPanel');
+        if (panel.style.display === 'none') {
+            panel.style.display = 'block';
+        } else {
+            panel.style.display = 'none';
+        }
+    }
+
+    // === APPLIQUER PRÉRÉGLAGE ÉGALISEUR ===
+    applyEQPreset(preset) {
+        const presets = {
+            flat: [0, 0, 0, 0, 0],
+            bass: [8, 4, 0, -2, -3],
+            rock: [5, 3, -1, 2, 4],
+            jazz: [4, 2, -2, 2, 4],
+            vocal: [-2, -1, 3, 4, 2]
+        };
+
+        const values = presets[preset] || presets.flat;
+        const sliders = document.querySelectorAll('.eq-slider');
+
+        sliders.forEach((slider, index) => {
+            slider.value = values[index];
+            const valueDisplay = slider.nextElementSibling;
+            valueDisplay.textContent = `${values[index] > 0 ? '+' : ''}${values[index]} dB`;
+
+            if (this.equalizerFilters && this.equalizerFilters[index]) {
+                this.equalizerFilters[index].gain.value = values[index];
+            }
+        });
     }
 }
 

@@ -1584,6 +1584,156 @@ body::before {
     }
 }
 
+/* ========================================
+   PANNEAU ÉGALISEUR
+   ======================================== */
+.equalizer-panel {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 90%;
+    max-width: 600px;
+    padding: 20px;
+    border-radius: 20px;
+    z-index: 9999;
+    animation: slideUp 0.3s ease;
+}
+
+.equalizer-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.equalizer-header h3 {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0;
+    font-size: 1.2rem;
+    color: white;
+}
+
+.equalizer-content {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* Préréglages */
+.equalizer-presets {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.preset-btn {
+    padding: 8px 16px;
+    font-size: 0.9rem;
+    min-width: auto;
+}
+
+.preset-btn.active {
+    background: rgba(124, 92, 255, 0.5);
+    border-color: rgba(124, 92, 255, 0.8);
+}
+
+/* Sliders d'égaliseur */
+.equalizer-sliders {
+    display: flex;
+    gap: 12px;
+    justify-content: space-between;
+}
+
+.eq-slider-group {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    flex: 1;
+}
+
+.eq-slider-group label {
+    font-size: 0.75rem;
+    text-align: center;
+    color: white;
+    font-weight: 500;
+    line-height: 1.2;
+}
+
+.eq-slider-group small {
+    font-size: 0.65rem;
+    opacity: 0.7;
+    display: block;
+}
+
+.eq-slider {
+    writing-mode: vertical-lr;
+    direction: rtl;
+    width: 6px;
+    height: 120px;
+    -webkit-appearance: slider-vertical;
+    appearance: slider-vertical;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    outline: none;
+    cursor: pointer;
+}
+
+.eq-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    cursor: pointer;
+    border: 2px solid white;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.eq-slider::-moz-range-thumb {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    cursor: pointer;
+    border: 2px solid white;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.eq-value {
+    font-size: 0.7rem;
+    color: white;
+    font-weight: 500;
+    min-height: 18px;
+}
+
+/* Mobile responsive */
+@media (max-width: 600px) {
+    .equalizer-panel {
+        bottom: 10px;
+        width: 95%;
+        padding: 16px;
+    }
+
+    .eq-slider {
+        height: 100px;
+    }
+
+    .equalizer-sliders {
+        gap: 8px;
+    }
+
+    .preset-btn {
+        padding: 6px 12px;
+        font-size: 0.8rem;
+    }
+}
+
 /* === FIX POUR IPHONE X ET PLUS === */
 @supports (padding-top: env(safe-area-inset-top)) {
     @media (max-width: 768px) {
