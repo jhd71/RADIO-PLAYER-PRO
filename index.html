@@ -77,6 +77,34 @@
             </button>
         </nav>
 
+<!-- Onglets de navigation -->
+        <nav class="tab-navigation glass-effect">
+            <button class="tab-button active" data-tab="radios">
+                <span class="material-icons">radio</span>
+                <span>Radios</span>
+            </button>
+            <button class="tab-button" data-tab="favoris">
+                <span class="material-icons">favorite</span>
+                <span>Favoris</span>
+            </button>
+        </nav>
+
+        <!-- Filtre par catégorie -->
+        <div class="category-filter glass-effect" id="categoryFilter">
+            <label for="categorySelect">
+                <span class="material-icons">filter_list</span>
+                <span>Catégorie :</span>
+            </label>
+            <select id="categorySelect" class="glass-select">
+                <option value="toutes">Toutes les radios</option>
+                <option value="generaliste">Généralistes</option>
+                <option value="rock">Rock</option>
+                <option value="info">Info / Talk</option>
+                <option value="thematique">Thématiques</option>
+                <option value="locale">Locales</option>
+            </select>
+        </div>
+		
         <!-- Conteneur des onglets -->
         <div class="tabs-container">
             <!-- Onglet Radios -->

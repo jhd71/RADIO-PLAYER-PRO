@@ -1622,6 +1622,88 @@ body::before {
     pointer-events: auto;
 }
 
+/* ========================================
+   FILTRE PAR CATÉGORIE
+   ======================================== */
+.category-filter {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 20px;
+    margin: 0 20px 10px 20px;
+    border-radius: 16px;
+}
+
+.category-filter label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: white;
+    white-space: nowrap;
+}
+
+.category-filter label .material-icons {
+    font-size: 20px;
+    opacity: 0.8;
+}
+
+.glass-select {
+    flex: 1;
+    padding: 10px 16px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 12px;
+    color: white;
+    font-size: 0.95rem;
+    font-family: 'Inter', sans-serif;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+
+.glass-select:hover {
+    background: rgba(255, 255, 255, 0.15);
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+.glass-select:focus {
+    outline: none;
+    background: rgba(255, 255, 255, 0.2);
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(124, 92, 255, 0.2);
+}
+
+.glass-select option {
+    background: #2a2a4a;
+    color: white;
+    padding: 10px;
+}
+
+/* Cacher le filtre dans l'onglet Favoris */
+.category-filter.hidden {
+    display: none;
+}
+
+/* Responsive mobile */
+@media (max-width: 768px) {
+    .category-filter {
+        margin: 0 12px 10px 12px;
+        padding: 10px 16px;
+    }
+    
+    .category-filter label span:last-child {
+        display: none; /* Cacher le texte "Catégorie :" sur mobile */
+    }
+    
+    .glass-select {
+        font-size: 0.9rem;
+        padding: 8px 12px;
+    }
+}
+
 /* === FIX POUR IPHONE X ET PLUS === */
 @supports (padding-top: env(safe-area-inset-top)) {
     @media (max-width: 768px) {
