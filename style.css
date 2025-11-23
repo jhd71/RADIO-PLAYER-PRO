@@ -226,7 +226,9 @@ body::before {
 /* === TAB CONTENT === */
 .tabs-container {
     flex: 1;
-    padding: 0 var(--spacing-md);
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding-bottom: 20px; /* Petit espace supplémentaire en bas */
 }
 
 .tab-content {
@@ -254,7 +256,7 @@ body::before {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: var(--spacing-md);
-    padding-bottom: 120px;
+    padding-bottom: 320px; /* Plus d'espace pour le player déployé */
 }
 
 @media (min-width: 400px) {
@@ -308,10 +310,13 @@ body::before {
 
 .radio-card.playing {
     background: linear-gradient(135deg, 
-        rgba(76, 175, 80, 0.2), 
-        rgba(76, 175, 80, 0.1));
+        rgba(76, 175, 80, 0.25), 
+        rgba(76, 175, 80, 0.15));
     border-color: var(--success-color);
-    box-shadow: 0 0 30px rgba(76, 175, 80, 0.3);
+    box-shadow: 
+        0 0 30px rgba(76, 175, 80, 0.4),
+        0 4px 20px rgba(0, 0, 0, 0.2);
+    transform: scale(1.02); /* Légère mise en avant */
 }
 
 .radio-card.playing::after {
@@ -323,9 +328,17 @@ body::before {
     width: 200%;
     height: 200%;
     background: radial-gradient(circle, 
-        rgba(76, 175, 80, 0.2) 0%, 
+        rgba(76, 175, 80, 0.3) 0%, 
         transparent 70%);
     animation: pulse 2s ease infinite;
+    z-index: 0; /* Derrière le contenu */
+}
+
+.radio-card.playing .radio-logo,
+.radio-card.playing .radio-name,
+.radio-card.playing .favorite-indicator {
+    position: relative;
+    z-index: 1; /* Au-dessus de l'animation */
 }
 
 @keyframes pulse {
@@ -393,6 +406,8 @@ body::before {
 
 /* === FAVORIS === */
 .favoris-container {
+	padding: 20px;
+    padding-bottom: 320px; /* Même espace que radios-grid */
     min-height: 300px;
     display: flex;
     align-items: center;
@@ -1403,6 +1418,17 @@ body::before {
     .radio-card.playing {
         border: 2px solid var(--success-color) !important;
         box-shadow: 0 0 20px rgba(76, 175, 80, 0.4) !important;
+    }
+	
+	.radios-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 12px;
+        padding: 12px;
+        padding-bottom: 350px; /* Encore plus d'espace sur mobile */
+    }
+    
+    .favoris-container {
+        padding-bottom: 350px; /* Pareil pour favoris */
     }
 }
 
