@@ -188,12 +188,12 @@ class RadioPlayerApp {
         this.checkNetworkStatus();
     }
 
-    // === CONFIGURATION AUDIO ===
+     // === CONFIGURATION AUDIO ===
     setupAudioPlayer() {
         this.audioPlayer.volume = this.volume;
         
-        // Créer l'égaliseur dès le départ (maintenant que CORS est réglé via proxy)
-        this.setupEqualizer();
+        // DÉSACTIVÉ TEMPORAIREMENT pour tester
+        // this.setupEqualizer();
         
         // Événements audio
         this.audioPlayer.addEventListener('play', () => {
@@ -374,10 +374,9 @@ class RadioPlayerApp {
         // Nouvelle station
         this.currentStation = station;
         
-        // Utiliser le proxy pour contourner CORS
-        const proxyUrl = `/api/proxy?url=${encodeURIComponent(station.url)}`;
+        // TEST: Utiliser l'URL directe SANS proxy pour vérifier
+        this.audioPlayer.src = station.url;
         
-        this.audioPlayer.src = proxyUrl;
         this.audioPlayer.play().catch(error => {
             console.error('Erreur lecture:', error);
             this.showToast('Impossible de lire cette radio');
