@@ -334,13 +334,6 @@ body::before {
     z-index: 0; /* Derrière le contenu */
 }
 
-.radio-card.playing .radio-logo,
-.radio-card.playing .radio-name,
-.radio-card.playing .favorite-indicator {
-    position: relative;
-    z-index: 1; /* Au-dessus de l'animation */
-}
-
 @keyframes pulse {
     0%, 100% {
         transform: translate(-50%, -50%) scale(0.8);
