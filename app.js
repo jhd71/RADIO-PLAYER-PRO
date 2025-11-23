@@ -1017,37 +1017,44 @@ class RadioPlayerApp {
         if (this.autoResumeEnabled && lastStation) {
             const station = this.stations.find(s => s.id === lastStation);
             if (station) {
-                // On prépare le player
+                // Préparer le player sans lancer la lecture
                 this.currentStation = station;
                 this.audioPlayer.src = station.url;
+                this.isPlaying = false;
 
-                // Afficher le player avec les infos de la dernière radio
+                // Afficher le player
                 this.playerContainer.style.display = 'block';
-                this.playerContainer.classList.remove('minimized'); // player bien déployé
+                this.playerContainer.classList.remove('minimized');
                 this.updatePlayerInfo();
+                this.updatePlayerUI();
+                this.updateRadioCards();
 
-                // LANCER LA LECTURE AUTOMATIQUEMENT
-                this.isPlaying = true;
-                this.audioPlayer.play()
-                    .then(() => {
-                        this.startVisualizer();
-                        this.updatePlayerUI();
-                        this.updateRadioCards();
-                        this.showToast(`Lecture automatique : ${station.name}`);
-                    })
-                    .catch((error) => {
-                        console.error('Erreur lecture auto:', error);
-                        // Si la lecture auto échoue (navigateur bloque), on met en pause
-                        this.isPlaying = false;
-                        this.audioPlayer.pause();
-                        this.stopVisualizer();
-                        this.updatePlayerUI();
-                        this.updateRadioCards();
-                        this.showToast(`${station.name} prête. Appuyez sur lecture.`);
-                    });
+                // Afficher l'overlay avec bouton de reprise
+                const overlay = document.getElementById('autoResumeOverlay');
+                const title = document.getElementById('autoResumeTitle');
+                const text = document.getElementById('autoResumeText');
+                const resumeBtn = document.getElementById('autoResumeBtn');
+                const cancelBtn = document.getElementById('autoResumeCancelBtn');
+
+                if (overlay && title && text && resumeBtn && cancelBtn) {
+                    title.textContent = `Reprendre ${station.name}`;
+                    text.textContent = station.description || 'Votre dernière radio est prête';
+                    overlay.style.display = 'flex';
+
+                    // Bouton "Démarrer"
+                    resumeBtn.onclick = () => {
+                        overlay.style.display = 'none';
+                        this.playRadio(station);
+                        this.showToast(`Lecture de ${station.name}`);
+                    };
+
+                    // Bouton "Annuler"
+                    cancelBtn.onclick = () => {
+                        overlay.style.display = 'none';
+                    };
+                }
             }
         }
-    }
 
     // === VÉRIFICATION RÉSEAU ===
     checkNetworkStatus() {

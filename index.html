@@ -162,6 +162,22 @@
         <!-- Toast notifications -->
         <div class="toast" id="toast"></div>
 
+		<!-- Bouton de reprise automatique -->
+			<div class="auto-resume-overlay" id="autoResumeOverlay" style="display: none;">
+				<div class="auto-resume-card glass-effect">
+					<span class="material-icons" style="font-size: 48px; color: #7C5CFF;">radio</span>
+					<h3 id="autoResumeTitle">Reprendre la lecture</h3>
+					<p id="autoResumeText">Votre dernière radio est prête</p>
+					<button id="autoResumeBtn" class="glass-button" style="padding: 12px 32px; font-size: 1.1rem;">
+						<span class="material-icons">play_arrow</span>
+						Démarrer
+					</button>
+					<button id="autoResumeCancelBtn" class="glass-button" style="margin-top: 8px; opacity: 0.7;">
+						Annuler
+					</button>
+				</div>
+			</div>
+			
         <!-- Loading overlay -->
         <div class="loading-overlay" id="loadingOverlay" style="display: none;">
             <div class="loading-spinner"></div>
