@@ -1,69 +1,92 @@
-// API Proxy pour contourner les restrictions CORS sur les flux radio
+// API Proxy pour streaming audio avec gestion CORS
 export default async function handler(req, res) {
-    // Permettre toutes les origines (CORS)
+    // Headers CORS
     res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Range');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, HEAD, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Range, Content-Type');
+    res.setHeader('Access-Control-Expose-Headers', 'Content-Length, Content-Range, Accept-Ranges');
     
-    // Gérer les requêtes OPTIONS (preflight)
+    // Répondre aux requêtes OPTIONS (preflight)
     if (req.method === 'OPTIONS') {
         return res.status(200).end();
     }
     
-    // Récupérer l'URL de la radio depuis les paramètres
+    // Récupérer l'URL de la radio
     const { url } = req.query;
     
     if (!url) {
         return res.status(400).json({ 
-            error: 'URL manquante',
-            message: 'Utilisez ?url=https://...' 
+            error: 'Paramètre URL manquant' 
         });
     }
     
     try {
-        // Décoder l'URL si elle est encodée
         const radioUrl = decodeURIComponent(url);
         
-        console.log('Proxy vers:', radioUrl);
+        // Headers pour la requête
+        const headers = {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+            'Accept': '*/*',
+            'Connection': 'keep-alive',
+            'Icy-MetaData': '1'
+        };
+        
+        // Ajouter Range si présent
+        if (req.headers.range) {
+            headers['Range'] = req.headers.range;
+        }
         
         // Faire la requête vers le flux radio
         const response = await fetch(radioUrl, {
             method: 'GET',
-            headers: {
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
-                'Accept': '*/*',
-                'Range': req.headers.range || 'bytes=0-'
-            }
+            headers: headers
         });
         
         if (!response.ok) {
-            throw new Error(`Erreur HTTP: ${response.status}`);
+            throw new Error(`HTTP ${response.status}`);
         }
         
-        // Copier les headers importants
+        // Définir les headers de réponse
         const contentType = response.headers.get('content-type') || 'audio/mpeg';
-        const contentLength = response.headers.get('content-length');
-        
         res.setHeader('Content-Type', contentType);
+        res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+        res.setHeader('Accept-Ranges', 'bytes');
         
-        if (contentLength) {
-            res.setHeader('Content-Length', contentLength);
+        // Copier les autres headers utiles
+        if (response.headers.get('content-length')) {
+            res.setHeader('Content-Length', response.headers.get('content-length'));
         }
         
-        // Permettre le streaming
-        res.setHeader('Accept-Ranges', 'bytes');
-        res.setHeader('Cache-Control', 'no-cache');
+        // IMPORTANT: Streamer les données au lieu de tout charger
+        const reader = response.body.getReader();
         
-        // Transférer le flux audio
-        const buffer = await response.arrayBuffer();
-        res.status(200).send(Buffer.from(buffer));
+        while (true) {
+            const { done, value } = await reader.read();
+            
+            if (done) break;
+            
+            // Envoyer les chunks au client
+            res.write(Buffer.from(value));
+        }
+        
+        res.end();
         
     } catch (error) {
-        console.error('Erreur proxy:', error);
+        console.error('Erreur proxy:', error.message);
         
-        return res.status(500).json({ 
-            error: 'Erreur proxy',
-            message: error.message 
-        });
+        if (!res.headersSent) {
+            return res.status(500).json({ 
+                error: 'Erreur de streaming',
+                message: error.message 
+            });
+        }
     }
 }
+
+// Configuration Vercel pour permettre le streaming
+export const config = {
+    api: {
+        responseLimit: false,
+        bodyParser: false
+    }
+};

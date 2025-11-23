@@ -131,6 +131,11 @@ self.addEventListener('fetch', (event) => {
         return;
     }
     
+    // NE PAS intercepter les requêtes vers le proxy API
+    if (url.pathname.startsWith('/api/')) {
+        return;
+    }
+    
     // Pour les flux audio (streaming), ne pas mettre en cache
     if (request.url.includes('.mp3') || request.url.includes('.aac') || 
         request.url.includes('stream') || request.url.includes('icecast')) {
