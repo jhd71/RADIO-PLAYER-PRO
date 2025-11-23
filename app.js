@@ -413,17 +413,16 @@ class RadioPlayerApp {
     }
 
     updateRadioCards() {
-        // Retirer toutes les classes playing
+        // Retirer toutes les classes playing de TOUTES les cartes (Radios ET Favoris)
         document.querySelectorAll('.radio-card').forEach(card => {
             card.classList.remove('playing');
         });
         
-        // Ajouter la classe playing à la carte active
+        // Ajouter la classe playing à TOUTES les cartes avec le bon ID (Radios ET Favoris)
         if (this.currentStation && this.isPlaying) {
-            const activeCard = document.querySelector(`[data-station-id="${this.currentStation.id}"]`);
-            if (activeCard) {
-                activeCard.classList.add('playing');
-            }
+            document.querySelectorAll(`[data-station-id="${this.currentStation.id}"]`).forEach(card => {
+                card.classList.add('playing');
+            });
         }
     }
 
@@ -1321,33 +1320,57 @@ class RadioPlayerApp {
 
         let touchStartX = 0;
         let touchEndX = 0;
+        let touchStartY = 0;
         let isSwiping = false;
+        let startTime = 0;
 
         tabsContainer.addEventListener('touchstart', (e) => {
-            touchStartX = e.changedTouches[0].screenX;
-            isSwiping = true;
+            // Uniquement pour les vrais événements tactiles
+            if (e.touches && e.touches.length === 1) {
+                touchStartX = e.touches[0].screenX;
+                touchStartY = e.touches[0].screenY;
+                touchEndX = touchStartX;
+                startTime = Date.now();
+                isSwiping = false; // Pas encore confirmé
+            }
         }, { passive: true });
 
         tabsContainer.addEventListener('touchmove', (e) => {
-            if (!isSwiping) return;
-            touchEndX = e.changedTouches[0].screenX;
+            if (!e.touches || e.touches.length !== 1) return;
+            
+            touchEndX = e.touches[0].screenX;
+            const touchEndY = e.touches[0].screenY;
+            
+            const deltaX = Math.abs(touchEndX - touchStartX);
+            const deltaY = Math.abs(touchEndY - touchStartY);
+            
+            // Confirmer le swipe seulement si mouvement horizontal > vertical
+            if (deltaX > deltaY && deltaX > 10) {
+                isSwiping = true;
+            }
         }, { passive: true });
 
         tabsContainer.addEventListener('touchend', () => {
             if (!isSwiping) return;
-            isSwiping = false;
-
+            
             const swipeDistance = touchEndX - touchStartX;
-            const minSwipeDistance = 50; // Distance minimale pour détecter un swipe
-
-            // Swipe vers la droite (afficher Radios)
-            if (swipeDistance > minSwipeDistance) {
-                this.switchToTab('radios');
+            const swipeTime = Date.now() - startTime;
+            const minSwipeDistance = 50;
+            const maxSwipeTime = 500; // Max 500ms pour être un swipe rapide
+            
+            // Vérifier que c'est bien un swipe intentionnel
+            if (Math.abs(swipeDistance) > minSwipeDistance && swipeTime < maxSwipeTime) {
+                // Swipe vers la droite (afficher Radios)
+                if (swipeDistance > 0) {
+                    this.switchToTab('radios');
+                }
+                // Swipe vers la gauche (afficher Favoris)
+                else {
+                    this.switchToTab('favoris');
+                }
             }
-            // Swipe vers la gauche (afficher Favoris)
-            else if (swipeDistance < -minSwipeDistance) {
-                this.switchToTab('favoris');
-            }
+            
+            isSwiping = false;
         }, { passive: true });
     }
 
