@@ -135,10 +135,6 @@
 					<span class="material-icons">volume_up</span>
 				</button>
 				
-				<button class="control-btn glass-button" id="equalizerBtn" title="Égaliseur">
-					<span class="material-icons">equalizer</span>
-				</button>
-				
 				<button class="control-btn glass-button danger" id="stopBtn">
 					<span class="material-icons">stop</span>
 				</button>
@@ -173,78 +169,6 @@
 
         <!-- Toast notifications -->
         <div class="toast" id="toast"></div>
-
-<!-- Panneau Égaliseur -->
-    <div id="equalizerPanel" class="equalizer-panel glass-effect" style="display: none;">
-        <div class="equalizer-header">
-            <h3>
-                <span class="material-icons">equalizer</span>
-                Égaliseur audio
-            </h3>
-            <button id="equalizerCloseBtn" class="glass-button">
-                <span class="material-icons">close</span>
-            </button>
-        </div>
-
-        <div class="equalizer-content">
-            <!-- Note d'information -->
-            <div style="background: rgba(124, 92, 255, 0.2); padding: 12px; border-radius: 12px; font-size: 0.85rem; margin-bottom: 16px; border: 1px solid rgba(124, 92, 255, 0.4);">
-                <strong>🎚️ Égaliseur audio</strong><br>
-                <span style="font-size: 0.8rem; opacity: 0.9;">
-                ✅ Compatible avec la plupart des radios<br>
-                ⚠️ Si certaines radios ne fonctionnent pas avec l'égaliseur, c'est normal (restrictions CORS)
-                </span>
-            </div>
-
-            <!-- Préréglages -->
-            <div class="equalizer-presets">
-                <button class="preset-btn glass-button active" data-preset="flat">Normal</button>
-                <button class="preset-btn glass-button" data-preset="bass">Basses+</button>
-                <button class="preset-btn glass-button" data-preset="rock">Rock</button>
-                <button class="preset-btn glass-button" data-preset="jazz">Jazz</button>
-                <button class="preset-btn glass-button" data-preset="vocal">Vocal</button>
-            </div>
-
-            <!-- Sliders d'égaliseur -->
-            <div class="equalizer-sliders">
-                <div class="eq-slider-group">
-                    <label>60 Hz<br><small>Basses</small></label>
-                    <input type="range" class="eq-slider" id="eq60" min="-12" max="12" value="0" step="1">
-                    <span class="eq-value">0 dB</span>
-                </div>
-
-                <div class="eq-slider-group">
-                    <label>250 Hz<br><small>Bas-med</small></label>
-                    <input type="range" class="eq-slider" id="eq250" min="-12" max="12" value="0" step="1">
-                    <span class="eq-value">0 dB</span>
-                </div>
-
-                <div class="eq-slider-group">
-                    <label>1 kHz<br><small>Médiums</small></label>
-                    <input type="range" class="eq-slider" id="eq1000" min="-12" max="12" value="0" step="1">
-                    <span class="eq-value">0 dB</span>
-                </div>
-
-                <div class="eq-slider-group">
-                    <label>4 kHz<br><small>Haut-med</small></label>
-                    <input type="range" class="eq-slider" id="eq4000" min="-12" max="12" value="0" step="1">
-                    <span class="eq-value">0 dB</span>
-                </div>
-
-                <div class="eq-slider-group">
-                    <label>14 kHz<br><small>Aigus</small></label>
-                    <input type="range" class="eq-slider" id="eq14000" min="-12" max="12" value="0" step="1">
-                    <span class="eq-value">0 dB</span>
-                </div>
-            </div>
-
-            <!-- Bouton Reset -->
-            <button id="equalizerReset" class="glass-button" style="width: 100%; margin-top: 16px;">
-                <span class="material-icons">restore</span>
-                Réinitialiser
-            </button>
-        </div>
-    </div>
 	
 		<!-- Bouton de reprise automatique -->
 			<div class="auto-resume-overlay" id="autoResumeOverlay" style="display: none;">
