@@ -1055,7 +1055,8 @@ class RadioPlayerApp {
                 }
             }
         }
-
+ }
+ 
     // === VÉRIFICATION RÉSEAU ===
     checkNetworkStatus() {
         if (!navigator.onLine) {
