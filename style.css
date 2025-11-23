@@ -595,6 +595,12 @@ body::before {
     background: rgba(244, 67, 54, 0.3);
 }
 
+/* Bouton Cast (état connecté) */
+.control-btn.casting {
+    background: rgba(123, 104, 238, 0.25); /* proche de ton violet */
+    border-color: rgba(123, 104, 238, 0.5);
+}
+
 /* Volume Slider */
 .volume-slider-container {
     margin-top: var(--spacing-md);

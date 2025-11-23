@@ -135,7 +135,7 @@ class RadioPlayerApp {
             }
         ];
 
-                // === ÉTAT DE L'APPLICATION ===
+                        // === ÉTAT DE L'APPLICATION ===
         this.currentStation = null;
         this.isPlaying = false;
         this.favorites = this.loadFavorites();
@@ -145,6 +145,11 @@ class RadioPlayerApp {
         this.audioContext = null;
         this.playerMinimized = false;
         this.errorCount = 0;
+
+        // === CHROMECAST ===
+        this.castSession = null;
+        this.isCasting = false;
+        this.castInitialized = false;
 
         // Minuteur de sommeil & reprise automatique
         this.sleepTimerId = null;
@@ -178,6 +183,7 @@ class RadioPlayerApp {
         this.setupEventListeners();
         this.setupSleepTimerUI();
         this.setupPWA();
+		this.setupCast();
         this.checkNetworkStatus();
     }
 
@@ -361,10 +367,19 @@ class RadioPlayerApp {
         }
     }
 
-    // === ARRÊT COMPLET ===
-        stopRadio() {
-        // Indique qu'on arrête volontairement la lecture
-        this.isStopping = true;
+        // === ARRÊT COMPLET ===
+    stopRadio() {
+        // Si une diffusion Chromecast est en cours, on termine aussi la session
+        if (this.isCasting && window.cast && window.cast.framework) {
+            try {
+                const context = cast.framework.CastContext.getInstance();
+                context.endCurrentSession(true);
+            } catch (e) {
+                console.error('Erreur arrêt Cast:', e);
+            }
+        }
+
+        this.isCasting = false;
         this.isPlaying = false;
         this.audioPlayer.pause();
         this.audioPlayer.src = '';
@@ -373,6 +388,7 @@ class RadioPlayerApp {
         this.playerContainer.style.display = 'none';
         this.updateRadioCards();
         this.stopVisualizer();
+        this.updateCastButtonUI();
     }
 
     // === MISE À JOUR DU PLAYER ===
@@ -499,6 +515,159 @@ class RadioPlayerApp {
         } else {
             icon.textContent = 'volume_up';
             muteBtn.classList.remove('muted');
+        }
+    }
+
+    // === CHROMECAST ===
+    setupCast() {
+        // Désactiver sur iOS (SDK Cast limité)
+        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+        if (isIOS) {
+            console.log('Cast désactivé sur iOS');
+            return;
+        }
+
+        if (this.castInitialized) {
+            return;
+        }
+
+        // Si le SDK est déjà chargé
+        if (window.cast && window.cast.framework && window.chrome && chrome.cast) {
+            this.initCastContext();
+        } else {
+            // Callback appelé par le SDK quand il est prêt
+            window.__onGCastApiAvailable = (isAvailable) => {
+                if (isAvailable) {
+                    this.initCastContext();
+                } else {
+                    console.log('Google Cast non disponible');
+                }
+            };
+        }
+    }
+
+    initCastContext() {
+        try {
+            const context = cast.framework.CastContext.getInstance();
+            context.setOptions({
+                receiverApplicationId: chrome.cast.media.DEFAULT_MEDIA_RECEIVER_APP_ID,
+                autoJoinPolicy: chrome.cast.AutoJoinPolicy.TAB_AND_ORIGIN_SCOPED
+            });
+
+            context.addEventListener(
+                cast.framework.CastContextEventType.SESSION_STATE_CHANGED,
+                this.onCastSessionStateChanged.bind(this)
+            );
+
+            this.castInitialized = true;
+            console.log('Chromecast initialisé');
+        } catch (error) {
+            console.error('Erreur init Cast:', error);
+        }
+    }
+
+    onCastSessionStateChanged(event) {
+        const context = cast.framework.CastContext.getInstance();
+
+        switch (event.sessionState) {
+            case cast.framework.SessionState.SESSION_STARTED:
+            case cast.framework.SessionState.SESSION_RESUMED:
+                this.castSession = context.getCurrentSession();
+                this.isCasting = true;
+                this.updateCastButtonUI();
+
+                if (this.currentStation) {
+                    this.castLoadCurrentStation();
+                }
+                break;
+
+            case cast.framework.SessionState.SESSION_ENDED:
+                this.castSession = null;
+                this.isCasting = false;
+                this.updateCastButtonUI();
+                break;
+        }
+    }
+
+    toggleCast() {
+        if (!window.cast || !window.cast.framework || !window.chrome || !chrome.cast) {
+            this.showToast('Chromecast non disponible sur ce navigateur');
+            return;
+        }
+
+        const context = cast.framework.CastContext.getInstance();
+
+        if (this.isCasting) {
+            // Arrêter la session
+            context.endCurrentSession(true);
+        } else {
+            // Démarrer une nouvelle session
+            context.requestSession().then(
+                () => {
+                    console.log('Session Chromecast démarrée');
+                    if (this.currentStation) {
+                        this.castLoadCurrentStation();
+                    }
+                },
+                (error) => {
+                    if (error !== 'cancel') {
+                        console.error('Erreur Cast:', error);
+                        this.showToast('Impossible de se connecter à Chromecast');
+                    }
+                }
+            );
+        }
+    }
+
+    castLoadCurrentStation() {
+        if (!this.castSession || !this.currentStation) {
+            return;
+        }
+
+        const mediaInfo = new chrome.cast.media.MediaInfo(
+            this.currentStation.url,
+            'audio/mpeg'
+        );
+
+        const metadata = new chrome.cast.media.GenericMediaMetadata();
+        metadata.title = this.currentStation.name;
+        metadata.subtitle = this.currentStation.description || 'Radio en ligne';
+
+        metadata.images = [
+            new chrome.cast.Image(window.location.origin + '/' + this.currentStation.logo)
+        ];
+
+        mediaInfo.metadata = metadata;
+        mediaInfo.streamType = chrome.cast.media.StreamType.LIVE;
+
+        const request = new chrome.cast.media.LoadRequest(mediaInfo);
+        request.autoplay = true;
+
+        this.castSession.loadMedia(request).then(
+            () => {
+                console.log('Radio diffusée sur Chromecast');
+                const deviceName = this.castSession.getCastDevice().friendlyName;
+                this.showToast('Diffusion sur ' + deviceName);
+            },
+            (error) => {
+                console.error('Erreur de diffusion Cast:', error);
+                this.showToast('Erreur lors de la diffusion');
+            }
+        );
+    }
+
+    updateCastButtonUI() {
+        const castBtn = document.getElementById('castBtn');
+        if (!castBtn) return;
+
+        const icon = castBtn.querySelector('.material-icons');
+
+        if (this.isCasting) {
+            castBtn.classList.add('casting');
+            if (icon) icon.textContent = 'cast_connected';
+        } else {
+            castBtn.classList.remove('casting');
+            if (icon) icon.textContent = 'cast';
         }
     }
 
@@ -857,7 +1026,7 @@ class RadioPlayerApp {
         });
 
         // Contrôles du player
-        document.getElementById('playPauseBtn').addEventListener('click', () => {
+                document.getElementById('playPauseBtn').addEventListener('click', () => {
             if (this.isPlaying) {
                 this.pauseRadio();
             } else {
@@ -868,6 +1037,13 @@ class RadioPlayerApp {
         document.getElementById('stopBtn').addEventListener('click', () => {
             this.stopRadio();
         });
+
+        const castBtn = document.getElementById('castBtn');
+        if (castBtn) {
+            castBtn.addEventListener('click', () => {
+                this.toggleCast();
+            });
+        }
 
         // Toggle player size
         document.getElementById('togglePlayerBtn').addEventListener('click', () => {
