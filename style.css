@@ -306,41 +306,37 @@ body::before {
     border-color: rgba(255, 255, 255, 0.3);
 }
 
-/* ========================================
-   EFFET CARTE EN LECTURE (AMÉLIORÉ)
-   ======================================== */
 .radio-card.playing {
-    border-color: rgba(124, 92, 255, 0.8) !important;
-    box-shadow: 
-        0 0 20px rgba(124, 92, 255, 0.4),
-        0 4px 20px rgba(0, 0, 0, 0.3) !important;
-    transform: scale(1.02);
-    animation: pulse-glow 2s ease-in-out infinite;
-}
-
-@keyframes pulse-glow {
-    0%, 100% {
-        box-shadow: 
-            0 0 20px rgba(124, 92, 255, 0.4),
-            0 4px 20px rgba(0, 0, 0, 0.3);
-    }
-    50% {
-        box-shadow: 
-            0 0 30px rgba(124, 92, 255, 0.6),
-            0 4px 25px rgba(0, 0, 0, 0.4);
-    }
+    background: linear-gradient(135deg, 
+        rgba(76, 175, 80, 0.2), 
+        rgba(76, 175, 80, 0.1));
+    border-color: var(--success-color);
+    box-shadow: 0 0 30px rgba(76, 175, 80, 0.3);
 }
 
 .radio-card.playing::after {
     content: '';
     position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    border-radius: 16px;
-    background: linear-gradient(135deg, rgba(124, 92, 255, 0.1) 0%, transparent 50%);
-    pointer-events: none;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, 
+        rgba(76, 175, 80, 0.2) 0%, 
+        transparent 70%);
+    animation: pulse 2s ease infinite;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        transform: translate(-50%, -50%) scale(0.8);
+        opacity: 0;
+    }
+    50% {
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 1;
+    }
 }
 
 .radio-logo {
