@@ -1012,29 +1012,39 @@ class RadioPlayerApp {
             localStorage.setItem('pwaInstallDismissed', 'true');
         });
 
-                                // Reprendre la dernière radio au démarrage (si l'option est activée)
+        // Reprendre la dernière radio au démarrage (si l'option est activée)
         const lastStation = localStorage.getItem('lastStation');
         if (this.autoResumeEnabled && lastStation) {
             const station = this.stations.find(s => s.id === lastStation);
             if (station) {
-                // On prépare le player, mais SANS lancer la lecture automatique
+                // On prépare le player
                 this.currentStation = station;
                 this.audioPlayer.src = station.url;
-
-                // On force l'état "en pause, prêt à lire"
-                this.isPlaying = false;
-                this.audioPlayer.pause();
-                this.stopVisualizer();
 
                 // Afficher le player avec les infos de la dernière radio
                 this.playerContainer.style.display = 'block';
                 this.playerContainer.classList.remove('minimized'); // player bien déployé
                 this.updatePlayerInfo();
-                this.updatePlayerUI();      // <-- met l'icône sur PLAY + texte "En pause"
-                this.updateRadioCards();
 
-                // Petit message pour l'utilisateur
-                this.showToast(`Prêt à reprendre : ${station.name}. Appuyez sur lecture pour démarrer.`);
+                // LANCER LA LECTURE AUTOMATIQUEMENT
+                this.isPlaying = true;
+                this.audioPlayer.play()
+                    .then(() => {
+                        this.startVisualizer();
+                        this.updatePlayerUI();
+                        this.updateRadioCards();
+                        this.showToast(`Lecture automatique : ${station.name}`);
+                    })
+                    .catch((error) => {
+                        console.error('Erreur lecture auto:', error);
+                        // Si la lecture auto échoue (navigateur bloque), on met en pause
+                        this.isPlaying = false;
+                        this.audioPlayer.pause();
+                        this.stopVisualizer();
+                        this.updatePlayerUI();
+                        this.updateRadioCards();
+                        this.showToast(`${station.name} prête. Appuyez sur lecture.`);
+                    });
             }
         }
     }
