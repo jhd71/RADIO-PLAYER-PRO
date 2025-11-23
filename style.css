@@ -346,8 +346,8 @@ body::before {
 }
 
 .radio-logo {
-    width: 100%;
-    height: 100%;
+    width: 80%;
+    height: 80%;
     object-fit: contain; /* Garde les proportions, ajoute des bandes si besoin */
     border-radius: 12px;
     background: rgba(255, 255, 255, 0.05); /* Fond subtil pour les logos non carrés */
@@ -765,8 +765,8 @@ body::before {
     }
     
     .radio-logo {
-        width: 70%;
-        height: 70%;
+        width: 90%;
+        height: 90%;
     }
     
     .radio-name {
