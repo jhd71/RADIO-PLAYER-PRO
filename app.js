@@ -390,11 +390,16 @@ class RadioPlayerApp {
         // Événements
         card.addEventListener('click', () => this.playRadio(station));
         
-        // Long press pour menu contextuel
+        // Long press pour menu contextuel (amélioré pour détecter le scroll)
         let pressTimer;
         let longPress = false;
+        let touchStartX = 0;
+        let touchStartY = 0;
+        let hasMoved = false;
         
+        // Pour desktop (souris)
         card.addEventListener('mousedown', (e) => {
+            longPress = false;
             pressTimer = setTimeout(() => {
                 longPress = true;
                 this.showContextMenu(e, station);
@@ -403,27 +408,72 @@ class RadioPlayerApp {
         
         card.addEventListener('mouseup', () => {
             clearTimeout(pressTimer);
-            if (longPress) {
+            longPress = false;
+        });
+        
+        card.addEventListener('mouseleave', () => {
+            clearTimeout(pressTimer);
+            longPress = false;
+        });
+        
+        // Pour mobile (tactile) - avec détection de mouvement
+        card.addEventListener('touchstart', (e) => {
+            if (e.touches && e.touches.length === 1) {
+                const touch = e.touches[0];
+                touchStartX = touch.clientX;
+                touchStartY = touch.clientY;
+                hasMoved = false;
                 longPress = false;
+                
+                pressTimer = setTimeout(() => {
+                    // Ne déclencher le long press que si l'utilisateur n'a pas bougé
+                    if (!hasMoved) {
+                        longPress = true;
+                        const fakeEvent = {
+                            clientX: touch.clientX,
+                            clientY: touch.clientY,
+                            preventDefault: () => {}
+                        };
+                        this.showContextMenu(fakeEvent, station);
+                        
+                        // Vibration pour feedback (si disponible)
+                        if (navigator.vibrate) {
+                            navigator.vibrate(50);
+                        }
+                        
+                        e.preventDefault();
+                    }
+                }, 600); // Augmenté à 600ms pour être plus précis
             }
         });
         
-        card.addEventListener('touchstart', (e) => {
-            pressTimer = setTimeout(() => {
-                longPress = true;
-                // Utiliser les coordonnées du toucher correctement
+        card.addEventListener('touchmove', (e) => {
+            if (e.touches && e.touches.length === 1) {
                 const touch = e.touches[0];
-                const fakeEvent = {
-                    clientX: touch.clientX,
-                    clientY: touch.clientY,
-                    preventDefault: () => {}
-                };
-                this.showContextMenu(fakeEvent, station);
-                e.preventDefault();
-            }, 500);
+                const deltaX = Math.abs(touch.clientX - touchStartX);
+                const deltaY = Math.abs(touch.clientY - touchStartY);
+                
+                // Si mouvement > 10px, c'est un scroll, pas un long press
+                if (deltaX > 10 || deltaY > 10) {
+                    hasMoved = true;
+                    clearTimeout(pressTimer);
+                }
+            }
         });
         
         card.addEventListener('touchend', () => {
+            clearTimeout(pressTimer);
+            
+            // Si c'était un long press, empêcher le clic
+            if (longPress) {
+                longPress = false;
+                return;
+            }
+            
+            longPress = false;
+        });
+        
+        card.addEventListener('touchcancel', () => {
             clearTimeout(pressTimer);
             longPress = false;
         });
@@ -485,6 +535,9 @@ class RadioPlayerApp {
 
         // === ARRÊT COMPLET ===
     stopRadio() {
+        // Indiquer qu'on arrête volontairement (pour éviter les tentatives de relance)
+        this.isStopping = true;
+        
         // Si une diffusion Chromecast est en cours, on termine aussi la session
         if (this.isCasting && window.cast && window.cast.framework) {
             try {
@@ -505,6 +558,11 @@ class RadioPlayerApp {
         this.updateRadioCards();
         this.stopVisualizer();
         this.updateCastButtonUI();
+        
+        // Réinitialiser le flag après un court délai
+        setTimeout(() => {
+            this.isStopping = false;
+        }, 500);
     }
 
     // === MISE À JOUR DU PLAYER ===
@@ -860,20 +918,27 @@ class RadioPlayerApp {
             }
         });
 
-        // Démarrer le minuteur
+        // Démarrer/Arrêter le minuteur (bouton dynamique)
         if (startBtn && sleepSelect) {
             startBtn.addEventListener('click', () => {
+                // Si un minuteur est actif, on l'arrête
+                if (this.sleepTimerEndTime) {
+                    this.cancelSleepTimer();
+                    this.updateSleepTimerInfo();
+                    this.showToast('Minuteur arrêté');
+                    return;
+                }
+
+                // Sinon on démarre un nouveau minuteur
                 const minutes = parseInt(sleepSelect.value, 10);
 
                 if (isNaN(minutes) || minutes <= 0) {
-                    this.cancelSleepTimer();
-                    this.showToast('Minuteur désactivé');
+                    this.showToast('⚠️ Sélectionnez une durée');
                 } else {
                     this.startSleepTimer(minutes);
-                    this.showToast(`La radio s'arrêtera dans ${minutes} minutes`);
+                    this.updateSleepTimerInfo();
+                    this.showToast(`⏱️ La radio s'arrêtera dans ${minutes} min`);
                 }
-
-                this.updateSleepTimerInfo();
             });
         }
 
@@ -1022,6 +1087,8 @@ class RadioPlayerApp {
         const info = document.getElementById('sleepTimerInfo');
         const settingsBtn = document.getElementById('settingsBtn');
         const indicator = document.getElementById('sleepTimerIndicator');
+        const startBtn = document.getElementById('sleepTimerStartBtn');
+        const cancelBtn = document.getElementById('sleepTimerCancelBtn');
 
         // Pas d'élément dans le DOM -> on ne fait rien
         if (!info) return;
@@ -1029,6 +1096,15 @@ class RadioPlayerApp {
         // Aucun minuteur en cours
         if (!this.sleepTimerEndTime) {
             info.textContent = 'Aucun minuteur actif';
+
+            // Mettre le bouton en mode "Démarrer"
+            if (startBtn) {
+                startBtn.innerHTML = '<span class="material-icons">timer</span> Démarrer le minuteur';
+                startBtn.classList.remove('active-timer');
+            }
+            if (cancelBtn) {
+                cancelBtn.style.display = 'none';
+            }
 
             // On enlève l'info-bulle + la pastille
             if (settingsBtn) {
@@ -1045,6 +1121,14 @@ class RadioPlayerApp {
         // Minuteur déjà dépassé
         if (remainingMs <= 0) {
             info.textContent = 'Aucun minuteur actif';
+            
+            if (startBtn) {
+                startBtn.innerHTML = '<span class="material-icons">timer</span> Démarrer le minuteur';
+                startBtn.classList.remove('active-timer');
+            }
+            if (cancelBtn) {
+                cancelBtn.style.display = 'none';
+            }
             if (settingsBtn) {
                 settingsBtn.removeAttribute('title');
             }
@@ -1058,6 +1142,15 @@ class RadioPlayerApp {
 
         // Texte dans le panneau des paramètres
         info.textContent = `La radio s'arrêtera dans environ ${remainingMinutes} min`;
+
+        // Mettre le bouton en mode "Arrêter"
+        if (startBtn) {
+            startBtn.innerHTML = '<span class="material-icons">stop</span> Arrêter le minuteur';
+            startBtn.classList.add('active-timer');
+        }
+        if (cancelBtn) {
+            cancelBtn.style.display = 'inline-flex';
+        }
 
         // Info-bulle sur le bouton ⚙️ dans la barre du haut
         if (settingsBtn) {
