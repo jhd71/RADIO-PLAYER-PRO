@@ -184,14 +184,6 @@ class RadioPlayerApp {
 		category: 'rock'
 	},
 	{
-		id: 'BFM-Business',
-		name: 'BFM Business',
-		url: 'http://audio.bfmtv.com/bfmbusiness_128.mp3',
-		logo: 'images/radio-logos/bfm-business.png',
-		description: 'Économie & finance',
-		category: 'info'
-	},
-	{
 		id: 'BFM-Radio',
 		name: 'BFM Radio',
 		url: 'http://audio.bfmtv.com/bfmradio_128.mp3',
