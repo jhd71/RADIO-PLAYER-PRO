@@ -208,22 +208,6 @@ class RadioPlayerApp {
 		category: 'info'
 	},
 	{
-		id: 'Jazz-Radio',
-		name: 'Jazz Radio',
-		url: 'http://jazzradio.ice.infomaniak.ch/jazzradio-high.mp3',
-		logo: 'images/radio-logos/jazz-radio.png',
-		description: 'Jazz & soul',
-		category: 'thematique'
-	},
-	{
-		id: 'TSF-Jazz',
-		name: 'TSF Jazz',
-		url: 'http://tsfjazz.ice.infomaniak.ch/tsfjazz-high',
-		logo: 'images/radio-logos/tsf-jazz.png',
-		description: 'Jazz 24/7',
-		category: 'thematique'
-	},
-	{
 		id: 'Voltage-80s',
 		name: 'Voltage 80s',
 		url: 'https://voltage80s.ice.infomaniak.ch/voltage80s-128.mp3',
@@ -253,14 +237,6 @@ class RadioPlayerApp {
 		url: 'http://kissfm2.ice.infomaniak.ch/kissfm2-128.mp3',
 		logo: 'images/radio-logos/kiss-fm.png',
 		description: 'Urban & R&B',
-		category: 'thematique'
-	},
-	{
-		id: 'Beur-FM',
-		name: 'Beur FM',
-		url: 'http://broadcast.infomaniak.ch/beurfm-high.mp3',
-		logo: 'images/radio-logos/beur-fm.png',
-		description: 'Musiques du monde',
 		category: 'thematique'
 	}
 	];
