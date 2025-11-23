@@ -192,8 +192,8 @@ class RadioPlayerApp {
     setupAudioPlayer() {
         this.audioPlayer.volume = this.volume;
         
-        // DÉSACTIVÉ TEMPORAIREMENT pour tester
-        // this.setupEqualizer();
+        // Créer l'égaliseur dès le départ (maintenant que CORS est réglé via proxy)
+        this.setupEqualizer();
         
         // Événements audio
         this.audioPlayer.addEventListener('play', () => {
