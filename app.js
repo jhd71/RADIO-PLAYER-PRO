@@ -192,7 +192,7 @@ class RadioPlayerApp {
     setupAudioPlayer() {
         this.audioPlayer.volume = this.volume;
         
-        // Créer le contexte audio et l'égaliseur
+        // Créer l'égaliseur dès le départ (maintenant que CORS est réglé via proxy)
         this.setupEqualizer();
         
         // Événements audio
@@ -373,7 +373,11 @@ class RadioPlayerApp {
         
         // Nouvelle station
         this.currentStation = station;
-        this.audioPlayer.src = station.url;
+        
+        // Utiliser le proxy pour contourner CORS
+        const proxyUrl = `/api/proxy?url=${encodeURIComponent(station.url)}`;
+        
+        this.audioPlayer.src = proxyUrl;
         this.audioPlayer.play().catch(error => {
             console.error('Erreur lecture:', error);
             this.showToast('Impossible de lire cette radio');
