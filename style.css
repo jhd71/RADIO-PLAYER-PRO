@@ -343,17 +343,6 @@ body::before {
     pointer-events: none;
 }
 
-@keyframes pulse {
-    0%, 100% {
-        transform: translate(-50%, -50%) scale(0.8);
-        opacity: 0;
-    }
-    50% {
-        transform: translate(-50%, -50%) scale(1);
-        opacity: 1;
-    }
-}
-
 .radio-logo {
     width: 60%;
     height: 60%;
