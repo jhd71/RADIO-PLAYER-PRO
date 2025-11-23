@@ -27,35 +27,7 @@ class RadioPlayerApp {
                 url: 'https://live1.jupinfo.fr:8443/play',
                 logo: 'images/radio-logos/La-Radio-Sans-pub.png',
                 description: '100% Hits 24/24'
-            },
-            {
-                id: 'France-Info',
-                name: 'France Info',
-                url: 'https://icecast.radiofrance.fr/franceinfo-midfi.mp3',
-                logo: 'images/radio-logos/france-info.png',
-                description: 'Info en continu'
-            },
-            {
-                id: 'RTL',
-                name: 'RTL',
-                url: 'https://streamer-03.rtl.fr/rtl-1-44-128',
-                logo: 'images/radio-logos/rtl.png',
-                description: 'Info & divertissement'
-            },
-            {
-                id: 'Europe-1',
-                name: 'Europe 1',
-                url: 'https://europe1.lmn.fm/europe1.mp3',
-                logo: 'images/radio-logos/europe1.png',
-                description: 'Talk & actualités'
-            },
-            {
-                id: 'RMC',
-                name: 'RMC',
-                url: 'https://audio.bfmtv.com/rmcradio_128.mp3',
-                logo: 'images/radio-logos/rmc.png',
-                description: 'Sport & info'
-            },
+            },            
             {
                 id: 'Skyrock',
                 name: 'Skyrock',
@@ -132,6 +104,41 @@ class RadioPlayerApp {
                 url: 'https://alouettenouveauxtalents.ice.infomaniak.ch/alouettenouveauxtalents-128.mp3',
                 logo: 'images/radio-logos/Alouette-Nouveaux-Talents.png',
                 description: '1ère Radio Régionale de France'
+            },
+            {
+                id: 'RTL',
+                name: 'RTL',
+                url: 'https://streamer-03.rtl.fr/rtl-1-44-128',
+                logo: 'images/radio-logos/rtl.png',
+                description: 'Info & divertissement'
+            },
+            {
+                id: 'Europe-1',
+                name: 'Europe 1',
+                url: 'https://europe1.lmn.fm/europe1.mp3',
+                logo: 'images/radio-logos/europe1.png',
+                description: 'Talk & actualités'
+            },
+            {
+                id: 'RMC',
+                name: 'RMC',
+                url: 'https://audio.bfmtv.com/rmcradio_128.mp3',
+                logo: 'images/radio-logos/rmc.png',
+                description: 'Sport & info'
+            },
+			{
+                id: 'France-Info',
+                name: 'France Info',
+                url: 'https://icecast.radiofrance.fr/franceinfo-midfi.mp3',
+                logo: 'images/radio-logos/france-info.png',
+                description: 'Info en continu'
+            },
+			{
+                id: 'France-Inter',
+                name: 'France-Inter',
+                url: 'https://icecast.radiofrance.fr/franceinter-midfi.mp3',
+                logo: 'images/radio-logos/France-Inter.png',
+                description: ' Service public radio'
             }
         ];
 

@@ -346,11 +346,11 @@ body::before {
 }
 
 .radio-logo {
-    width: 60%;
-    height: 60%;
-    object-fit: contain;
-    border-radius: var(--radius-sm);
-    background: white;
+    width: 100%;
+    height: 100%;
+    object-fit: contain; /* Garde les proportions, ajoute des bandes si besoin */
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.05); /* Fond subtil pour les logos non carrés */
     padding: 2px;
     position: relative;
     z-index: 1;

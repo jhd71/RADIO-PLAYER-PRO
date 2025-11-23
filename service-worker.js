@@ -1,4 +1,4 @@
-const CACHE_NAME = 'radio-player-v2';
+const CACHE_NAME = 'radio-player-v3';
 const RUNTIME_CACHE = 'radio-runtime-v1';
 
 // Fichiers à mettre en cache
