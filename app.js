@@ -1149,7 +1149,7 @@ class RadioPlayerApp {
             startBtn.classList.add('active-timer');
         }
         if (cancelBtn) {
-            cancelBtn.style.display = 'inline-flex';
+            cancelBtn.style.display = 'inline-flex' 'align-items: center';
         }
 
         // Info-bulle sur le bouton ⚙️ dans la barre du haut
