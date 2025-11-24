@@ -1841,6 +1841,18 @@ body::before {
 /* ========================================
    THÈME SOMBRE
    ======================================== */
+/* Transitions fluides pour le changement de thème */
+* {
+    transition: background-color 0.3s ease, 
+                background 0.3s ease, 
+                border-color 0.3s ease,
+                color 0.3s ease !important;
+}
+
+/* Désactiver les transitions pendant le chargement */
+body.preload * {
+    transition: none !important;
+}
 
 /* Variables pour le thème clair (par défaut) */
 :root {
