@@ -382,6 +382,7 @@ class RadioPlayerApp {
         
         card.innerHTML = `
             <img class="radio-logo" src="${station.logo}" alt="${station.name}" 
+                 loading="lazy"
                  onerror="this.src='images/radio-logos/default.png'">
             <span class="radio-name">${station.name}</span>
             <span class="material-icons favorite-indicator">favorite</span>

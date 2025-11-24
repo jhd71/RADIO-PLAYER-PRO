@@ -16,7 +16,24 @@
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>RadioFM - Toutes vos radios préférées</title>
+    <meta name="description" content="Écoutez gratuitement plus de 19 radios françaises en ligne : NRJ, Skyrock, RTL, France Info, Nostalgie. Player radio moderne sans pub, avec favoris et minuteur de sommeil.">
+    <meta name="keywords" content="radio, radio en ligne, écouter radio gratuit, webradio, radio française, player radio, NRJ, Skyrock, RTL">
+    <meta name="author" content="RadioFM">
+    <!-- Open Graph pour partage réseaux sociaux -->
+    <meta property="og:title" content="RadioFM - Toutes vos radios préférées">
+    <meta property="og:description" content="Écoutez gratuitement plus de 19 radios françaises en ligne. Player moderne sans pub.">
+    <meta property="og:image" content="https://radiofm.ovh/icons/icon-512.png">
+    <meta property="og:url" content="https://radiofm.ovh">
+    <meta property="og:type" content="website">
     
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="RadioFM - Toutes vos radios préférées">
+    <meta name="twitter:description" content="Écoutez gratuitement plus de 19 radios françaises en ligne">
+    <meta name="twitter:image" content="https://radiofm.ovh/icons/icon-512.png">
+    
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://radiofm.ovh">
     <!-- Manifest PWA -->
     <link rel="manifest" href="manifest.json">
     
@@ -107,13 +124,13 @@
         </div>
 		
         <!-- Conteneur des onglets -->
-        <div class="tabs-container">
+        <main class="tabs-container" role="main">
             <!-- Onglet Radios -->
             <div class="tab-content active" id="radios-tab">
                 <div class="radios-grid" id="radiosGrid">
                     <!-- Les radios seront ajoutées dynamiquement ici -->
-                </div>
-            </div>
+                </main>
+			</div>
 
             <!-- Onglet Favoris -->
             <div class="tab-content" id="favoris-tab">
