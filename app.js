@@ -163,7 +163,7 @@ class RadioPlayerApp {
 		id: 'Vibration',
 		name: 'Vibration',
 		url: 'http://vibration.ice.infomaniak.ch/vibration-high.mp3',
-		logo: 'images/radio-logos/vibration.png',
+		logo: 'images/radio-logos/Vibration.png',
 		description: 'Hits & variétés',
 		category: 'generaliste'
 	},
@@ -171,7 +171,7 @@ class RadioPlayerApp {
 		id: 'Voltage',
 		name: 'Voltage',
 		url: 'https://start-voltage.ice.infomaniak.ch/start-voltage-high.mp3',
-		logo: 'images/radio-logos/voltage.png',
+		logo: 'images/radio-logos/Voltage.png',
 		description: 'Pop-rock français',
 		category: 'generaliste'
 	},
@@ -179,7 +179,7 @@ class RadioPlayerApp {
 		id: 'Virage-Radio',
 		name: 'Virage Radio',
 		url: 'http://virageradio.ice.infomaniak.ch/virageradio-high.mp3',
-		logo: 'images/radio-logos/virage-radio.png',
+		logo: 'images/radio-logos/Virage-Radio.png',
 		description: 'Rock & pop',
 		category: 'rock'
 	},
@@ -187,7 +187,7 @@ class RadioPlayerApp {
 		id: 'BFM-Radio',
 		name: 'BFM Radio',
 		url: 'http://audio.bfmtv.com/bfmradio_128.mp3',
-		logo: 'images/radio-logos/bfm-radio.png',
+		logo: 'images/radio-logos/BFM-Radio.png',
 		description: 'Info en continu',
 		category: 'info'
 	},
@@ -195,7 +195,7 @@ class RadioPlayerApp {
 		id: 'Sud-Radio',
 		name: 'Sud Radio',
 		url: 'https://live.sudradio.fr/sudradio-mp3-128',
-		logo: 'images/radio-logos/sud-radio.png',
+		logo: 'images/radio-logos/Sud-Radio.png',
 		description: 'Talk & débats',
 		category: 'info'
 	},
@@ -203,7 +203,7 @@ class RadioPlayerApp {
 		id: 'Voltage-80s',
 		name: 'Voltage 80s',
 		url: 'https://voltage80s.ice.infomaniak.ch/voltage80s-128.mp3',
-		logo: 'images/radio-logos/voltage-80s.png',
+		logo: 'images/radio-logos/Voltage-80s.png',
 		description: 'Hits années 80',
 		category: 'thematique'
 	},
@@ -211,7 +211,7 @@ class RadioPlayerApp {
 		id: 'Voltage-90s',
 		name: 'Voltage 90s',
 		url: 'https://voltage90s.ice.infomaniak.ch/voltage90s-128.mp3',
-		logo: 'images/radio-logos/voltage-90s.png',
+		logo: 'images/radio-logos/Voltage-90s.png',
 		description: 'Hits années 90',
 		category: 'thematique'
 	},
@@ -219,7 +219,7 @@ class RadioPlayerApp {
 		id: 'Voltage-2000',
 		name: 'Voltage 2000',
 		url: 'https://voltage2000.ice.infomaniak.ch/voltage2000-128.mp3',
-		logo: 'images/radio-logos/voltage-2000.png',
+		logo: 'images/radio-logos/Voltage-2000.png',
 		description: 'Hits années 2000',
 		category: 'thematique'
 	},
@@ -227,7 +227,7 @@ class RadioPlayerApp {
 		id: 'Kiss-FM',
 		name: 'Kiss FM',
 		url: 'http://kissfm2.ice.infomaniak.ch/kissfm2-128.mp3',
-		logo: 'images/radio-logos/kiss-fm.png',
+		logo: 'images/radio-logos/Kiss-fm.png',
 		description: 'Urban & R&B',
 		category: 'thematique'
 	}
