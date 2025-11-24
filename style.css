@@ -1436,22 +1436,25 @@ body::before {
         -webkit-backdrop-filter: blur(20px) !important;
         border-bottom: 2px solid var(--glass-border-mobile) !important;
     }
-
     .app-title {
         font-size: 1.3rem !important;
         text-shadow: var(--text-shadow) !important;
     }
-
-    .settings-btn {
+    .settings-btn,
+    .theme-toggle-btn {
         background: rgba(255, 255, 255, 0.12) !important;
         border: 2px solid rgba(255, 255, 255, 0.25) !important;
         width: 40px !important;
         height: 40px !important;
     }
-
-    .settings-btn:active {
+    .settings-btn:active,
+    .theme-toggle-btn:active {
         background: rgba(255, 255, 255, 0.25) !important;
         transform: scale(0.95) !important;
+    }
+    .settings-btn .material-icons,
+    .theme-toggle-btn .material-icons {
+        font-size: 22px;
     }
 }
 
