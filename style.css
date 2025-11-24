@@ -1094,8 +1094,14 @@ body {
 }
 
 #sleepTimerSelect option {
-    background: var(--glass-bg);
-    color: var(--text-primary);
+    background: #ffffff;
+    color: #000000;
+    padding: 8px;
+}
+
+body.dark-theme #sleepTimerSelect option {
+    background: #1a1a2e;
+    color: #ffffff;
 }
 
 #sleepTimerSelect:focus {
