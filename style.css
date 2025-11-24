@@ -1835,6 +1835,89 @@ body::before {
     animation: pulse-timer 2s ease-in-out infinite;
 }
 
+/* ========================================
+   THÈME SOMBRE
+   ======================================== */
+
+/* Variables pour le thème clair (par défaut) */
+:root {
+    --bg-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    --bg-card: rgba(255, 255, 255, 0.1);
+    --text-primary: #ffffff;
+    --text-secondary: rgba(255, 255, 255, 0.8);
+    --glass-bg: rgba(255, 255, 255, 0.15);
+    --glass-border: rgba(255, 255, 255, 0.2);
+    --shadow-color: rgba(0, 0, 0, 0.2);
+}
+
+/* Variables pour le thème sombre */
+body.dark-theme {
+    --bg-primary: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    --bg-card: rgba(0, 0, 0, 0.3);
+    --text-primary: #ffffff;
+    --text-secondary: rgba(255, 255, 255, 0.7);
+    --glass-bg: rgba(0, 0, 0, 0.3);
+    --glass-border: rgba(255, 255, 255, 0.1);
+    --shadow-color: rgba(0, 0, 0, 0.5);
+}
+
+/* Application des variables */
+body {
+    background: var(--bg-primary);
+    color: var(--text-primary);
+}
+
+.glass-effect {
+    background: var(--glass-bg) !important;
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--glass-border);
+}
+
+.radio-card {
+    background: var(--bg-card);
+}
+
+.radio-name {
+    color: var(--text-primary);
+}
+
+/* Bouton toggle thème */
+.theme-toggle-btn {
+    padding: 10px;
+    min-width: auto;
+}
+
+.theme-toggle-btn .material-icons {
+    transition: transform 0.3s ease;
+}
+
+body.dark-theme .theme-toggle-btn .material-icons {
+    content: 'light_mode';
+}
+
+/* Animation de rotation lors du changement */
+.theme-toggle-btn.rotating .material-icons {
+    animation: rotate-icon 0.5s ease;
+}
+
+@keyframes rotate-icon {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Ajustements pour le thème sombre */
+body.dark-theme .player-container {
+    background: rgba(0, 0, 0, 0.5) !important;
+}
+
+body.dark-theme .radio-card:hover {
+    background: rgba(124, 92, 255, 0.2);
+}
+
+body.dark-theme .radio-card.playing {
+    background: linear-gradient(135deg, rgba(76, 175, 80, 0.3), rgba(56, 142, 60, 0.3));
+}
+
 /* === FIX POUR IPHONE X ET PLUS === */
 @supports (padding-top: env(safe-area-inset-top)) {
     @media (max-width: 768px) {

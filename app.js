@@ -283,6 +283,7 @@ class RadioPlayerApp {
         this.renderRadios();
         this.renderFavorites();
         this.setupEventListeners();
+		this.setupThemeToggle();
         this.setupSleepTimerUI();
         this.setupPWA();
         this.setupCast();
@@ -1410,6 +1411,43 @@ class RadioPlayerApp {
         });
     }
 
+// === TOGGLE THÈME SOMBRE/CLAIR ===
+    setupThemeToggle() {
+        const themeToggleBtn = document.getElementById('themeToggleBtn');
+        const themeIcon = themeToggleBtn?.querySelector('.material-icons');
+        
+        // Charger le thème sauvegardé
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        if (savedTheme === 'dark') {
+            document.body.classList.add('dark-theme');
+            if (themeIcon) themeIcon.textContent = 'light_mode';
+        }
+        
+        // Toggle au clic
+        if (themeToggleBtn) {
+            themeToggleBtn.addEventListener('click', () => {
+                // Animation de rotation
+                themeToggleBtn.classList.add('rotating');
+                setTimeout(() => themeToggleBtn.classList.remove('rotating'), 500);
+                
+                // Toggle du thème
+                document.body.classList.toggle('dark-theme');
+                const isDark = document.body.classList.contains('dark-theme');
+                
+                // Changer l'icône
+                if (themeIcon) {
+                    themeIcon.textContent = isDark ? 'light_mode' : 'dark_mode';
+                }
+                
+                // Sauvegarder la préférence
+                localStorage.setItem('theme', isDark ? 'dark' : 'light');
+                
+                // Toast de confirmation
+                this.showToast(isDark ? '🌙 Thème sombre activé' : '☀️ Thème clair activé');
+            });
+        }
+    }
+	
         // === PWA ===
     setupPWA() {
         // Références de la bannière d'installation

@@ -71,11 +71,15 @@
     <div class="app-container">
         <!-- Header avec effet glass -->
         <header class="app-header glass-effect">
-				<h1 class="app-title">
+			<h1 class="app-title">
 			<span class="material-icons">radio</span>
 			Radio Player Pro
 			</h1>
-			<button class="settings-btn glass-button" id="settingsBtn">
+			<div style="display: flex; gap: 8px; align-items: center;">
+				<button class="theme-toggle-btn glass-button" id="themeToggleBtn" title="Changer de thème">
+					<span class="material-icons">dark_mode</span>
+				</button>
+				<button class="settings-btn glass-button" id="settingsBtn">
 				<span class="material-icons">settings</span>
 				<!-- Petit indicateur de minuteur actif -->
 				<span id="sleepTimerIndicator" class="sleep-timer-indicator" aria-hidden="true"></span>
