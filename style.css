@@ -1140,106 +1140,113 @@ body {
 /* === PANNEAU DES PARAMÈTRES MOBILE === */
 @media (max-width: 768px) {
     #settingsOverlay {
-        background: rgba(0, 0, 0, 0.85) !important; /* Fond plus sombre */
+        background: rgba(0, 0, 0, 0.5) !important;
     }
-
+    
+    body.dark-theme #settingsOverlay {
+        background: rgba(0, 0, 0, 0.85) !important;
+    }
+    
     #settingsPanel {
-        background: var(--glass-bg-mobile-dark) !important;
+        background: var(--glass-bg) !important;
         backdrop-filter: blur(20px) !important;
         -webkit-backdrop-filter: blur(20px) !important;
-        border: 2px solid var(--glass-border-mobile) !important;
-        box-shadow: 0 15px 50px rgba(0, 0, 0, 0.8) !important;
+        border: 2px solid var(--glass-border) !important;
+        box-shadow: 0 15px 50px var(--shadow-color) !important;
         width: calc(100% - 20px) !important;
         max-width: 390px !important;
         padding: 20px !important;
         margin: 10px;
     }
-
+    
     #settingsPanel h2 {
         font-size: 1.2rem !important;
         margin-bottom: 15px !important;
-        text-shadow: var(--text-shadow) !important;
-        color: #ffffff !important;
+        color: var(--text-primary) !important;
         font-weight: 600 !important;
     }
-
+    
     #settingsPanel h3 {
         font-size: 1rem !important;
         margin-bottom: 10px !important;
-        color: #ffffff !important;
-        text-shadow: var(--text-shadow) !important;
+        color: var(--text-primary) !important;
     }
-
+    
     #settingsPanel section {
-        background: rgba(255, 255, 255, 0.08) !important;
-        border: 1px solid rgba(255, 255, 255, 0.15) !important;
+        background: var(--bg-card) !important;
+        border: 1px solid var(--glass-border) !important;
         padding: 15px !important;
         margin-bottom: 15px !important;
     }
-
+    
     #settingsPanel p {
         font-size: 0.85rem !important;
         line-height: 1.4 !important;
-        color: rgba(255, 255, 255, 0.95) !important;
-        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5) !important;
+        color: var(--text-secondary) !important;
     }
-
+    
     /* Select amélioré pour mobile */
     #sleepTimerSelect {
-        background: rgba(255, 255, 255, 0.12) !important;
-        border: 2px solid rgba(255, 255, 255, 0.3) !important;
-        color: #ffffff !important;
+        background: var(--bg-card) !important;
+        border: 2px solid var(--glass-border) !important;
+        color: var(--text-primary) !important;
         padding: 10px !important;
         font-size: 1rem !important;
         width: 100% !important;
         margin-top: 8px !important;
     }
-
+    
     #sleepTimerSelect option {
-        background: #2a2a3e !important;
-        color: #ffffff !important;
+        background: var(--bg-card) !important;
+        color: var(--text-primary) !important;
         padding: 10px !important;
     }
-
+    
+    /* Mode sombre spécifique pour le select */
+    body.dark-theme #sleepTimerSelect option {
+        background: #2a2a3e !important;
+        color: #ffffff !important;
+    }
+    
     /* Boutons dans le panneau */
     #settingsPanel .glass-button {
-        background: rgba(74, 144, 226, 0.3) !important;
-        border: 2px solid rgba(74, 144, 226, 0.5) !important;
-        color: #ffffff !important;
+        background: rgba(124, 92, 255, 0.3) !important;
+        border: 2px solid rgba(124, 92, 255, 0.5) !important;
+        color: var(--text-primary) !important;
         padding: 12px 20px !important;
         font-size: 0.95rem !important;
         font-weight: 500 !important;
-        text-shadow: var(--text-shadow) !important;
     }
-
+    
     #settingsPanel .glass-button:active {
-        background: rgba(74, 144, 226, 0.5) !important;
+        background: rgba(124, 92, 255, 0.5) !important;
         transform: scale(0.98) !important;
     }
-
+    
     /* Checkbox améliorée */
-    #autoResumeCheckbox {
+    #autoResumeCheckbox,
+    #startOnFavoritesCheckbox {
         width: 20px !important;
         height: 20px !important;
         margin-right: 10px !important;
     }
-
+    
     #settingsPanel label {
         display: flex;
         align-items: center;
         font-size: 0.9rem !important;
-        color: #ffffff !important;
+        color: var(--text-primary) !important;
         gap: 8px;
     }
-
+    
     /* Status du minuteur */
-    #sleepTimerStatus {
-        background: rgba(255, 107, 107, 0.2) !important;
-        border: 1px solid rgba(255, 107, 107, 0.4) !important;
+    #sleepTimerInfo {
+        background: rgba(124, 92, 255, 0.2) !important;
+        border: 1px solid rgba(124, 92, 255, 0.4) !important;
         padding: 10px !important;
         border-radius: 8px !important;
         margin-top: 10px !important;
-        color: #ffcccc !important;
+        color: var(--text-primary) !important;
         font-size: 0.85rem !important;
     }
 }
