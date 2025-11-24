@@ -1423,11 +1423,6 @@ class RadioPlayerApp {
             if (themeIcon) themeIcon.textContent = 'light_mode';
         }
         
-        // Retirer la classe preload après le chargement
-        window.addEventListener('load', () => {
-            document.body.classList.remove('preload');
-        });
-        
         // Toggle au clic
         if (themeToggleBtn) {
             themeToggleBtn.addEventListener('click', () => {
@@ -1435,8 +1430,7 @@ class RadioPlayerApp {
                 themeToggleBtn.classList.add('rotating');
                 setTimeout(() => themeToggleBtn.classList.remove('rotating'), 500);
                 
-                // Toggle du thème avec transition fluide
-                document.body.style.transition = 'background 0.3s ease';
+                // Toggle du thème
                 document.body.classList.toggle('dark-theme');
                 const isDark = document.body.classList.contains('dark-theme');
                 
