@@ -1430,9 +1430,20 @@ class RadioPlayerApp {
                 themeToggleBtn.classList.add('rotating');
                 setTimeout(() => themeToggleBtn.classList.remove('rotating'), 500);
                 
+                // Désactiver temporairement les transitions
+                document.body.style.transition = 'none';
+                const allElements = document.querySelectorAll('*');
+                allElements.forEach(el => el.style.transition = 'none');
+                
                 // Toggle du thème
                 document.body.classList.toggle('dark-theme');
                 const isDark = document.body.classList.contains('dark-theme');
+                
+                // Réactiver les transitions après un court délai
+                setTimeout(() => {
+                    document.body.style.transition = '';
+                    allElements.forEach(el => el.style.transition = '');
+                }, 50);
                 
                 // Changer l'icône
                 if (themeIcon) {

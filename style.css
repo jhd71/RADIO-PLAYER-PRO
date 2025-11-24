@@ -68,6 +68,28 @@ body {
     -moz-osx-font-smoothing: grayscale;
 }
 
+/* Background animé FIXE (ne change pas avec le thème) */
+body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: 
+        radial-gradient(circle at 20% 80%, rgba(74, 144, 226, 0.15) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(123, 104, 238, 0.15) 0%, transparent 50%);
+    animation: slowPulse 15s ease-in-out infinite;
+    z-index: -1;
+    pointer-events: none;
+    transition: none !important; /* IMPORTANT : pas de transition */
+}
+
+@keyframes slowPulse {
+    0%, 100% { opacity: 0.6; }
+    50% { opacity: 0.8; }
+}
+
 /* === GLASS EFFECT === */
 .glass-effect {
     background: var(--glass-bg);
