@@ -119,6 +119,85 @@ body::before {
     transform: translateY(0);
 }
 
+/* Boutons dans le panneau de paramètres */
+#settingsPanel .glass-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px 20px;
+    min-width: 140px;
+    text-align: center;
+}
+
+#settingsPanel .glass-button .material-icons {
+    font-size: 20px;
+}
+
+/* Conteneur des boutons du minuteur */
+#settingsPanel section > div[style*="display:flex"] {
+    display: flex !important;
+    gap: 8px;
+    margin-bottom: 6px;
+}
+
+/* Boutons du minuteur spécifiques */
+#sleepTimerStartBtn,
+#sleepTimerCancelBtn {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 12px 16px;
+    white-space: nowrap;
+}
+
+/* Responsive mobile */
+@media (max-width: 768px) {
+    #settingsPanel .glass-button {
+        padding: 10px 16px;
+        font-size: 0.9rem;
+        min-width: 120px;
+    }
+    
+    #settingsPanel .glass-button .material-icons {
+        font-size: 18px;
+    }
+    
+    #sleepTimerStartBtn,
+    #sleepTimerCancelBtn {
+        padding: 10px 12px;
+        gap: 4px;
+    }
+}
+
+/* Animation pulsation pour le bouton actif */
+@keyframes pulse-timer {
+    0%, 100% {
+        box-shadow: 0 0 0 0 rgba(244, 67, 54, 0.4);
+    }
+    50% {
+        box-shadow: 0 0 0 8px rgba(244, 67, 54, 0);
+    }
+}
+
+.active-timer {
+    background: rgba(244, 67, 54, 0.2) !important;
+    border-color: rgba(244, 67, 54, 0.5) !important;
+    color: #ff5252 !important;
+    animation: pulse-timer 2s ease-in-out infinite;
+}
+
+.active-timer:hover {
+    background: rgba(244, 67, 54, 0.3) !important;
+    border-color: rgba(244, 67, 54, 0.7) !important;
+}
+
+.active-timer .material-icons {
+    color: #ff5252;
+}
+
 /* === APP CONTAINER === */
 .app-container {
     min-height: 100vh;
