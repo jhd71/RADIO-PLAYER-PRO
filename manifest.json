@@ -1,17 +1,17 @@
 {
-  "name": "Radio Player Pro",
-  "short_name": "Radio Pro",
-  "description": "Lecteur de radios en ligne avec effet liquid glass",
-  "start_url": "/",
+  "name": "RadioFM - Toutes vos radios préférées",
+  "short_name": "RadioFM",
+  "description": "Écoutez vos radios françaises préférées en ligne. Plus de 19 stations : généralistes, rock, info, thématiques. 100% gratuit, sans pub.",
+  "start_url": "https://radiofm.ovh/",
   "display": "standalone",
   "orientation": "portrait",
   "theme_color": "#7C5CFF",
   "background_color": "#7C5CFF",
-  "scope": "/",
+  "scope": "https://radiofm.ovh/",
+  "id": "https://radiofm.ovh/",
   "lang": "fr-FR",
   "dir": "ltr",
-  "categories": ["music", "entertainment", "lifestyle"],
-  "iarc_rating_id": "e84b072d-71b3-4d3e-86ae-31a8ce4e53b7",
+  "categories": ["music", "entertainment", "lifestyle", "news"],
   "prefer_related_applications": false,
   "icons": [
     {
@@ -68,24 +68,26 @@
       "src": "screenshots/screenshot1.png",
       "sizes": "1080x1920",
       "type": "image/png",
-      "label": "Page principale avec liste des radios"
+      "label": "Liste des radios par catégorie",
+      "form_factor": "narrow"
     },
     {
       "src": "screenshots/screenshot2.png",
       "sizes": "1080x1920",
       "type": "image/png",
-      "label": "Lecteur en cours de lecture"
+      "label": "Lecteur en cours de lecture",
+      "form_factor": "narrow"
     }
   ],
   "shortcuts": [
     {
-      "name": "Favoris",
+      "name": "Mes Favoris",
       "short_name": "Favoris",
       "description": "Accéder à vos radios favorites",
       "url": "/?tab=favoris",
       "icons": [
         {
-          "src": "icons/favorite-96.png",
+          "src": "icons/icon-96.png",
           "sizes": "96x96",
           "type": "image/png"
         }
@@ -98,7 +100,7 @@
       "url": "/?action=resume",
       "icons": [
         {
-          "src": "icons/play-96.png",
+          "src": "icons/icon-96.png",
           "sizes": "96x96",
           "type": "image/png"
         }
