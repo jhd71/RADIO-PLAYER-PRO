@@ -1842,6 +1842,18 @@ body::before {
    THÈME SOMBRE
    ======================================== */
 
+/* Transition douce uniquement sur les éléments glass */
+.glass-effect,
+.radio-card,
+.player-container {
+    transition: background 0.3s ease, border-color 0.3s ease;
+}
+
+/* Pas de transition sur le body (évite les clignotements) */
+body {
+    transition: none !important;
+}
+
 /* Variables pour le thème clair (par défaut) */
 :root {
     --bg-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -1936,25 +1948,6 @@ body.dark-theme .radio-card:hover {
 
 body.dark-theme .radio-card.playing {
     background: linear-gradient(135deg, rgba(76, 175, 80, 0.3), rgba(56, 142, 60, 0.3));
-}
-
-/* Transitions fluides UNIQUEMENT sur les éléments principaux */
-body,
-.glass-effect,
-.radio-card,
-.player-container,
-.app-header,
-.tab-navigation {
-    transition: background 0.3s ease,
-                background-color 0.3s ease,
-                border-color 0.3s ease,
-                color 0.3s ease;
-}
-
-/* Désactiver les transitions pendant le chargement */
-body.preload,
-body.preload * {
-    transition: none !important;
 }
 
 /* === FIX POUR IPHONE X ET PLUS === */
