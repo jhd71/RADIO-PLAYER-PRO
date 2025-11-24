@@ -68,22 +68,6 @@ body {
     -moz-osx-font-smoothing: grayscale;
 }
 
-/* Background animé */
-body::before {
-    content: '';
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: 
-        radial-gradient(circle at 20% 80%, rgba(74, 144, 226, 0.3) 0%, transparent 50%),
-        radial-gradient(circle at 80% 20%, rgba(123, 104, 238, 0.3) 0%, transparent 50%),
-        radial-gradient(circle at 40% 40%, rgba(255, 107, 107, 0.2) 0%, transparent 50%);
-    animation: backgroundShift 20s ease infinite;
-    z-index: -1;
-}
-
 @keyframes backgroundShift {
     0%, 100% { transform: rotate(0deg) scale(1); }
     33% { transform: rotate(120deg) scale(1.1); }
