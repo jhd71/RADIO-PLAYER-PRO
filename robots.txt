@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Sitemap: https://radiofm.ovh/sitemap.xml
+
+# Bloquer les dossiers non publics
+Disallow: /api/
