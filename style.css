@@ -68,12 +68,6 @@ body {
     -moz-osx-font-smoothing: grayscale;
 }
 
-@keyframes backgroundShift {
-    0%, 100% { transform: rotate(0deg) scale(1); }
-    33% { transform: rotate(120deg) scale(1.1); }
-    66% { transform: rotate(240deg) scale(1); }
-}
-
 /* === GLASS EFFECT === */
 .glass-effect {
     background: var(--glass-bg);
@@ -1825,18 +1819,6 @@ body {
 /* ========================================
    THÈME SOMBRE
    ======================================== */
-
-/* Transition douce uniquement sur les éléments glass */
-.glass-effect,
-.radio-card,
-.player-container {
-    transition: background 0.3s ease, border-color 0.3s ease;
-}
-
-/* Pas de transition sur le body (évite les clignotements) */
-body {
-    transition: none !important;
-}
 
 /* Variables pour le thème clair (par défaut) */
 :root {
