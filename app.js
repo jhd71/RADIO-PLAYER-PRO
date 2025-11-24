@@ -488,6 +488,15 @@ class RadioPlayerApp {
 
     // === LECTURE D'UNE RADIO ===
     playRadio(station) {
+        // Tracking Google Tag Manager
+        if (window.dataLayer) {
+            window.dataLayer.push({
+                'event': 'radio_play',
+                'radio_name': station.name,
+                'radio_category': station.category || 'non-categorisée'
+            });
+        }
+        
         // Si c'est la même station
         if (this.currentStation && this.currentStation.id === station.id) {
             if (this.isPlaying) {
