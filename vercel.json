@@ -1,0 +1,9 @@
+{
+  "redirects": [
+    {
+      "source": "https://www.radiofm.ovh/:path*",
+      "destination": "https://radiofm.ovh/:path*",
+      "permanent": true
+    }
+  ]
+}
