@@ -546,10 +546,11 @@ body.dark-theme .player-container {
 
 /* Bouton agrandir repositionné */
 .player-container.minimized .toggle-player-btn {
-    position: relative;
-    top: auto;
-    right: auto;
+    right: 8px;
     order: 10;
+    right: 8px;
+    width: 32px;
+    height: 32px;
 }
 
 .toggle-player-btn {
