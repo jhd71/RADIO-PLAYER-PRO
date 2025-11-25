@@ -120,7 +120,7 @@ body {
     justify-content: center;
     gap: 8px;
     padding: 12px 20px;
-    min-width: 62px;
+    min-width: 140px;
     text-align: center;
 }
 
@@ -345,7 +345,7 @@ body {
 
 @media (min-width: 400px) {
     .radios-grid {
-        grid-template-columns: repeat(3, 1fr);
+        grid-template-columns: repeat(4, 1fr);
     }
 }
 
@@ -367,7 +367,7 @@ body {
     position: relative;
     background: var(--bg-card);
     border-radius: var(--radius-md);
-    padding: var(--spacing-sm);
+    padding: var(--spacing-md);
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -485,14 +485,71 @@ body.dark-theme .player-container {
     background: rgba(0, 0, 0, 0.5) !important;
 }
 
+/* PLAYER MINIMISÉ - ULTRA COMPACT */
 .player-container.minimized {
-    padding: var(--spacing-sm);
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
 }
 
-.player-container.minimized .player-details,
+/* Cacher les éléments non essentiels en mode minimisé */
 .player-container.minimized .visualizer,
-.player-container.minimized .volume-slider-container {
+.player-container.minimized .volume-slider-container,
+.player-container.minimized #muteBtn,
+.player-container.minimized #castBtn {
+    display: none !important;
+}
+
+/* Réorganiser player-info en mode minimisé */
+.player-container.minimized .player-info {
+    flex: 1;
+    margin-bottom: 0;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.player-container.minimized .player-logo {
+    width: 45px;
+    height: 45px;
+}
+
+/* Afficher le titre en ligne à côté du logo */
+.player-container.minimized .player-details {
+    display: block;
+}
+
+.player-container.minimized .player-title {
+    font-size: 0.95rem;
+    margin-bottom: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 150px;
+}
+
+.player-container.minimized .player-status {
     display: none;
+}
+
+/* Contrôles compacts */
+.player-container.minimized .player-controls {
+    margin-bottom: 0;
+    gap: 8px;
+}
+
+.player-container.minimized .control-btn {
+    width: 40px;
+    height: 40px;
+}
+
+/* Bouton agrandir repositionné */
+.player-container.minimized .toggle-player-btn {
+    position: relative;
+    top: auto;
+    right: auto;
+    order: 10;
 }
 
 .toggle-player-btn {
@@ -788,7 +845,7 @@ body.dark-theme .player-container {
     display: flex;
     align-items: center;
     gap: 12px;
-    font-size: 1.2rem;
+    font-size: 1.5rem;
     margin-bottom: 20px;
     color: var(--text-primary);
 }
@@ -1078,7 +1135,7 @@ body.dark-theme .theme-toggle-btn {
     #settingsPanel .glass-button {
         padding: 10px 16px;
         font-size: 0.9rem;
-        min-width: 55px;
+        min-width: 120px;
     }
     
     #settingsPanel .glass-button .material-icons {
@@ -1136,37 +1193,6 @@ body.dark-theme .theme-toggle-btn {
         animation-duration: 0.01ms !important;
         animation-iteration-count: 1 !important;
         transition-duration: 0.01ms !important;
-    }
-}
-
-/* Desktop : plus large */
-@media (min-width: 768px) {
-    .app-container {
-        max-width: 95%; /* ou 100% pour pleine largeur */
-    }
-    
-    .radios-grid {
-        grid-template-columns: repeat(6, 1fr); /* Au lieu de 8 */
-        max-width: 1200px;
-        margin: 0 auto;
-    }
-	
-	.tab-navigation {
-        max-width: 400px;
-        margin: 0 auto var(--spacing-md);
-    }
-	
-	.category-filter {
-        max-width: 500px;
-        margin: 0 auto 10px auto;
-    }
-	
-	.radio-card {
-        padding: 20px; /* Au lieu de 16px */
-    }
-    
-    .radio-name {
-        font-size: 0.95rem; /* Un peu plus grand */
     }
 }
 
