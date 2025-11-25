@@ -11,6 +11,7 @@
     <meta name="description" content="Écoutez gratuitement plus de 19 radios françaises en ligne : NRJ, Skyrock, RTL, France Info, Nostalgie. Player radio moderne sans pub, avec favoris et minuteur de sommeil.">
     <meta name="keywords" content="radio, radio en ligne, écouter radio gratuit, webradio, radio française, player radio, NRJ, Skyrock, RTL">
     <meta name="author" content="RadioFM">
+    
     <!-- Open Graph pour partage réseaux sociaux -->
     <meta property="og:title" content="RadioFM - Toutes vos radios préférées">
     <meta property="og:description" content="Écoutez gratuitement plus de 19 radios françaises en ligne. Player moderne sans pub.">
@@ -26,6 +27,7 @@
     
     <!-- Canonical URL -->
     <link rel="canonical" href="https://radiofm.ovh">
+    
     <!-- Manifest PWA -->
     <link rel="manifest" href="manifest.json">
     
@@ -50,52 +52,55 @@
 <body>      
     <!-- Bannière d'installation PWA -->
     <div id="pwaInstallBanner" class="pwa-install-banner">
-    <div style="display:flex; align-items:center; gap:12px;">
-        <span class="material-icons" aria-hidden="true">download</span>
-        <div style="flex:1;">
-            <div style="font-weight:600; font-size:0.95rem;">Installer l'application</div>
-            <div style="font-size:0.8rem; opacity:0.85;">
-                Ajoutez Radio Player Pro sur votre écran d'accueil pour un accès rapide.
+        <div style="display:flex; align-items:center; gap:12px;">
+            <span class="material-icons" aria-hidden="true">download</span>
+            <div style="flex:1;">
+                <div style="font-weight:600; font-size:0.95rem;">Installer l'application</div>
+                <div style="font-size:0.8rem; opacity:0.85;">
+                    Ajoutez Radio Player Pro sur votre écran d'accueil pour un accès rapide.
+                </div>
+            </div>
+            <div style="display:flex; flex-direction:column; gap:4px;">
+                <button id="pwaInstallBtn" class="glass-button" aria-label="Installer l'application">
+                    Installer
+                </button>
+                <button id="pwaDismissBtn" class="glass-button" aria-label="Fermer la bannière">
+                    Plus tard
+                </button>
             </div>
         </div>
-        <div style="display:flex; flex-direction:column; gap:4px;">
-            <button id="pwaInstallBtn" class="glass-button">
-                Installer
-            </button>
-            <button id="pwaDismissBtn" class="glass-button">
-                Plus tard
-            </button>
-        </div>
     </div>
-</div>
+
     <div class="app-container">
         <!-- Header avec effet glass -->
         <header class="app-header glass-effect">
-			<h1 class="app-title">
-			<span class="material-icons">radio</span>
-			Radio Player Pro
-			</h1>
-			<div style="display: flex; gap: 8px; align-items: center;">
-				<button class="theme-toggle-btn glass-button" id="themeToggleBtn" 
-        title="Changer de thème" 
-        aria-label="Changer de thème">
-					<span class="material-icons">dark_mode</span>
-				</button>
-				<button class="settings-btn glass-button" id="settingsBtn" aria-label="Ouvrir les paramètres">
-				<span class="material-icons">settings</span>
-				<!-- Petit indicateur de minuteur actif -->
-				<span id="sleepTimerIndicator" class="sleep-timer-indicator" aria-hidden="true"></span>
-			</button>
+            <h1 class="app-title">
+                <span class="material-icons" aria-hidden="true">radio</span>
+                Radio Player Pro
+            </h1>
+            <div style="display: flex; gap: 8px; align-items: center;">
+                <button class="theme-toggle-btn glass-button" id="themeToggleBtn" 
+                        title="Changer de thème" 
+                        aria-label="Changer de thème">
+                    <span class="material-icons">dark_mode</span>
+                </button>
+                <button class="settings-btn glass-button" id="settingsBtn" 
+                        aria-label="Ouvrir les paramètres">
+                    <span class="material-icons">settings</span>
+                    <!-- Petit indicateur de minuteur actif -->
+                    <span id="sleepTimerIndicator" class="sleep-timer-indicator" aria-hidden="true"></span>
+                </button>
+            </div>
         </header>
 
         <!-- Onglets de navigation -->
-        <nav class="tab-navigation glass-effect">
-            <button class="tab-button active" data-tab="radios">
-                <span class="material-icons">radio</span>
+        <nav class="tab-navigation glass-effect" aria-label="Navigation principale">
+            <button class="tab-button active" data-tab="radios" aria-label="Afficher toutes les radios">
+                <span class="material-icons" aria-hidden="true">radio</span>
                 <span>Radios</span>
             </button>
-            <button class="tab-button" data-tab="favoris">
-                <span class="material-icons">favorite</span>
+            <button class="tab-button" data-tab="favoris" aria-label="Afficher les radios favorites">
+                <span class="material-icons" aria-hidden="true">favorite</span>
                 <span>Favoris</span>
             </button>
         </nav>
@@ -103,10 +108,10 @@
         <!-- Filtre par catégorie -->
         <div class="category-filter glass-effect" id="categoryFilter">
             <label for="categorySelect">
-                <span class="material-icons">filter_list</span>
+                <span class="material-icons" aria-hidden="true">filter_list</span>
                 <span>Catégorie :</span>
             </label>
-            <select id="categorySelect" class="glass-select">
+            <select id="categorySelect" class="glass-select" aria-label="Filtrer par catégorie">
                 <option value="toutes">Toutes les radios</option>
                 <option value="generaliste">Généralistes</option>
                 <option value="rock">Rock</option>
@@ -121,32 +126,33 @@
             <div class="tabs-wrapper">
                 <div class="tabs-slider" id="tabsSlider">
                     <!-- Onglet Radios -->
-                    <div class="tab-content active" id="radios-tab">
+                    <div class="tab-content active" id="radios-tab" role="tabpanel" aria-label="Liste des radios">
                         <div class="radios-grid" id="radiosGrid">
                             <!-- Les radios seront ajoutées dynamiquement ici -->
                         </div>
                     </div>
 
                     <!-- Onglet Favoris -->
-                    <div class="tab-content" id="favoris-tab">
+                    <div class="tab-content" id="favoris-tab" role="tabpanel" aria-label="Radios favorites">
                         <div class="favoris-container">
-                    <div class="favoris-empty" id="favorisEmpty">
-                        <span class="material-icons">favorite_border</span>
-                        <p>Aucun favori</p>
-                        <p class="favoris-hint">Appuyez longuement sur une radio pour l'ajouter aux favoris</p>
-                    </div>
-                    <div class="radios-grid" id="favorisGrid" style="display: none;">
-                        <!-- Les favoris seront ajoutés dynamiquement ici -->
-                    </div>
+                            <div class="favoris-empty" id="favorisEmpty">
+                                <span class="material-icons" aria-hidden="true">favorite_border</span>
+                                <p>Aucun favori</p>
+                                <p class="favoris-hint">Appuyez longuement sur une radio pour l'ajouter aux favoris</p>
+                            </div>
+                            <div class="radios-grid" id="favorisGrid" style="display: none;">
+                                <!-- Les favoris seront ajoutés dynamiquement ici -->
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </main>
 
         <!-- Player flottant amélioré avec effet glass -->
-        <div class="player-container glass-effect" id="playerContainer" style="display: none;">
+        <div class="player-container glass-effect" id="playerContainer" style="display: none;" role="region" aria-label="Lecteur audio">
             <!-- Bouton pour minimiser/agrandir le player -->
-            <button class="toggle-player-btn glass-button" id="togglePlayerBtn">
+            <button class="toggle-player-btn glass-button" id="togglePlayerBtn" aria-label="Agrandir ou réduire le lecteur">
                 <span class="material-icons">expand_more</span>
             </button>
             
@@ -159,7 +165,7 @@
             </div>
             
             <!-- Visualiseur -->
-            <div class="visualizer" id="visualizer">
+            <div class="visualizer" id="visualizer" aria-hidden="true">
                 <div class="bar"></div>
                 <div class="bar"></div>
                 <div class="bar"></div>
@@ -167,147 +173,154 @@
                 <div class="bar"></div>
             </div>
             
-                                    <!-- Contrôles améliorés -->
-			<div class="player-controls">
-				<button class="control-btn glass-button" id="playPauseBtn">
-					<span class="material-icons">play_arrow</span>
-				</button>
-				
-				<button class="control-btn glass-button" id="muteBtn">
-					<span class="material-icons">volume_up</span>
-				</button>
-				
-				<button class="control-btn glass-button danger" id="stopBtn">
-					<span class="material-icons">stop</span>
-				</button>
-				
-				<button class="control-btn glass-button" id="castBtn" title="Caster sur un appareil">
-					<span class="material-icons">cast</span>
-				</button>
-			</div>
+            <!-- Contrôles améliorés -->
+            <div class="player-controls">
+                <button class="control-btn glass-button" id="playPauseBtn" aria-label="Lecture ou pause">
+                    <span class="material-icons">play_arrow</span>
+                </button>
+                
+                <button class="control-btn glass-button" id="muteBtn" aria-label="Couper ou réactiver le son">
+                    <span class="material-icons">volume_up</span>
+                </button>
+                
+                <button class="control-btn glass-button danger" id="stopBtn" aria-label="Arrêter la lecture">
+                    <span class="material-icons">stop</span>
+                </button>
+                
+                <button class="control-btn glass-button" id="castBtn" title="Caster sur un appareil" aria-label="Caster sur Chromecast">
+                    <span class="material-icons">cast</span>
+                </button>
+            </div>
             
             <!-- Slider de volume toujours visible quand le player est déployé -->
             <div class="volume-slider-container" id="volumeSliderContainer" style="display: flex;">
-                <input type="range" class="volume-slider" id="volumeSlider" min="0" max="100" value="30">
-                <span class="volume-value">30%</span>
+                <input type="range" class="volume-slider" id="volumeSlider" 
+                       min="0" max="100" value="30" 
+                       aria-label="Contrôle du volume">
+                <span class="volume-value" aria-live="polite">30%</span>
             </div>
         </div>
 
         <!-- Menu contextuel pour les radios -->
-        <div class="context-menu glass-effect" id="contextMenu" style="display: none;">
-            <button class="context-menu-item" id="addToFavorites">
-                <span class="material-icons">favorite</span>
+        <div class="context-menu glass-effect" id="contextMenu" style="display: none;" role="menu">
+            <button class="context-menu-item" id="addToFavorites" role="menuitem">
+                <span class="material-icons" aria-hidden="true">favorite</span>
                 <span>Ajouter aux favoris</span>
             </button>
-            <button class="context-menu-item" id="removeFromFavorites" style="display: none;">
-                <span class="material-icons">favorite_border</span>
+            <button class="context-menu-item" id="removeFromFavorites" style="display: none;" role="menuitem">
+                <span class="material-icons" aria-hidden="true">favorite_border</span>
                 <span>Retirer des favoris</span>
             </button>
-            <button class="context-menu-item" id="shareRadio">
-                <span class="material-icons">share</span>
+            <button class="context-menu-item" id="shareRadio" role="menuitem">
+                <span class="material-icons" aria-hidden="true">share</span>
                 <span>Partager</span>
             </button>
         </div>
 
         <!-- Toast notifications -->
-        <div class="toast" id="toast"></div>
+        <div class="toast" id="toast" role="alert" aria-live="polite"></div>
 	
-		<!-- Bouton de reprise automatique -->
-			<div class="auto-resume-overlay" id="autoResumeOverlay" style="display: none;">
-				<div class="auto-resume-card glass-effect">
-					<span class="material-icons" style="font-size: 48px; color: #7C5CFF;">radio</span>
-					<h3 id="autoResumeTitle">Reprendre la lecture</h3>
-					<p id="autoResumeText">Votre dernière radio est prête</p>
-					<button id="autoResumeBtn" class="glass-button" style="padding: 12px 32px; font-size: 1.1rem;">
-						<span class="material-icons">play_arrow</span>
-						Démarrer
-					</button>
-					<button id="autoResumeCancelBtn" class="glass-button" style="margin-top: 8px; opacity: 0.7;">
-						Annuler
-					</button>
-				</div>
-			</div>
+        <!-- Bouton de reprise automatique -->
+        <div class="auto-resume-overlay" id="autoResumeOverlay" style="display: none;">
+            <div class="auto-resume-card glass-effect">
+                <span class="material-icons" style="font-size: 48px; color: #7C5CFF;" aria-hidden="true">radio</span>
+                <h3 id="autoResumeTitle">Reprendre la lecture</h3>
+                <p id="autoResumeText">Votre dernière radio est prête</p>
+                <button id="autoResumeBtn" class="glass-button" 
+                        style="padding: 12px 32px; font-size: 1.1rem;"
+                        aria-label="Démarrer la lecture de la dernière radio">
+                    <span class="material-icons">play_arrow</span>
+                    Démarrer
+                </button>
+                <button id="autoResumeCancelBtn" class="glass-button" 
+                        style="margin-top: 8px; opacity: 0.7;"
+                        aria-label="Ne pas reprendre la lecture">
+                    Annuler
+                </button>
+            </div>
+        </div>
 			
         <!-- Loading overlay -->
-        <div class="loading-overlay" id="loadingOverlay" style="display: none;">
+        <div class="loading-overlay" id="loadingOverlay" style="display: none;" aria-hidden="true">
             <div class="loading-spinner"></div>
         </div>
     </div>
+
     <!-- Panneau des paramètres -->
-<div id="settingsOverlay">
-    <div id="settingsPanel" class="glass-effect">
-        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:12px;">
-            <h2>
-                <span class="material-icons" aria-hidden="true">settings</span>
-                Paramètres du player
-            </h2>
-            <button id="settingsCloseBtn" class="glass-button">
-                <span class="material-icons">close</span>
-            </button>
-        </div>
+    <div id="settingsOverlay">
+        <div id="settingsPanel" class="glass-effect" role="dialog" aria-labelledby="settingsTitle">
+            <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:12px;">
+                <h2 id="settingsTitle">
+                    <span class="material-icons" aria-hidden="true">settings</span>
+                    Paramètres du player
+                </h2>
+                <button id="settingsCloseBtn" class="glass-button" aria-label="Fermer les paramètres">
+                    <span class="material-icons">close</span>
+                </button>
+            </div>
 
-        <div style="font-size:0.85rem; display:flex; flex-direction:column; gap:12px;">
-            <!-- Minuteur de sommeil -->
-            <section>
-                <h3>Minuteur de sommeil</h3>
-                <p>
-                    La radio s’arrêtera automatiquement après la durée choisie.
-                </p>
-                <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
-                    <label for="sleepTimerSelect" style="white-space:nowrap;">Arrêt dans :</label>
-                    <select id="sleepTimerSelect">
-                        <option value="0">Désactivé</option>
-                        <option value="15">15 min</option>
-                        <option value="30">30 min</option>
-                        <option value="45">45 min</option>
-                        <option value="60">1 h</option>
-                        <option value="75">1 h 15</option>
-                        <option value="90">1 h 30</option>
-                        <option value="105">1 h 45</option>
-                        <option value="120">2 h</option>
-                    </select>
-                </div>
-                <div style="display: flex; gap: 8px; margin-bottom: 6px; width: 100%;">
-                    <button id="sleepTimerStartBtn" class="glass-button" style="flex: 1;">
-                        <span class="material-icons" style="font-size: 20px;">timer</span>
-                        <span>Démarrer le minuteur</span>
-                    </button>
-                    <button id="sleepTimerCancelBtn" class="glass-button" style="flex: 1; display: none;">
-                        <span class="material-icons" style="font-size: 20px;">close</span>
-                        <span>Annuler</span>
-                    </button>
-                </div>
-                <p id="sleepTimerInfo">
-                    Aucun minuteur actif
-                </p>
-            </section>
+            <div style="font-size:0.85rem; display:flex; flex-direction:column; gap:12px;">
+                <!-- Minuteur de sommeil -->
+                <section>
+                    <h3>Minuteur de sommeil</h3>
+                    <p>
+                        La radio s'arrêtera automatiquement après la durée choisie.
+                    </p>
+                    <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
+                        <label for="sleepTimerSelect" style="white-space:nowrap;">Arrêt dans :</label>
+                        <select id="sleepTimerSelect" aria-label="Durée du minuteur de sommeil">
+                            <option value="0">Désactivé</option>
+                            <option value="15">15 min</option>
+                            <option value="30">30 min</option>
+                            <option value="45">45 min</option>
+                            <option value="60">1 h</option>
+                            <option value="75">1 h 15</option>
+                            <option value="90">1 h 30</option>
+                            <option value="105">1 h 45</option>
+                            <option value="120">2 h</option>
+                        </select>
+                    </div>
+                    <div style="display: flex; gap: 8px; margin-bottom: 6px; width: 100%;">
+                        <button id="sleepTimerStartBtn" class="glass-button" style="flex: 1;" aria-label="Démarrer le minuteur de sommeil">
+                            <span class="material-icons" style="font-size: 20px;">timer</span>
+                            <span>Démarrer le minuteur</span>
+                        </button>
+                        <button id="sleepTimerCancelBtn" class="glass-button" style="flex: 1; display: none;" aria-label="Annuler le minuteur de sommeil">
+                            <span class="material-icons" style="font-size: 20px;">close</span>
+                            <span>Annuler</span>
+                        </button>
+                    </div>
+                    <p id="sleepTimerInfo" aria-live="polite">
+                        Aucun minuteur actif
+                    </p>
+                </section>
 
-            <!-- Reprendre la dernière radio -->
-            <section>
-                <h3>Reprendre la dernière radio</h3>
-                <label style="display:flex; align-items:center; gap:8px; cursor:pointer;">
-                    <input type="checkbox" id="autoResumeCheckbox">
-                    <span>Reprendre automatiquement la dernière radio au démarrage</span>
-                </label>
-                <p>
-                    La dernière radio écoutée sera relancée quand vous ouvrez l'application.
-                </p>
-            </section>
+                <!-- Reprendre la dernière radio -->
+                <section>
+                    <h3>Reprendre la dernière radio</h3>
+                    <label style="display:flex; align-items:center; gap:8px; cursor:pointer;">
+                        <input type="checkbox" id="autoResumeCheckbox" aria-label="Reprendre automatiquement la dernière radio au démarrage">
+                        <span>Reprendre automatiquement la dernière radio au démarrage</span>
+                    </label>
+                    <p>
+                        La dernière radio écoutée sera relancée quand vous ouvrez l'application.
+                    </p>
+                </section>
 
-            <!-- Onglet de démarrage -->
-            <section>
-                <h3>Onglet de démarrage</h3>
-                <label style="display:flex; align-items:center; gap:8px; cursor:pointer;">
-                    <input type="checkbox" id="startOnFavoritesCheckbox">
-                    <span>Démarrer sur l'onglet Favoris</span>
-                </label>
-                <p>
-                    L'application s'ouvrira directement sur vos radios favorites.
-                </p>
-            </section>
+                <!-- Onglet de démarrage -->
+                <section>
+                    <h3>Onglet de démarrage</h3>
+                    <label style="display:flex; align-items:center; gap:8px; cursor:pointer;">
+                        <input type="checkbox" id="startOnFavoritesCheckbox" aria-label="Démarrer sur l'onglet Favoris">
+                        <span>Démarrer sur l'onglet Favoris</span>
+                    </label>
+                    <p>
+                        L'application s'ouvrira directement sur vos radios favorites.
+                    </p>
+                </section>
+            </div>
         </div>
     </div>
-</div>
 
     <!-- Audio element -->
     <audio id="audioPlayer" preload="none"></audio>
