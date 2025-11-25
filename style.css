@@ -136,7 +136,7 @@ body {
     #settingsPanel .glass-button {
         padding: 10px 16px;
         font-size: 0.9rem;
-        min-width: 120px;
+        min-width: 63px;
     }
     
     #settingsPanel .glass-button .material-icons {
@@ -1184,7 +1184,7 @@ body.dark-theme #sleepTimerSelect option {
     }
     
     #settingsPanel h2 {
-        font-size: 1.2rem !important;
+        font-size: 1rem !important;
         margin-bottom: 15px !important;
         color: var(--text-primary) !important;
         font-weight: 600 !important;
