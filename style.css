@@ -283,9 +283,9 @@ body {
 /* === TAB CONTENT === */
 .tabs-container {
     flex: 1;
-    overflow-y: auto;
-    overflow-x: hidden;
-    padding-bottom: 20px; /* Petit espace supplémentaire en bas */
+    display: flex;
+    flex-direction: column;
+    overflow: hidden; /* Important : pas de scroll ici */
 }
 
 /* Container pour le swipe fluide */
@@ -298,6 +298,7 @@ body {
 .tabs-slider {
     display: flex;
     width: 200%;
+    height: 100%;
     transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     will-change: transform;
 }
@@ -309,10 +310,9 @@ body {
 .tab-content {
     width: 50%;
     flex-shrink: 0;
-}
-
-.tab-content.active {
-    display: block;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding-bottom: 20px;
 }
 
 @keyframes fadeIn {
