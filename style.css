@@ -1715,20 +1715,12 @@ body.dark-theme #sleepTimerSelect option {
 /* ========================================
    TRANSITION SWIPE POUR ONGLETS
    ======================================== */
-.tabs-container {
+.tabs-wrapper {
     touch-action: pan-y; /* Permet le scroll vertical mais détecte le swipe horizontal */
 }
 
+/* Les deux onglets sont toujours visibles (côte à côte dans le slider) */
 .tab-content {
-    transition: opacity 0.3s ease;
-}
-
-.tab-content:not(.active) {
-    opacity: 0;
-    pointer-events: none;
-}
-
-.tab-content.active {
     opacity: 1;
     pointer-events: auto;
 }
