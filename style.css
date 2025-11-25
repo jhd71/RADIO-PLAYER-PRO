@@ -1146,7 +1146,7 @@ body.dark-theme .theme-toggle-btn {
     }
     
     .radios-grid {
-        grid-template-columns: repeat(12, 1fr); /* Plus de colonnes */
+        grid-template-columns: repeat(14, 1fr); /* Plus de colonnes */
     }
 }
 
