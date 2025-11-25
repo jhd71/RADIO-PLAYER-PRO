@@ -331,7 +331,7 @@ body {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: var(--spacing-md);
-    padding-bottom: 200px; /* Plus d'espace pour le player déployé */
+    padding-bottom: 320px; /* Plus d'espace pour le player déployé */
 }
 
 @media (min-width: 400px) {
@@ -1808,8 +1808,51 @@ body.dark-theme #sleepTimerSelect option {
 }
 
 /* ========================================
+   BOUTON MINUTEUR ACTIF
+   ======================================== */
+.active-timer {
+    background: rgba(244, 67, 54, 0.2) !important;
+    border-color: rgba(244, 67, 54, 0.5) !important;
+    color: #ff5252 !important;
+}
+
+.active-timer:hover {
+    background: rgba(244, 67, 54, 0.3) !important;
+    border-color: rgba(244, 67, 54, 0.7) !important;
+}
+
+.active-timer .material-icons {
+    color: #ff5252;
+}
+
+/* Animation pulsation pour le bouton actif */
+@keyframes pulse-timer {
+    0%, 100% {
+        box-shadow: 0 0 0 0 rgba(244, 67, 54, 0.4);
+    }
+    50% {
+        box-shadow: 0 0 0 8px rgba(244, 67, 54, 0);
+    }
+}
+
+.active-timer {
+    animation: pulse-timer 2s ease-in-out infinite;
+}
+
+/* ========================================
    THÈME SOMBRE
    ======================================== */
+
+/* Variables pour le thème clair (par défaut) */
+:root {
+    --bg-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    --bg-card: rgba(255, 255, 255, 0.1);
+    --text-primary: #ffffff;
+    --text-secondary: rgba(255, 255, 255, 0.8);
+    --glass-bg: rgba(255, 255, 255, 0.15);
+    --glass-border: rgba(255, 255, 255, 0.2);
+    --shadow-color: rgba(0, 0, 0, 0.2);
+}
 
 /* Variables pour le thème sombre */
 body.dark-theme {
@@ -1826,6 +1869,12 @@ body.dark-theme {
 body {
     background: var(--bg-primary);
     color: var(--text-primary);
+}
+
+.glass-effect {
+    background: var(--glass-bg) !important;
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--glass-border);
 }
 
 .radio-card {
