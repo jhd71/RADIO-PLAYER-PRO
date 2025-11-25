@@ -367,7 +367,7 @@ body {
     position: relative;
     background: var(--bg-card);
     border-radius: var(--radius-md);
-    padding: initial;
+    padding: var(--spacing-sm);
     display: flex;
     flex-direction: column;
     align-items: center;
