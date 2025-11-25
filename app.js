@@ -254,8 +254,8 @@ class RadioPlayerApp {
         this.sleepTimerEndTime = null;
         this.autoResumeEnabled = localStorage.getItem('autoResumeLastStation') === 'true';
         this.startOnFavorites = localStorage.getItem('startOnFavorites') === 'true';
-		this.startOnFavorites = localStorage.getItem('startOnFavorites') === 'true';
         this.currentCategory = localStorage.getItem('currentCategory') || 'toutes';
+        
 
         this.deferredPrompt = null; // Événement PWA stocké pour l'installation
         this.isStopping = false; // Sert à ignorer les erreurs juste après un STOP volontaire
