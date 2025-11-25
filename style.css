@@ -1,6 +1,6 @@
 /* ====================================
    RADIO PLAYER PRO - LIQUID GLASS CSS
-   VERSION CORRIGÉE ET AMÉLIORÉE
+   VERSION CORRIGÉE ET CONSOLIDÉE
    ==================================== */
 
 /* === VARIABLES === */
@@ -13,13 +13,14 @@
     --warning-color: #ffc107;
     --danger-color: #f44336;
     
-    /* Couleurs de fond */
+    /* Couleurs de fond - THÈME CLAIR PAR DÉFAUT */
     --bg-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     --bg-secondary: rgba(255, 255, 255, 0.1);
+    --bg-card: rgba(255, 255, 255, 0.1);
     
     /* Glass effect */
-    --glass-bg: rgba(255, 255, 255, 0.05);
-    --glass-border: rgba(255, 255, 255, 0.18);
+    --glass-bg: rgba(255, 255, 255, 0.15);
+    --glass-border: rgba(255, 255, 255, 0.2);
     --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
     --glass-blur: blur(10px);
     
@@ -27,6 +28,9 @@
     --text-primary: #ffffff;
     --text-secondary: rgba(255, 255, 255, 0.8);
     --text-muted: rgba(255, 255, 255, 0.6);
+    
+    /* Ombres */
+    --shadow-color: rgba(0, 0, 0, 0.2);
     
     /* Espacements */
     --spacing-xs: 4px;
@@ -45,6 +49,17 @@
     --transition-fast: 0.2s ease;
     --transition-normal: 0.3s ease;
     --transition-slow: 0.5s ease;
+}
+
+/* Variables pour le thème sombre */
+body.dark-theme {
+    --bg-primary: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    --bg-card: rgba(0, 0, 0, 0.3);
+    --glass-bg: rgba(0, 0, 0, 0.3);
+    --glass-border: rgba(255, 255, 255, 0.1);
+    --text-primary: #ffffff;
+    --text-secondary: rgba(255, 255, 255, 0.7);
+    --shadow-color: rgba(0, 0, 0, 0.5);
 }
 
 /* === RESET & BASE === */
@@ -66,6 +81,7 @@ body {
     position: relative;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    transition: background 0.3s ease;
 }
 
 /* === GLASS EFFECT === */
@@ -129,25 +145,6 @@ body {
     gap: 6px;
     padding: 12px 16px;
     white-space: nowrap;
-}
-
-/* Responsive mobile */
-@media (max-width: 768px) {
-    #settingsPanel .glass-button {
-        padding: 10px 16px;
-        font-size: 0.9rem;
-        min-width: 63px;
-    }
-    
-    #settingsPanel .glass-button .material-icons {
-        font-size: 18px;
-    }
-    
-    #sleepTimerStartBtn,
-    #sleepTimerCancelBtn {
-        padding: 10px 12px;
-        gap: 4px;
-    }
 }
 
 /* Animation pulsation pour le bouton actif */
@@ -240,6 +237,15 @@ body {
     animation: sleepTimerPulse 1.6s infinite ease-out;
 }
 
+@keyframes sleepTimerPulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.4;
+    }
+}
+
 /* === TAB NAVIGATION === */
 .tab-navigation {
     display: flex;
@@ -285,14 +291,14 @@ body {
     flex: 1;
     display: flex;
     flex-direction: column;
-    overflow: hidden; /* Important : pas de scroll ici */
+    overflow: hidden;
 }
 
-/* Container pour le swipe fluide */
 .tabs-wrapper {
     position: relative;
     overflow: hidden;
     flex: 1;
+    touch-action: pan-y;
 }
 
 .tabs-slider {
@@ -313,6 +319,8 @@ body {
     overflow-y: auto;
     overflow-x: hidden;
     padding-bottom: 20px;
+    opacity: 1;
+    pointer-events: auto;
 }
 
 @keyframes fadeIn {
@@ -331,7 +339,8 @@ body {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: var(--spacing-md);
-    padding-bottom: 320px; /* Plus d'espace pour le player déployé */
+    padding: 0 var(--spacing-md);
+    padding-bottom: 200px;
 }
 
 @media (min-width: 400px) {
@@ -345,144 +354,82 @@ body {
     content: '💡 Astuce : Appui long sur une radio pour les options';
     grid-column: 1 / -1;
     text-align: center;
+    padding: 12px;
     font-size: 0.85rem;
-    color: rgba(255, 255, 255, 0.6);
-    padding: 8px;
-    background: rgba(124, 92, 255, 0.1);
-    border-radius: 12px;
+    color: var(--text-muted);
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: var(--radius-md);
     margin-bottom: 8px;
 }
 
-@media (max-width: 768px) {
-    .radios-grid::before {
-        font-size: 0.75rem;
-        padding: 6px;
-    }
-}
-
-/* === RADIO CARD AMÉLIORÉ === */
+/* === RADIO CARD === */
 .radio-card {
-    aspect-ratio: 1;
-    border-radius: var(--radius-lg);
-    background: var(--glass-bg);
-    backdrop-filter: blur(5px);
-    -webkit-backdrop-filter: blur(5px);
-    border: 1px solid var(--glass-border);
-    padding: var(--spacing-sm);
-    cursor: pointer;
-    transition: all var(--transition-normal);
+    position: relative;
+    background: var(--bg-card);
+    border-radius: var(--radius-md);
+    padding: var(--spacing-md);
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
-    position: relative;
-    overflow: hidden;
-}
-
-.radio-card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: linear-gradient(135deg, 
-        rgba(255, 255, 255, 0) 0%, 
-        rgba(255, 255, 255, 0.1) 100%);
-    opacity: 0;
-    transition: opacity var(--transition-normal);
-}
-
-.radio-card:hover::before {
-    opacity: 1;
+    gap: var(--spacing-sm);
+    cursor: pointer;
+    transition: all var(--transition-normal);
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-tap-highlight-color: transparent;
 }
 
 .radio-card:hover {
-    transform: translateY(-5px) scale(1.05);
-    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
-    border-color: rgba(255, 255, 255, 0.3);
+    transform: translateY(-4px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
 }
 
 .radio-card.playing {
-    background: linear-gradient(135deg, 
-        rgba(76, 175, 80, 0.25), 
-        rgba(76, 175, 80, 0.15));
-    border-color: var(--success-color);
-    box-shadow: 
-        0 0 30px rgba(76, 175, 80, 0.4),
-        0 4px 20px rgba(0, 0, 0, 0.2);
-    transform: scale(1.02); /* Légère mise en avant */
+    background: linear-gradient(135deg, rgba(76, 175, 80, 0.4), rgba(56, 142, 60, 0.4));
+    border: 2px solid var(--success-color);
+    animation: pulse 2s infinite;
 }
 
-.radio-card.playing::after {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 200%;
-    height: 200%;
-    background: radial-gradient(circle, 
-        rgba(76, 175, 80, 0.3) 0%, 
-        transparent 70%);
-    animation: pulse 2s ease infinite;
-    z-index: 0; /* Derrière le contenu */
+body.dark-theme .radio-card:hover {
+    background: rgba(124, 92, 255, 0.2);
+}
+
+body.dark-theme .radio-card.playing {
+    background: linear-gradient(135deg, rgba(76, 175, 80, 0.3), rgba(56, 142, 60, 0.3));
 }
 
 @keyframes pulse {
     0%, 100% {
-        transform: translate(-50%, -50%) scale(0.8);
-        opacity: 0;
+        box-shadow: 0 0 0 0 rgba(76, 175, 80, 0.4);
     }
     50% {
-        transform: translate(-50%, -50%) scale(1);
-        opacity: 1;
+        box-shadow: 0 0 0 10px rgba(76, 175, 80, 0);
     }
 }
 
 .radio-logo {
-    width: 80%;
-    height: 80%;
-    object-fit: contain; /* Garde les proportions, ajoute des bandes si besoin */
-    border-radius: 12px;
-    background: rgba(255, 255, 255, 0.05); /* Fond subtil pour les logos non carrés */
-    padding: 2px;
-    position: relative;
-    z-index: 1;
+    width: 100%;
+    aspect-ratio: 1;
+    object-fit: cover;
+    border-radius: var(--radius-sm);
 }
 
-/* FIX POUR LE TEXTE QUI NE DÉBORDE PLUS */
 .radio-name {
-    position: absolute;
-    bottom: var(--spacing-xs);
-    left: var(--spacing-xs);
-    right: var(--spacing-xs);
-    font-size: 0.6rem;
+    font-size: 0.85rem;
+    font-weight: 500;
     text-align: center;
     color: var(--text-primary);
-    font-weight: 500;
-    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
-    z-index: 2;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    text-overflow: ellipsis;
-    line-height: 1.1;
-    max-height: 0.95rem;
-    word-break: break-word;
 }
 
-/* Indicateur favori */
 .favorite-indicator {
     position: absolute;
-    top: var(--spacing-xs);
-    right: var(--spacing-xs);
+    top: 8px;
+    right: 8px;
+    font-size: 1.2rem;
     color: var(--accent-color);
-    font-size: 1rem;
-    z-index: 2;
     opacity: 0;
     transform: scale(0);
-    transition: all var(--transition-normal);
+    transition: all var(--transition-fast);
 }
 
 .radio-card.is-favorite .favorite-indicator {
@@ -492,102 +439,81 @@ body {
 
 /* === FAVORIS === */
 .favoris-container {
-	padding: 20px;
-    padding-bottom: 320px; /* Même espace que radios-grid */
-    min-height: 300px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    padding: 0 var(--spacing-md);
 }
 
 .favoris-empty {
-    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
     padding: var(--spacing-xl);
+    text-align: center;
+    color: var(--text-muted);
 }
 
 .favoris-empty .material-icons {
     font-size: 4rem;
-    color: var(--text-muted);
     margin-bottom: var(--spacing-md);
+    opacity: 0.5;
 }
 
 .favoris-empty p {
-    color: var(--text-secondary);
     margin-bottom: var(--spacing-sm);
 }
 
 .favoris-hint {
-    font-size: 0.85rem;
+    font-size: 0.9rem;
     color: var(--text-muted);
 }
 
-/* === PLAYER AMÉLIORÉ === */
+/* === PLAYER CONTAINER === */
 .player-container {
     position: fixed;
     bottom: 0;
-    left: 0;
-    right: 0;
-    padding: var(--spacing-md);
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    max-width: 480px;
+    padding: var(--spacing-lg);
     border-radius: var(--radius-lg) var(--radius-lg) 0 0;
     z-index: 100;
-    animation: slideUp var(--transition-normal);
     transition: all var(--transition-normal);
 }
 
-/* État minimisé du player */
+body.dark-theme .player-container {
+    background: rgba(0, 0, 0, 0.5) !important;
+}
+
 .player-container.minimized {
-    padding: var(--spacing-sm) var(--spacing-md);
+    padding: var(--spacing-sm);
 }
 
-.player-container.minimized .player-info {
-    margin-bottom: 0;
-}
-
+.player-container.minimized .player-details,
 .player-container.minimized .visualizer,
 .player-container.minimized .volume-slider-container {
-    display: none !important;
+    display: none;
 }
 
-.player-container.minimized .player-controls {
-    gap: var(--spacing-sm);
-}
-
-.player-container.minimized .control-btn {
-    width: 40px;
-    height: 40px;
-    font-size: 1.2rem;
-}
-
-@keyframes slideUp {
-    from {
-        transform: translateY(100%);
-    }
-    to {
-        transform: translateY(0);
-    }
-}
-
-/* Toggle button pour minimiser */
 .toggle-player-btn {
     position: absolute;
-    top: -15px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 30px;
-    height: 30px;
+    top: 8px;
+    right: 8px;
+    width: 32px;
+    height: 32px;
     border-radius: 50%;
-    background: rgba(255, 255, 255, 0.2);
-    border: 1px solid rgba(255, 255, 255, 0.3);
     display: flex;
     align-items: center;
     justify-content: center;
-    cursor: pointer;
-    transition: all var(--transition-fast);
+    padding: 0;
 }
 
-.toggle-player-btn:hover {
-    background: rgba(255, 255, 255, 0.3);
-    transform: translateX(-50%) scale(1.1);
+.toggle-player-btn .material-icons {
+    transition: transform var(--transition-normal);
+}
+
+.player-container.minimized .toggle-player-btn .material-icons {
+    transform: rotate(180deg);
 }
 
 .player-info {
@@ -601,9 +527,7 @@ body {
     width: 60px;
     height: 60px;
     border-radius: var(--radius-md);
-    object-fit: contain;
-    background: white;
-    padding: 2px;
+    object-fit: cover;
 }
 
 .player-details {
@@ -613,178 +537,158 @@ body {
 .player-title {
     font-size: 1.1rem;
     font-weight: 600;
-    margin-bottom: var(--spacing-xs);
+    margin-bottom: 4px;
 }
 
 .player-status {
-    font-size: 0.85rem;
+    font-size: 0.9rem;
     color: var(--text-secondary);
 }
 
-/* Visualiseur */
+/* === VISUALIZER === */
 .visualizer {
     display: flex;
-    align-items: center;
     justify-content: center;
-    gap: 3px;
-    height: 30px;
+    align-items: flex-end;
+    gap: 4px;
+    height: 40px;
     margin-bottom: var(--spacing-md);
 }
 
 .visualizer .bar {
-    width: 4px;
-    background: linear-gradient(to top, 
-        var(--primary-color), 
-        var(--secondary-color));
-    border-radius: 2px;
-    transition: height var(--transition-fast);
+    width: 8px;
+    height: 20%;
+    background: linear-gradient(to top, var(--primary-color), var(--secondary-color));
+    border-radius: 4px;
+    transition: height 0.1s ease;
 }
 
 .visualizer.active .bar {
-    animation: dance 0.5s ease infinite alternate;
+    animation: visualize 1s ease-in-out infinite;
 }
 
-.visualizer .bar:nth-child(1) { animation-delay: 0s; height: 10px; }
-.visualizer .bar:nth-child(2) { animation-delay: 0.1s; height: 20px; }
-.visualizer .bar:nth-child(3) { animation-delay: 0.2s; height: 15px; }
-.visualizer .bar:nth-child(4) { animation-delay: 0.3s; height: 25px; }
-.visualizer .bar:nth-child(5) { animation-delay: 0.4s; height: 18px; }
+.visualizer .bar:nth-child(1) {
+    animation-delay: 0s;
+}
+.visualizer .bar:nth-child(2) {
+    animation-delay: 0.1s;
+}
+.visualizer .bar:nth-child(3) {
+    animation-delay: 0.2s;
+}
+.visualizer .bar:nth-child(4) {
+    animation-delay: 0.3s;
+}
+.visualizer .bar:nth-child(5) {
+    animation-delay: 0.4s;
+}
 
-@keyframes dance {
-    0% {
-        height: 10px;
+@keyframes visualize {
+    0%, 100% {
+        height: 20%;
     }
-    100% {
-        height: 25px;
+    50% {
+        height: 80%;
     }
 }
 
-/* Contrôles améliorés */
+/* === PLAYER CONTROLS === */
 .player-controls {
     display: flex;
     justify-content: center;
     gap: var(--spacing-md);
-    position: relative;
+    margin-bottom: var(--spacing-md);
 }
 
 .control-btn {
-    width: 50px;
-    height: 50px;
+    width: 48px;
+    height: 48px;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.5rem;
-}
-
-/* Bouton mute */
-.control-btn.muted {
-    background: rgba(255, 193, 7, 0.2);
-    border-color: rgba(255, 193, 7, 0.4);
-}
-
-.control-btn.muted:hover {
-    background: rgba(255, 193, 7, 0.3);
+    padding: 0;
 }
 
 .control-btn.danger {
     background: rgba(244, 67, 54, 0.2);
-    border-color: rgba(244, 67, 54, 0.3);
+    border-color: rgba(244, 67, 54, 0.4);
 }
 
 .control-btn.danger:hover {
     background: rgba(244, 67, 54, 0.3);
 }
 
-/* Bouton Cast (état connecté) */
-.control-btn.casting {
-    background: rgba(123, 104, 238, 0.25); /* proche de ton violet */
-    border-color: rgba(123, 104, 238, 0.5);
-}
-
-/* Volume Slider */
+/* === VOLUME SLIDER === */
 .volume-slider-container {
-    margin-top: var(--spacing-md);
-    padding: var(--spacing-md);
-    background: rgba(0, 0, 0, 0.2);
-    border-radius: var(--radius-md);
     display: flex;
     align-items: center;
-    gap: var(--spacing-md);
+    gap: var(--spacing-sm);
 }
 
 .volume-slider {
     flex: 1;
     -webkit-appearance: none;
     appearance: none;
-    height: 4px;
-    background: rgba(255, 255, 255, 0.3);
-    border-radius: 2px;
+    height: 6px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 3px;
     outline: none;
 }
 
 .volume-slider::-webkit-slider-thumb {
     -webkit-appearance: none;
     appearance: none;
-    width: 20px;
-    height: 20px;
+    width: 16px;
+    height: 16px;
     background: var(--primary-color);
     border-radius: 50%;
     cursor: pointer;
-    transition: all var(--transition-fast);
-}
-
-.volume-slider::-webkit-slider-thumb:hover {
-    transform: scale(1.2);
-    box-shadow: 0 0 10px var(--primary-color);
 }
 
 .volume-slider::-moz-range-thumb {
-    width: 20px;
-    height: 20px;
+    width: 16px;
+    height: 16px;
     background: var(--primary-color);
     border-radius: 50%;
-    border: none;
     cursor: pointer;
-    transition: all var(--transition-fast);
-}
-
-.volume-slider::-moz-range-thumb:hover {
-    transform: scale(1.2);
-    box-shadow: 0 0 10px var(--primary-color);
+    border: none;
 }
 
 .volume-value {
-    min-width: 45px;
-    text-align: right;
     font-size: 0.9rem;
     color: var(--text-secondary);
+    min-width: 40px;
+    text-align: right;
 }
 
 /* === CONTEXT MENU === */
 .context-menu {
     position: fixed;
-    z-index: 1000;
+    background: var(--glass-bg);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid var(--glass-border);
     border-radius: var(--radius-md);
-    padding: var(--spacing-xs);
+    padding: var(--spacing-sm);
+    z-index: 1000;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
     min-width: 200px;
-    animation: fadeIn var(--transition-fast);
 }
 
 .context-menu-item {
     display: flex;
     align-items: center;
     gap: var(--spacing-sm);
-    width: 100%;
-    padding: var(--spacing-sm) var(--spacing-md);
+    padding: var(--spacing-md);
     background: transparent;
     border: none;
     color: var(--text-primary);
-    font-size: 0.9rem;
-    border-radius: var(--radius-sm);
+    font-size: 0.95rem;
     cursor: pointer;
-    transition: background var(--transition-fast);
-    text-align: left;
+    border-radius: var(--radius-sm);
+    width: 100%;
+    transition: all var(--transition-fast);
 }
 
 .context-menu-item:hover {
@@ -801,17 +705,15 @@ body {
     bottom: 100px;
     left: 50%;
     transform: translateX(-50%) translateY(100px);
-    background: rgba(0, 0, 0, 0.8);
+    background: rgba(0, 0, 0, 0.9);
     color: white;
-    padding: var(--spacing-md) var(--spacing-lg);
-    border-radius: var(--radius-lg);
+    padding: 12px 24px;
+    border-radius: 24px;
     font-size: 0.9rem;
+    z-index: 10000;
     opacity: 0;
     transition: all var(--transition-normal);
     pointer-events: none;
-    z-index: 2000;
-    max-width: 80%;
-    text-align: center;
 }
 
 .toast.show {
@@ -819,25 +721,25 @@ body {
     transform: translateX(-50%) translateY(0);
 }
 
-/* === LOADING === */
+/* === LOADING OVERLAY === */
 .loading-overlay {
     position: fixed;
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(0, 0, 0, 0.5);
+    background: rgba(0, 0, 0, 0.8);
     display: flex;
     align-items: center;
     justify-content: center;
-    z-index: 3000;
+    z-index: 9999;
 }
 
 .loading-spinner {
     width: 50px;
     height: 50px;
-    border: 3px solid rgba(255, 255, 255, 0.2);
-    border-top-color: var(--primary-color);
+    border: 4px solid rgba(255, 255, 255, 0.3);
+    border-top-color: white;
     border-radius: 50%;
     animation: spin 1s linear infinite;
 }
@@ -848,809 +750,167 @@ body {
     }
 }
 
-/* === RESPONSIVE AMÉLIORÉ === */
-
-/* === PETITS SMARTPHONES === */
-@media (max-width: 480px) {
-    .radios-grid {
-        grid-template-columns: repeat(3, 1fr);
-        gap: var(--spacing-sm);
-    }
-    
-    .radio-logo {
-        width: 90%;
-        height: 90%;
-    }
-    
-    .radio-name {
-        font-size: 0.6rem;
-        bottom: 2px;
-    }
-    
-    /* Player minimisé */
-    .player-container.minimized .player-info {
-        gap: var(--spacing-sm);
-    }
-    
-    .player-container.minimized .player-logo {
-        width: 40px;
-        height: 40px;
-    }
-    
-    .player-container.minimized .player-title {
-        font-size: 0.95rem;
-    }
-}
-
-/* === TABLETTES ET PLUS === */
-@media (min-width: 768px) {
-    .app-container {
-        max-width: 100%;  /* Changé de 'initial' à '100%' */
-    }
-    
-    /* 5 colonnes pour tablettes */
-    .radios-grid {
-        grid-template-columns: repeat(5, 1fr);
-    }
-}
-
-/* === ÉCRANS MOYENS === */
-@media (min-width: 1024px) {
-    /* 8 colonnes pour écrans moyens */
-    .radios-grid {
-        grid-template-columns: repeat(8, 1fr);
-    }
-}
-
-/* === GRANDS ÉCRANS === */
-@media (min-width: 1440px) {
-    /* 12 colonnes pour grands écrans */
-    .radios-grid {
-        grid-template-columns: repeat(12, 1fr);
-    }
-}
-
-/* === TRÈS GRANDS ÉCRANS === */
-@media (min-width: 1920px) {
-    /* 15 colonnes pour très grands écrans */
-    .radios-grid {
-        grid-template-columns: repeat(15, 1fr);
-    }
-    
-    .app-container {
-        max-width: 1800px;
-        margin: 0 auto;
-    }
-}
-
-/* === MODE PAYSAGE MOBILE === */
-@media (max-width: 768px) and (orientation: landscape) {
-    .radios-grid {
-        grid-template-columns: repeat(5, 1fr);
-        gap: var(--spacing-sm);
-    }
-    
-    .radio-logo {
-        width: 60%;
-        height: 60%;
-    }
-    
-    .radio-name {
-        font-size: 0.55rem;
-    }
-}
-
-/* === TRÈS PETITS ÉCRANS === */
-@media (max-width: 360px) {
-    .radios-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
-    
-    .radio-name {
-        font-size: 0.55rem;
-    }
-    
-    .radio-logo {
-        width: 75%;
-        height: 75%;
-    }
-}
-
-/* === ANIMATIONS SUPPLÉMENTAIRES === */
-@keyframes ripple {
-    0% {
-        transform: scale(0);
-        opacity: 1;
-    }
-    100% {
-        transform: scale(4);
-        opacity: 0;
-    }
-}
-
-.ripple-effect {
-    position: absolute;
-    border-radius: 50%;
-    background: rgba(255, 255, 255, 0.5);
-    animation: ripple 0.6s ease-out;
-    pointer-events: none;
-}
-
-/* === PWA SPECIFIC === */
-@media (display-mode: standalone) {
-    .app-header {
-        padding-top: calc(env(safe-area-inset-top) + var(--spacing-lg));
-    }
-    
-    .player-container {
-        padding-bottom: calc(env(safe-area-inset-bottom) + var(--spacing-md));
-    }
-}
-
-/* === DARK MODE SUPPORT === */
-@media (prefers-color-scheme: dark) {
-    :root {
-        --glass-bg: rgba(0, 0, 0, 0.3);
-        --glass-border: rgba(255, 255, 255, 0.1);
-    }
-}
-
-/* === SCROLLBAR CUSTOM === */
-::-webkit-scrollbar {
-    width: 8px;
-}
-
-::-webkit-scrollbar-track {
-    background: rgba(255, 255, 255, 0.05);
-    border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.2);
-    border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-    background: rgba(255, 255, 255, 0.3);
-}
-
-/* === BANNIÈRE D'INSTALLATION PWA === */
-#pwaInstallBanner {
-    position: fixed;
-    left: 50%;
-    bottom: 16px;
-    transform: translateX(-50%);
-    z-index: 9999;
-    max-width: 480px;
-    width: calc(100% - 32px);
-    display: none; /* Affichée en JS */
-    padding: 12px 14px;
-    border-radius: var(--radius-md);
-    background: var(--glass-bg);
-    border: 1px solid var(--glass-border);
-    box-shadow: var(--glass-shadow);
-    color: var(--text-primary);
-    font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    backdrop-filter: var(--glass-blur);
-    -webkit-backdrop-filter: var(--glass-blur);
-}
-
-#pwaInstallBanner .material-icons {
-    font-size: 20px;
-}
-
-#pwaInstallBanner .glass-button {
-    padding: 4px 10px;
-    font-size: 0.8rem;
-}
-
-/* === OVERLAY / PARAMÈTRES DU PLAYER === */
+/* ========================================
+   PANNEAU DES PARAMÈTRES
+   ======================================== */
 #settingsOverlay {
     position: fixed;
-    inset: 0;
-    z-index: 9998;
-    display: none; /* JS met display:flex */
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(5px);
+    z-index: 1000;
+    display: none;
     align-items: center;
     justify-content: center;
-    background: rgba(0, 0, 0, 0.35);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
+    padding: 20px;
+}
+
+#settingsOverlay.show {
+    display: flex;
 }
 
 #settingsPanel {
-    background: var(--glass-bg);
+    max-width: 500px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    padding: 24px;
+    border-radius: 20px;
+    animation: slideUp 0.3s ease;
+    /* Assure que le panneau suit le thème */
     color: var(--text-primary);
-    padding: 16px 18px;
-    border-radius: var(--radius-lg);
-    max-width: 430px;
-    width: calc(100% - 40px);
-    border: 1px solid var(--glass-border);
-    box-shadow: var(--glass-shadow);
-    backdrop-filter: var(--glass-blur);
-    -webkit-backdrop-filter: var(--glass-blur);
 }
 
-/* Titres et sections */
 #settingsPanel h2 {
-    margin: 0;
-    font-size: 1rem;
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: 12px;
+    font-size: 1.5rem;
+    margin-bottom: 20px;
+    color: var(--text-primary);
 }
 
 #settingsPanel h3 {
-    margin: 0 0 6px 0;
-    font-size: 0.9rem;
-}
-
-#settingsPanel section {
-    border-radius: var(--radius-md);
-    padding: 10px 12px;
-    background: var(--glass-bg);
-    border: 1px solid var(--glass-border);
-    box-shadow: var(--glass-shadow);
-    margin-bottom: 10px;
+    font-size: 1.1rem;
+    margin-bottom: 8px;
+    color: var(--text-primary);
 }
 
 #settingsPanel p {
-    font-size: 0.8rem;
+    font-size: 0.9rem;
     color: var(--text-secondary);
+    margin-bottom: 12px;
+    line-height: 1.5;
 }
 
-/* Select & checkbox */
-#sleepTimerSelect {
-    flex: 1;
-    padding: 4px 6px;
-    border-radius: 8px;
-    border: 1px solid var(--glass-border);
-    background: var(--glass-bg);
+#settingsPanel section {
+    margin-bottom: 24px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+#settingsPanel section:last-child {
+    border-bottom: none;
+}
+
+/* Amélioration du select dans le panneau */
+#settingsPanel select {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
     color: var(--text-primary);
-    box-shadow: var(--glass-shadow);
-    backdrop-filter: var(--glass-blur);
-    -webkit-backdrop-filter: var(--glass-blur);
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
 }
 
-#sleepTimerSelect option {
-    background: #ffffff;
-    color: #000000;
-    padding: 8px;
+#settingsPanel select:hover {
+    background: rgba(255, 255, 255, 0.15);
+    border-color: rgba(255, 255, 255, 0.3);
 }
 
-body.dark-theme #sleepTimerSelect option {
-    background: #1a1a2e;
-    color: #ffffff;
-}
-
-#sleepTimerSelect:focus {
+#settingsPanel select:focus {
     outline: none;
+    background: rgba(255, 255, 255, 0.2);
     border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(124, 92, 255, 0.2);
 }
 
-#autoResumeCheckbox {
-    width: 16px;
-    height: 16px;
+/* OPTIONS DU SELECT - CORRECTION THÈME */
+#settingsPanel select option {
+    background: #2a2a4a;
+    color: white;
+    padding: 10px;
+}
+
+body.dark-theme #settingsPanel select option {
+    background: #1a1a2e;
+    color: white;
+}
+
+/* Style des checkboxes */
+#settingsPanel input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
     accent-color: var(--primary-color);
 }
 
-@keyframes sleepTimerPulse {
-    0% {
-        box-shadow: 0 0 0 0 rgba(255, 107, 107, 0.5);
+#settingsPanel label {
+    cursor: pointer;
+    user-select: none;
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(30px);
+        opacity: 0;
     }
-    70% {
-        box-shadow: 0 0 0 8px rgba(255, 107, 107, 0);
-    }
-    100% {
-        box-shadow: 0 0 0 0 rgba(255, 107, 107, 0);
+    to {
+        transform: translateY(0);
+        opacity: 1;
     }
 }
 
-/* ====================================
-   RADIO PLAYER PRO - CORRECTIONS MOBILE
-   Ajoutez ce fichier APRÈS style.css
-   ==================================== */
-
-/* === VARIABLES MOBILE AMÉLIORÉES === */
-@media (max-width: 768px) {
-    :root {
-        /* Fonds plus opaques pour meilleure lisibilité */
-        --glass-bg-mobile: rgba(20, 20, 40, 0.95);
-        --glass-bg-mobile-dark: rgba(10, 10, 20, 0.98);
-        --glass-border-mobile: rgba(255, 255, 255, 0.25);
-        --text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
-    }
+/* ========================================
+   BANNIÈRE PWA
+   ======================================== */
+#pwaInstallBanner {
+    position: fixed;
+    bottom: 16px;
+    left: 50%;
+    transform: translateX(-50%);
+    max-width: 450px;
+    width: calc(100% - 32px);
+    background: var(--glass-bg);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid var(--glass-border);
+    border-radius: 16px;
+    padding: 16px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    z-index: 999;
+    animation: slideUp 0.4s ease;
+    color: var(--text-primary);
 }
 
-/* === PANNEAU DES PARAMÈTRES MOBILE === */
-@media (max-width: 768px) {
-    #settingsOverlay {
-        background: rgba(0, 0, 0, 0.5) !important;
-    }
-    
-    body.dark-theme #settingsOverlay {
-        background: rgba(0, 0, 0, 0.85) !important;
-    }
-    
-    #settingsPanel {
-        background: var(--glass-bg) !important;
-        backdrop-filter: blur(20px) !important;
-        -webkit-backdrop-filter: blur(20px) !important;
-        border: 2px solid var(--glass-border) !important;
-        box-shadow: 0 15px 50px var(--shadow-color) !important;
-        width: calc(100% - 20px) !important;
-        max-width: 390px !important;
-        padding: 20px !important;
-        margin: 10px;
-    }
-    
-    #settingsPanel h2 {
-        font-size: 1rem !important;
-        margin-bottom: 15px !important;
-        color: var(--text-primary) !important;
-        font-weight: 600 !important;
-    }
-    
-    #settingsPanel h3 {
-        font-size: 1rem !important;
-        margin-bottom: 10px !important;
-        color: var(--text-primary) !important;
-    }
-    
-    #settingsPanel section {
-        background: var(--bg-card) !important;
-        border: 1px solid var(--glass-border) !important;
-        padding: 15px !important;
-        margin-bottom: 15px !important;
-    }
-    
-    #settingsPanel p {
-        font-size: 0.85rem !important;
-        line-height: 1.4 !important;
-        color: var(--text-secondary) !important;
-    }
-    
-    /* Select amélioré pour mobile */
-    #sleepTimerSelect {
-        background: var(--bg-card) !important;
-        border: 2px solid var(--glass-border) !important;
-        color: var(--text-primary) !important;
-        padding: 10px !important;
-        font-size: 1rem !important;
-        width: 100% !important;
-        margin-top: 8px !important;
-    }
-    
-    #sleepTimerSelect option {
-        background: var(--bg-card) !important;
-        color: var(--text-primary) !important;
-        padding: 10px !important;
-    }
-    
-    /* Mode sombre spécifique pour le select */
-    body.dark-theme #sleepTimerSelect option {
-        background: #2a2a3e !important;
-        color: #ffffff !important;
-    }
-    
-    /* Boutons dans le panneau */
-    #settingsPanel .glass-button {
-        background: rgba(124, 92, 255, 0.3) !important;
-        border: 2px solid rgba(124, 92, 255, 0.5) !important;
-        color: var(--text-primary) !important;
-        padding: 12px 20px !important;
-        font-size: 0.95rem !important;
-        font-weight: 500 !important;
-    }
-    
-    #settingsPanel .glass-button:active {
-        background: rgba(124, 92, 255, 0.5) !important;
-        transform: scale(0.98) !important;
-    }
-    
-    /* Checkbox améliorée */
-    #autoResumeCheckbox,
-    #startOnFavoritesCheckbox {
-        width: 20px !important;
-        height: 20px !important;
-        margin-right: 10px !important;
-    }
-    
-    #settingsPanel label {
-        display: flex;
-        align-items: center;
-        font-size: 0.9rem !important;
-        color: var(--text-primary) !important;
-        gap: 8px;
-    }
-    
-    /* Status du minuteur */
-    #sleepTimerInfo {
-        background: rgba(124, 92, 255, 0.2) !important;
-        border: 1px solid rgba(124, 92, 255, 0.4) !important;
-        padding: 10px !important;
-        border-radius: 8px !important;
-        margin-top: 10px !important;
-        color: var(--text-primary) !important;
-        font-size: 0.85rem !important;
-    }
+.pwa-install-banner {
+    display: none;
 }
 
-/* === BANNIÈRE D'INSTALLATION MOBILE === */
-@media (max-width: 768px) {
-    #pwaInstallBanner {
-        background: var(--glass-bg-mobile-dark) !important;
-        backdrop-filter: blur(20px) !important;
-        -webkit-backdrop-filter: blur(20px) !important;
-        border: 2px solid var(--glass-border-mobile) !important;
-        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8) !important;
-        padding: 16px !important;
-        bottom: 20px !important;
-        width: calc(100% - 20px) !important;
-        max-width: 340px !important;
-    }
-
-    #pwaInstallBanner h3 {
-        font-size: 1rem !important;
-        margin-bottom: 8px !important;
-        color: #ffffff !important;
-        text-shadow: var(--text-shadow) !important;
-        font-weight: 600 !important;
-    }
-
-    #pwaInstallBanner p {
-        font-size: 0.85rem !important;
-        color: rgba(255, 255, 255, 0.95) !important;
-        line-height: 1.3 !important;
-        margin-bottom: 12px !important;
-        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5) !important;
-    }
-
-    #pwaInstallBanner .material-icons {
-        font-size: 24px !important;
-        color: var(--primary-color) !important;
-        vertical-align: middle !important;
-    }
-
-    /* Boutons de la bannière */
-    #pwaInstallBanner .glass-button {
-        background: rgba(74, 144, 226, 0.3) !important;
-        border: 2px solid rgba(74, 144, 226, 0.5) !important;
-        padding: 10px 16px !important;
-        font-size: 0.9rem !important;
-        color: #ffffff !important;
-        font-weight: 500 !important;
-        margin: 4px !important;
-    }
-
-    #pwaInstallBanner .glass-button.primary {
-        background: rgba(76, 175, 80, 0.3) !important;
-        border-color: rgba(76, 175, 80, 0.5) !important;
-    }
-
-    #pwaInstallBanner .glass-button:active {
-        transform: scale(0.98) !important;
-    }
-
-    /* Conteneur des boutons */
-    #pwaInstallBanner .banner-buttons {
-        display: flex !important;
-        gap: 8px !important;
-        justify-content: space-between !important;
-        margin-top: 12px !important;
-    }
-
-    #pwaInstallBanner .banner-buttons .glass-button {
-        flex: 1 !important;
-    }
+.pwa-install-banner.show {
+    display: block;
 }
 
-/* === MENU CONTEXTUEL MOBILE === */
-@media (max-width: 768px) {
-    .context-menu {
-        background: var(--glass-bg-mobile-dark) !important;
-        backdrop-filter: blur(20px) !important;
-        -webkit-backdrop-filter: blur(20px) !important;
-        border: 2px solid var(--glass-border-mobile) !important;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8) !important;
-        padding: 8px !important;
-        min-width: 220px !important;
-    }
-
-    .context-menu-item {
-        padding: 12px 16px !important;
-        font-size: 0.95rem !important;
-        color: #ffffff !important;
-        text-shadow: var(--text-shadow) !important;
-    }
-
-    .context-menu-item:active {
-        background: rgba(255, 255, 255, 0.2) !important;
-    }
-
-    .context-menu-item .material-icons {
-        font-size: 1.3rem !important;
-        color: var(--primary-color) !important;
-    }
-}
-
-/* === PLAYER MOBILE AMÉLIORÉ === */
-@media (max-width: 768px) {
-    .player-container {
-        background: var(--glass-bg-mobile) !important;
-        backdrop-filter: blur(20px) !important;
-        -webkit-backdrop-filter: blur(20px) !important;
-        border-top: 2px solid var(--glass-border-mobile) !important;
-        box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.5) !important;
-    }
-
-    .player-container.minimized {
-        padding: 8px 12px !important;
-    }
-
-    .player-title {
-        text-shadow: var(--text-shadow) !important;
-    }
-
-    .player-status {
-        color: rgba(255, 255, 255, 0.9) !important;
-    }
-
-    /* Contrôles du player */
-    .control-btn {
-        background: rgba(255, 255, 255, 0.12) !important;
-        border: 2px solid rgba(255, 255, 255, 0.25) !important;
-    }
-
-    .control-btn:active {
-        background: rgba(255, 255, 255, 0.25) !important;
-        transform: scale(0.95) !important;
-    }
-
-    .control-btn.muted {
-        background: rgba(255, 193, 7, 0.3) !important;
-        border-color: rgba(255, 193, 7, 0.5) !important;
-    }
-
-    .control-btn.danger {
-        background: rgba(244, 67, 54, 0.3) !important;
-        border-color: rgba(244, 67, 54, 0.5) !important;
-    }
-
-    /* Volume slider mobile */
-    .volume-slider-container {
-        background: rgba(0, 0, 0, 0.8) !important;
-        border: 1px solid rgba(255, 255, 255, 0.2) !important;
-        padding: 16px !important;
-    }
-}
-
-/* === TOAST MOBILE === */
-@media (max-width: 768px) {
-    .toast {
-        background: rgba(20, 20, 30, 0.95) !important;
-        border: 1px solid rgba(255, 255, 255, 0.2) !important;
-        padding: 14px 20px !important;
-        font-size: 0.9rem !important;
-        bottom: 120px !important;
-        max-width: 90% !important;
-        text-shadow: var(--text-shadow) !important;
-    }
-}
-
-/* === HEADER MOBILE === */
-@media (max-width: 768px) {
-    .app-header {
-        background: var(--glass-bg-mobile) !important;
-        backdrop-filter: blur(20px) !important;
-        -webkit-backdrop-filter: blur(20px) !important;
-        border-bottom: 2px solid var(--glass-border-mobile) !important;
-    }
-    .app-title {
-        font-size: 1.3rem !important;
-        text-shadow: var(--text-shadow) !important;
-    }
-    .settings-btn,
-    .theme-toggle-btn {
-        background: rgba(255, 255, 255, 0.12) !important;
-        border: 2px solid rgba(255, 255, 255, 0.25) !important;
-        width: 40px !important;
-        height: 40px !important;
-    }
-    .settings-btn:active,
-    .theme-toggle-btn:active {
-        background: rgba(255, 255, 255, 0.25) !important;
-        transform: scale(0.95) !important;
-    }
-    .settings-btn .material-icons,
-    .theme-toggle-btn .material-icons {
-        font-size: 22px;
-    }
-}
-
-/* === ONGLETS MOBILE === */
-@media (max-width: 768px) {
-    .tab-navigation {
-        background: var(--glass-bg-mobile) !important;
-        backdrop-filter: blur(20px) !important;
-        -webkit-backdrop-filter: blur(20px) !important;
-        border: 2px solid var(--glass-border-mobile) !important;
-        padding: 6px !important;
-    }
-
-    .tab-button {
-        padding: 12px !important;
-        font-size: 0.9rem !important;
-        font-weight: 500 !important;
-    }
-
-    .tab-button.active {
-        background: rgba(255, 255, 255, 0.2) !important;
-        text-shadow: var(--text-shadow) !important;
-    }
-
-    .tab-button:active {
-        transform: scale(0.98) !important;
-    }
-}
-
-/* === CARTES RADIO MOBILE === */
-@media (max-width: 768px) {
-    .radio-card {
-        background: rgba(255, 255, 255, 0.08) !important;
-        border: 1px solid rgba(255, 255, 255, 0.15) !important;
-    }
-
-    .radio-card:active {
-        transform: scale(0.95) !important;
-        background: rgba(255, 255, 255, 0.15) !important;
-    }
-
-    .radio-name {
-        text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8),
-                     0 0 8px rgba(0, 0, 0, 0.5) !important;
-        font-weight: 500 !important;
-        background: linear-gradient(to top, 
-            rgba(0, 0, 0, 0.8) 0%, 
-            transparent 100%) !important;
-        padding: 2px 4px 0 !important;
-        bottom: 0 !important;
-        border-radius: 0 0 12px 12px !important;
-    }
-
-    .radio-card.playing {
-        border: 2px solid var(--success-color) !important;
-        box-shadow: 0 0 20px rgba(76, 175, 80, 0.4) !important;
-    }
-	
-	.radios-grid {
-        grid-template-columns: repeat(3, 1fr);
-        gap: 12px;
-        padding: 12px;
-        padding-bottom: 350px; /* Encore plus d'espace sur mobile */
-    }
-    
-    .favoris-container {
-        padding-bottom: 350px; /* Pareil pour favoris */
-    }
-}
-
-/* === AMÉLIORATION GÉNÉRALE CONTRASTE === */
-@media (max-width: 768px) {
-    /* Tous les textes importants */
-    h1, h2, h3, h4, h5, h6 {
-        text-shadow: var(--text-shadow) !important;
-    }
-
-    /* Tous les boutons */
-    button {
-        -webkit-tap-highlight-color: rgba(255, 255, 255, 0.1);
-        touch-action: manipulation;
-    }
-
-    /* Input et select */
-    input, select, textarea {
-        font-size: 16px !important; /* Évite le zoom sur iOS */
-    }
-
-    /* Scrollbar mobile */
-    ::-webkit-scrollbar {
-        width: 6px !important;
-    }
-
-    ::-webkit-scrollbar-track {
-        background: rgba(255, 255, 255, 0.02) !important;
-    }
-
-    ::-webkit-scrollbar-thumb {
-        background: rgba(255, 255, 255, 0.15) !important;
-        border-radius: 3px !important;
-    }
-}
-
-/* === MODE PAYSAGE MOBILE === */
-@media (max-width: 768px) and (orientation: landscape) {
-    .radios-grid {
-        grid-template-columns: repeat(6, 1fr) !important;
-        gap: 8px !important;
-        padding-bottom: 100px !important;
-    }
-
-    .player-container {
-        padding: 8px 12px !important;
-    }
-
-    #settingsPanel {
-        max-height: 90vh !important;
-        overflow-y: auto !important;
-    }
-
-    #pwaInstallBanner {
-        bottom: 10px !important;
-    }
-}
-
-/* === PETITS ÉCRANS (< 360px) === */
-@media (max-width: 360px) {
-    .radios-grid {
-        grid-template-columns: repeat(2, 1fr) !important;
-    }
-
-    .radio-name {
-        font-size: 0.55rem !important;
-    }
-
-    #settingsPanel {
-        width: calc(100% - 16px) !important;
-        padding: 12px !important;
-    }
-
-    #pwaInstallBanner {
-        width: calc(100% - 16px) !important;
-        padding: 12px !important;
-    }
-
-    .app-title {
-        font-size: 1.1rem !important;
-    }
-
-    .app-title span:not(.material-icons) {
-        display: none !important; /* Cache le texte, garde l'icône */
-    }
-}
-
-/* === SUPPORT TACTILE === */
-@media (hover: none) and (pointer: coarse) {
-    /* Augmente les zones tactiles */
-    .control-btn {
-        min-width: 44px !important;
-        min-height: 44px !important;
-    }
-
-    .tab-button {
-        min-height: 44px !important;
-    }
-
-    .context-menu-item {
-        min-height: 44px !important;
-    }
-
-    /* Désactive les effets hover sur mobile */
-    .radio-card:hover {
-        transform: none !important;
-    }
-
-    .glass-button:hover {
-        transform: none !important;
-    }
-}
-
-/* === ANIMATIONS RÉDUITES POUR MOBILE === */
-@media (max-width: 768px) and (prefers-reduced-motion: reduce) {
-    * {
-        animation-duration: 0.01ms !important;
-        animation-iteration-count: 1 !important;
-        transition-duration: 0.01ms !important;
-    }
+/* Boutons de la bannière PWA */
+#pwaInstallBanner .glass-button {
+    padding: 8px 16px;
+    font-size: 0.9rem;
+    border-radius: 8px;
 }
 
 /* ========================================
@@ -1699,30 +959,6 @@ body.dark-theme #sleepTimerSelect option {
     gap: 8px;
     min-width: 160px;
     justify-content: center;
-}
-
-@keyframes slideUp {
-    from {
-        transform: translateY(30px);
-        opacity: 0;
-    }
-    to {
-        transform: translateY(0);
-        opacity: 1;
-    }
-}
-
-/* ========================================
-   TRANSITION SWIPE POUR ONGLETS
-   ======================================== */
-.tabs-wrapper {
-    touch-action: pan-y; /* Permet le scroll vertical mais détecte le swipe horizontal */
-}
-
-/* Les deux onglets sont toujours visibles (côte à côte dans le slider) */
-.tab-content {
-    opacity: 1;
-    pointer-events: auto;
 }
 
 /* ========================================
@@ -1785,107 +1021,18 @@ body.dark-theme #sleepTimerSelect option {
     padding: 10px;
 }
 
-/* Cacher le filtre dans l'onglet Favoris */
+body.dark-theme .glass-select option {
+    background: #1a1a2e;
+    color: white;
+}
+
 .category-filter.hidden {
     display: none;
 }
 
-/* Responsive mobile */
-@media (max-width: 768px) {
-    .category-filter {
-        margin: 0 12px 10px 12px;
-        padding: 10px 16px;
-    }
-    
-    .category-filter label span:last-child {
-        display: none; /* Cacher le texte "Catégorie :" sur mobile */
-    }
-    
-    .glass-select {
-        font-size: 0.9rem;
-        padding: 8px 12px;
-    }
-}
-
 /* ========================================
-   BOUTON MINUTEUR ACTIF
+   BOUTON THÈME
    ======================================== */
-.active-timer {
-    background: rgba(244, 67, 54, 0.2) !important;
-    border-color: rgba(244, 67, 54, 0.5) !important;
-    color: #ff5252 !important;
-}
-
-.active-timer:hover {
-    background: rgba(244, 67, 54, 0.3) !important;
-    border-color: rgba(244, 67, 54, 0.7) !important;
-}
-
-.active-timer .material-icons {
-    color: #ff5252;
-}
-
-/* Animation pulsation pour le bouton actif */
-@keyframes pulse-timer {
-    0%, 100% {
-        box-shadow: 0 0 0 0 rgba(244, 67, 54, 0.4);
-    }
-    50% {
-        box-shadow: 0 0 0 8px rgba(244, 67, 54, 0);
-    }
-}
-
-.active-timer {
-    animation: pulse-timer 2s ease-in-out infinite;
-}
-
-/* ========================================
-   THÈME SOMBRE
-   ======================================== */
-
-/* Variables pour le thème clair (par défaut) */
-:root {
-    --bg-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    --bg-card: rgba(255, 255, 255, 0.1);
-    --text-primary: #ffffff;
-    --text-secondary: rgba(255, 255, 255, 0.8);
-    --glass-bg: rgba(255, 255, 255, 0.15);
-    --glass-border: rgba(255, 255, 255, 0.2);
-    --shadow-color: rgba(0, 0, 0, 0.2);
-}
-
-/* Variables pour le thème sombre */
-body.dark-theme {
-    --bg-primary: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-    --bg-card: rgba(0, 0, 0, 0.3);
-    --text-primary: #ffffff;
-    --text-secondary: rgba(255, 255, 255, 0.7);
-    --glass-bg: rgba(0, 0, 0, 0.3);
-    --glass-border: rgba(255, 255, 255, 0.1);
-    --shadow-color: rgba(0, 0, 0, 0.5);
-}
-
-/* Application des variables */
-body {
-    background: var(--bg-primary);
-    color: var(--text-primary);
-}
-
-.glass-effect {
-    background: var(--glass-bg) !important;
-    backdrop-filter: blur(10px);
-    border: 1px solid var(--glass-border);
-}
-
-.radio-card {
-    background: var(--bg-card);
-}
-
-.radio-name {
-    color: var(--text-primary);
-}
-
-/* Bouton toggle thème */
 .theme-toggle-btn {
     position: relative;
     width: 44px;
@@ -1903,7 +1050,6 @@ body {
     transition: transform 0.3s ease;
 }
 
-/* Indicateur visuel du thème actif */
 body.dark-theme .theme-toggle-btn {
     background: rgba(124, 92, 255, 0.3);
 }
@@ -1912,11 +1058,6 @@ body.dark-theme .theme-toggle-btn {
     transform: scale(1.05);
 }
 
-body.dark-theme .theme-toggle-btn .material-icons {
-    content: 'light_mode';
-}
-
-/* Animation de rotation lors du changement */
 .theme-toggle-btn.rotating .material-icons {
     animation: rotate-icon 0.5s ease;
 }
@@ -1926,17 +1067,76 @@ body.dark-theme .theme-toggle-btn .material-icons {
     100% { transform: rotate(360deg); }
 }
 
-/* Ajustements pour le thème sombre */
-body.dark-theme .player-container {
-    background: rgba(0, 0, 0, 0.5) !important;
+/* ========================================
+   RESPONSIVE MOBILE
+   ======================================== */
+@media (max-width: 768px) {
+    .radios-grid {
+        padding-bottom: 180px;
+    }
+    
+    #settingsPanel .glass-button {
+        padding: 10px 16px;
+        font-size: 0.9rem;
+        min-width: 120px;
+    }
+    
+    #settingsPanel .glass-button .material-icons {
+        font-size: 18px;
+    }
+    
+    #sleepTimerStartBtn,
+    #sleepTimerCancelBtn {
+        padding: 10px 12px;
+        gap: 4px;
+    }
+    
+    .category-filter {
+        margin: 0 12px 10px 12px;
+        padding: 10px 16px;
+    }
+    
+    .category-filter label span:last-child {
+        display: none;
+    }
+    
+    .glass-select {
+        font-size: 0.9rem;
+        padding: 8px 12px;
+    }
 }
 
-body.dark-theme .radio-card:hover {
-    background: rgba(124, 92, 255, 0.2);
+/* === SUPPORT TACTILE === */
+@media (hover: none) and (pointer: coarse) {
+    .control-btn {
+        min-width: 44px !important;
+        min-height: 44px !important;
+    }
+
+    .tab-button {
+        min-height: 44px !important;
+    }
+
+    .context-menu-item {
+        min-height: 44px !important;
+    }
+
+    .radio-card:hover {
+        transform: none !important;
+    }
+
+    .glass-button:hover {
+        transform: none !important;
+    }
 }
 
-body.dark-theme .radio-card.playing {
-    background: linear-gradient(135deg, rgba(76, 175, 80, 0.3), rgba(56, 142, 60, 0.3));
+/* === ANIMATIONS RÉDUITES POUR MOBILE === */
+@media (max-width: 768px) and (prefers-reduced-motion: reduce) {
+    * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
 }
 
 /* === FIX POUR IPHONE X ET PLUS === */
@@ -1959,4 +1159,3 @@ body.dark-theme .radio-card.playing {
         }
     }
 }
-
