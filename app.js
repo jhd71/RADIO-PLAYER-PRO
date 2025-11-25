@@ -1620,67 +1620,108 @@ class RadioPlayerApp {
 	
 	// === NAVIGATION PAR SWIPE ===
     setupSwipeNavigation() {
-        const tabsContainer = document.querySelector('.tabs-container');
-        if (!tabsContainer) return;
+        const tabsSlider = document.getElementById('tabsSlider');
+        if (!tabsSlider) return;
 
         let touchStartX = 0;
-        let touchEndX = 0;
         let touchStartY = 0;
-        let isSwiping = false;
-        let startTime = 0;
+        let touchStartTime = 0;
+        let currentX = 0;
+        let isDragging = false;
+        let startTranslateX = 0;
 
-        tabsContainer.addEventListener('touchstart', (e) => {
-            // Uniquement pour les vrais événements tactiles
-            if (e.touches && e.touches.length === 1) {
-                touchStartX = e.touches[0].screenX;
-                touchStartY = e.touches[0].screenY;
-                touchEndX = touchStartX;
-                startTime = Date.now();
-                isSwiping = false; // Pas encore confirmé
+        const getCurrentTranslateX = () => {
+            const transform = window.getComputedStyle(tabsSlider).transform;
+            if (transform === 'none') return 0;
+            const matrix = transform.match(/matrix.*\((.+)\)/);
+            if (matrix) {
+                const values = matrix[1].split(', ');
+                return parseFloat(values[4]) || 0;
+            }
+            return 0;
+        };
+
+        tabsSlider.addEventListener('touchstart', (e) => {
+            // Vérifier qu'on n'est pas sur un élément scrollable
+            if (e.target.closest('.radios-grid') || e.target.closest('.favoris-container')) {
+                touchStartX = e.touches[0].clientX;
+                touchStartY = e.touches[0].clientY;
+                touchStartTime = Date.now();
+                isDragging = false;
+                startTranslateX = getCurrentTranslateX();
+                
+                // Désactiver la transition pendant le drag
+                tabsSlider.classList.add('no-transition');
             }
         }, { passive: true });
 
-        tabsContainer.addEventListener('touchmove', (e) => {
-            if (!e.touches || e.touches.length !== 1) return;
+        tabsSlider.addEventListener('touchmove', (e) => {
+            if (!touchStartX) return;
+
+            currentX = e.touches[0].clientX;
+            const currentY = e.touches[0].clientY;
             
-            touchEndX = e.touches[0].screenX;
-            const touchEndY = e.touches[0].screenY;
-            
-            const deltaX = Math.abs(touchEndX - touchStartX);
-            const deltaY = Math.abs(touchEndY - touchStartY);
-            
-            // Confirmer le swipe seulement si mouvement horizontal > vertical
-            if (deltaX > deltaY && deltaX > 10) {
-                isSwiping = true;
+            const deltaX = currentX - touchStartX;
+            const deltaY = currentY - touchStartY;
+
+            // Déterminer si c'est un swipe horizontal
+            if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > 10) {
+                isDragging = true;
+                
+                // Calculer la nouvelle position
+                let newTranslateX = startTranslateX + deltaX;
+                
+                // Limiter le déplacement
+                const maxTranslate = 0;
+                const minTranslate = -tabsSlider.offsetWidth / 2;
+                newTranslateX = Math.max(minTranslate, Math.min(maxTranslate, newTranslateX));
+                
+                // Appliquer la transformation
+                tabsSlider.style.transform = `translateX(${newTranslateX}px)`;
             }
         }, { passive: true });
 
-        tabsContainer.addEventListener('touchend', () => {
-            if (!isSwiping) return;
-            
-            const swipeDistance = touchEndX - touchStartX;
-            const swipeTime = Date.now() - startTime;
-            const minSwipeDistance = 50;
-            const maxSwipeTime = 500; // Max 500ms pour être un swipe rapide
-            
-            // Vérifier que c'est bien un swipe intentionnel
-            if (Math.abs(swipeDistance) > minSwipeDistance && swipeTime < maxSwipeTime) {
-                // Swipe vers la droite (afficher Radios)
-                if (swipeDistance > 0) {
+        tabsSlider.addEventListener('touchend', (e) => {
+            if (!touchStartX) return;
+
+            const deltaX = currentX - touchStartX;
+            const deltaY = e.changedTouches[0].clientY - touchStartY;
+            const swipeTime = Date.now() - touchStartTime;
+
+            // Réactiver la transition
+            tabsSlider.classList.remove('no-transition');
+
+            // Vérifier si c'est un swipe valide
+            if (isDragging && 
+                Math.abs(deltaX) > Math.abs(deltaY) && 
+                Math.abs(deltaX) > 50 && 
+                swipeTime < 500) {
+                
+                if (deltaX < 0) {
+                    // Swipe gauche → Favoris
+                    this.switchToTab('favoris');
+                } else {
+                    // Swipe droite → Radios
                     this.switchToTab('radios');
                 }
-                // Swipe vers la gauche (afficher Favoris)
-                else {
-                    this.switchToTab('favoris');
-                }
+            } else {
+                // Revenir à la position actuelle
+                const currentTab = document.querySelector('.tab-button.active').dataset.tab;
+                this.switchToTab(currentTab);
             }
-            
-            isSwiping = false;
-        }, { passive: true });
+
+            // Reset
+            touchStartX = 0;
+            touchStartY = 0;
+            currentX = 0;
+            isDragging = false;
+        });
     }
 
     // === CHANGER D'ONGLET ===
     switchToTab(tabName) {
+        const tabsSlider = document.getElementById('tabsSlider');
+        
         // Retirer active de tous
         document.querySelectorAll('.tab-button').forEach(b => b.classList.remove('active'));
         document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
@@ -1693,6 +1734,18 @@ class RadioPlayerApp {
             button.classList.add('active');
             content.classList.add('active');
         }
+        
+        // Animer le slider
+        if (tabsSlider) {
+            if (tabName === 'radios') {
+                tabsSlider.style.transform = 'translateX(0)';
+            } else if (tabName === 'favoris') {
+                tabsSlider.style.transform = 'translateX(-50%)';
+            }
+        }
+        
+        // Cacher/afficher le filtre catégorie
+        this.toggleCategoryFilter(tabName);
     }
 	
 	// === AFFICHER/CACHER LE FILTRE SELON L'ONGLET ===

@@ -116,16 +116,18 @@
 		
         <!-- Conteneur des onglets -->
         <main class="tabs-container" role="main">
-            <!-- Onglet Radios -->
-            <div class="tab-content active" id="radios-tab">
-                <div class="radios-grid" id="radiosGrid">
-                    <!-- Les radios seront ajoutées dynamiquement ici -->
-                </div>
-            </div>
+            <div class="tabs-wrapper">
+                <div class="tabs-slider" id="tabsSlider">
+                    <!-- Onglet Radios -->
+                    <div class="tab-content active" id="radios-tab">
+                        <div class="radios-grid" id="radiosGrid">
+                            <!-- Les radios seront ajoutées dynamiquement ici -->
+                        </div>
+                    </div>
 
-            <!-- Onglet Favoris -->
-            <div class="tab-content" id="favoris-tab">
-                <div class="favoris-container">
+                    <!-- Onglet Favoris -->
+                    <div class="tab-content" id="favoris-tab">
+                        <div class="favoris-container">
                     <div class="favoris-empty" id="favorisEmpty">
                         <span class="material-icons">favorite_border</span>
                         <p>Aucun favori</p>
@@ -133,6 +135,7 @@
                     </div>
                     <div class="radios-grid" id="favorisGrid" style="display: none;">
                         <!-- Les favoris seront ajoutés dynamiquement ici -->
+                    </div>
                     </div>
                 </div>
             </div>

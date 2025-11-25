@@ -288,9 +288,27 @@ body {
     padding-bottom: 20px; /* Petit espace supplémentaire en bas */
 }
 
+/* Container pour le swipe fluide */
+.tabs-wrapper {
+    position: relative;
+    overflow: hidden;
+    flex: 1;
+}
+
+.tabs-slider {
+    display: flex;
+    width: 200%;
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    will-change: transform;
+}
+
+.tabs-slider.no-transition {
+    transition: none;
+}
+
 .tab-content {
-    display: none;
-    animation: fadeIn var(--transition-normal);
+    width: 50%;
+    flex-shrink: 0;
 }
 
 .tab-content.active {
