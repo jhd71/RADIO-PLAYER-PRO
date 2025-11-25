@@ -1146,7 +1146,27 @@ body.dark-theme .theme-toggle-btn {
     }
     
     .radios-grid {
-        grid-template-columns: repeat(14, 1fr); /* Plus de colonnes */
+        grid-template-columns: repeat(6, 1fr); /* Au lieu de 8 */
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+	
+	.tab-navigation {
+        max-width: 400px;
+        margin: 0 auto var(--spacing-md);
+    }
+	
+	.category-filter {
+        max-width: 500px;
+        margin: 0 auto 10px auto;
+    }
+	
+	.radio-card {
+        padding: 20px; /* Au lieu de 16px */
+    }
+    
+    .radio-name {
+        font-size: 0.95rem; /* Un peu plus grand */
     }
 }
 
