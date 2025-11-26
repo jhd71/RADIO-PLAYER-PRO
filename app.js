@@ -294,14 +294,17 @@ class RadioPlayerApp {
         this.renderRadios();
         this.renderFavorites();
         this.setupEventListeners();
-		this.setupThemeToggle();
+        this.setupThemeToggle();
         this.setupSleepTimerUI();
         this.setupPWA();
         this.setupCast();
         this.checkNetworkStatus();
+        this.checkIfAdmin();
         this.checkSharedRadio();
-		this.checkIfAdmin();
         this.applyStartupTab();
+        
+        // Mettre à jour les badges de chat
+        this.updateChatBadges();
     }
 
      // === CONFIGURATION AUDIO ===
@@ -1380,6 +1383,11 @@ closeChat() {
         overlay.style.display = 'none';
         this.chatOpen = false;
         
+        // Marquer comme lu
+        if (this.currentStation) {
+            this.markChatAsRead(this.currentStation.id);
+        }
+        
         // Se désabonner
         this.unsubscribeFromChat();
     }
@@ -1462,6 +1470,9 @@ handleNewChatMessage(message) {
     if (message.username !== this.username) {
         this.playChatNotificationSound();
     }
+    
+    // Mettre à jour les badges sur les cartes radio
+    this.updateChatBadges();
 }
 
 // Afficher les messages
@@ -1674,13 +1685,60 @@ playChatNotificationSound() {
     } catch (e) {
         // Pas grave si ça échoue
     }
-	
-	// Mettre à jour les badges de nouveaux messages
-updateChatBadges() {
-    // TODO: Compter les nouveaux messages par radio depuis Supabase
-    // Pour l'instant on ne fait rien
+} // ← Cette accolade FERME playChatNotificationSound()
+
+// Mettre à jour les badges de nouveaux messages
+async updateChatBadges() {
+    try {
+        // Pour chaque radio, compter les nouveaux messages
+        for (const station of this.stations) {
+            // Récupérer le timestamp de la dernière visite de cette radio
+            const lastVisitKey = `last_chat_visit_${station.id}`;
+            const lastVisit = localStorage.getItem(lastVisitKey);
+            
+            if (!lastVisit) {
+                // Première visite, pas de badge
+                continue;
+            }
+            
+            // Compter les messages depuis la dernière visite
+            const { count, error } = await supabase
+                .from('radio_chat_messages')
+                .select('*', { count: 'exact', head: true })
+                .eq('radio_id', station.id)
+                .gt('created_at', lastVisit);
+            
+            if (error) {
+                console.error('Erreur comptage messages:', error);
+                continue;
+            }
+            
+            // Mettre à jour le badge
+            const badges = document.querySelectorAll(`[data-station="${station.id}"]`);
+            badges.forEach(badge => {
+                if (count > 0) {
+                    badge.textContent = count > 99 ? '99+' : count;
+                    badge.style.display = 'block';
+                } else {
+                    badge.style.display = 'none';
+                }
+            });
+        }
+    } catch (error) {
+        console.error('Erreur updateChatBadges:', error);
+    }
 }
 
+// Marquer une radio comme visitée (pour réinitialiser le badge)
+markChatAsRead(radioId) {
+    const lastVisitKey = `last_chat_visit_${radioId}`;
+    localStorage.setItem(lastVisitKey, new Date().toISOString());
+    
+    // Cacher le badge immédiatement
+    const badges = document.querySelectorAll(`[data-station="${radioId}"]`);
+    badges.forEach(badge => {
+        badge.style.display = 'none';
+    });
 }
 
 	// Fallback si Web Share API pas disponible
