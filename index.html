@@ -366,6 +366,47 @@
                     </p>
                 </section>
 
+<!-- Section Admin -->
+        <section>
+            <h3>👑 Administration</h3>
+            
+            <!-- Si pas connecté -->
+            <div id="adminLoginForm">
+                <p style="margin-bottom: 12px;">Connexion administrateur pour modérer le chat</p>
+                <input type="text" 
+                       id="adminUsername" 
+                       class="glass-effect" 
+                       placeholder="Identifiant"
+                       style="width: 100%; padding: 12px; margin-bottom: 8px; border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; background: rgba(255,255,255,0.1); color: white;">
+                <input type="password" 
+                       id="adminPassword" 
+                       class="glass-effect" 
+                       placeholder="Mot de passe"
+                       style="width: 100%; padding: 12px; margin-bottom: 12px; border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; background: rgba(255,255,255,0.1); color: white;">
+                <button id="adminLoginBtn" class="glass-button" style="width: 100%; padding: 12px;">
+                    <span class="material-icons">login</span>
+                    Se connecter
+                </button>
+            </div>
+            
+            <!-- Si connecté -->
+            <div id="adminPanel" style="display: none;">
+                <div style="background: rgba(76, 175, 80, 0.2); padding: 12px; border-radius: 8px; margin-bottom: 12px; border: 1px solid rgba(76, 175, 80, 0.4);">
+                    <p style="display: flex; align-items: center; gap: 8px; color: #4caf50; font-weight: 600;">
+                        <span class="material-icons">check_circle</span>
+                        Connecté en tant qu'administrateur
+                    </p>
+                    <p style="font-size: 0.85rem; margin-top: 4px; color: var(--text-secondary);">
+                        Pseudo : <span id="adminUsernameDisplay"></span>
+                    </p>
+                </div>
+                <button id="adminLogoutBtn" class="glass-button danger" style="width: 100%; padding: 12px;">
+                    <span class="material-icons">logout</span>
+                    Se déconnecter
+                </button>
+            </div>
+        </section>
+		
                 <!-- Reprendre la dernière radio -->
                 <section>
                     <h3>Reprendre la dernière radio</h3>

@@ -299,11 +299,9 @@ class RadioPlayerApp {
         this.setupPWA();
         this.setupCast();
         this.checkNetworkStatus();
-        this.checkIfAdmin();
+        this.checkAdminSession();
         this.checkSharedRadio();
         this.applyStartupTab();
-        
-        // Mettre à jour les badges de chat
         this.updateChatBadges();
     }
 
@@ -1325,6 +1323,117 @@ class RadioPlayerApp {
 // GESTION DU CHAT EN DIRECT
 // ========================================
 
+// ========================================
+// AUTHENTIFICATION ADMIN
+// ========================================
+
+// Hash SHA-256 (simple)
+async hashPassword(password) {
+    const encoder = new TextEncoder();
+    const data = encoder.encode(password);
+    const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
+// Vérifier si admin est connecté
+checkAdminSession() {
+    const adminSession = localStorage.getItem('radio_admin_session');
+    
+    if (adminSession) {
+        try {
+            const session = JSON.parse(adminSession);
+            this.isAdmin = true;
+            this.adminUsername = session.username;
+            this.updateAdminUI();
+            console.log('👑 Session admin active:', session.username);
+        } catch (e) {
+            localStorage.removeItem('radio_admin_session');
+        }
+    }
+}
+
+// Connexion admin
+async loginAdmin() {
+    const usernameInput = document.getElementById('adminUsername');
+    const passwordInput = document.getElementById('adminPassword');
+    
+    if (!usernameInput || !passwordInput) return;
+    
+    const username = usernameInput.value.trim();
+    const password = passwordInput.value;
+    
+    if (!username || !password) {
+        this.showToast('Remplissez tous les champs');
+        return;
+    }
+    
+    try {
+        // Hash du mot de passe
+        const passwordHash = await this.hashPassword(password);
+        
+        // Vérifier dans Supabase
+        const { data, error } = await supabase
+            .from('radio_admins')
+            .select('*')
+            .eq('username', username)
+            .eq('password', passwordHash)
+            .single();
+        
+        if (error || !data) {
+            this.showToast('Identifiants incorrects');
+            passwordInput.value = '';
+            return;
+        }
+        
+        // Connexion réussie
+        this.isAdmin = true;
+        this.adminUsername = username;
+        
+        // Sauvegarder la session
+        localStorage.setItem('radio_admin_session', JSON.stringify({
+            username: username,
+            loginTime: Date.now()
+        }));
+        
+        this.updateAdminUI();
+        this.showToast('👑 Connecté en tant qu\'admin');
+        
+        // Vider les champs
+        usernameInput.value = '';
+        passwordInput.value = '';
+        
+    } catch (error) {
+        console.error('Erreur connexion admin:', error);
+        this.showToast('Erreur de connexion');
+    }
+}
+
+// Déconnexion admin
+logoutAdmin() {
+    this.isAdmin = false;
+    this.adminUsername = null;
+    localStorage.removeItem('radio_admin_session');
+    this.updateAdminUI();
+    this.showToast('Déconnecté');
+}
+
+// Mettre à jour l'interface admin
+updateAdminUI() {
+    const loginForm = document.getElementById('adminLoginForm');
+    const adminPanel = document.getElementById('adminPanel');
+    const usernameDisplay = document.getElementById('adminUsernameDisplay');
+    
+    if (this.isAdmin) {
+        if (loginForm) loginForm.style.display = 'none';
+        if (adminPanel) adminPanel.style.display = 'block';
+        if (usernameDisplay) usernameDisplay.textContent = this.adminUsername || 'Admin';
+    } else {
+        if (loginForm) loginForm.style.display = 'block';
+        if (adminPanel) adminPanel.style.display = 'none';
+    }
+}
+
 // Générer ou récupérer un pseudo utilisateur
 getOrCreateUsername() {
     let username = localStorage.getItem('radio_chat_username');
@@ -1362,6 +1471,9 @@ openChat() {
         // Réinitialiser le compteur de messages non lus
         this.unreadMessages = 0;
         this.updateChatBadge();
+        
+        // Marquer comme lu DÈS L'OUVERTURE
+        this.markChatAsRead(this.currentStation.id);
         
         // S'abonner aux messages de cette radio
         this.subscribeToChat(this.currentStation.id);
@@ -1976,6 +2088,36 @@ checkSharedRadio() {
 		
 		// === CHAT EN DIRECT ===
         
+		// === ADMIN ===
+        
+        // Bouton connexion
+        const adminLoginBtn = document.getElementById('adminLoginBtn');
+        if (adminLoginBtn) {
+            adminLoginBtn.addEventListener('click', () => {
+                this.loginAdmin();
+            });
+        }
+        
+        // Entrée pour se connecter
+        const adminPassword = document.getElementById('adminPassword');
+        if (adminPassword) {
+            adminPassword.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    this.loginAdmin();
+                }
+            });
+        }
+        
+        // Bouton déconnexion
+        const adminLogoutBtn = document.getElementById('adminLogoutBtn');
+        if (adminLogoutBtn) {
+            adminLogoutBtn.addEventListener('click', () => {
+                if (confirm('Se déconnecter de l\'administration ?')) {
+                    this.logoutAdmin();
+                }
+            });
+        }
+		
         // Bouton ouvrir chat
         const chatBtn = document.getElementById('chatBtn');
         if (chatBtn) {
@@ -2044,33 +2186,6 @@ checkSharedRadio() {
             });
         }
     }
-
-// Vérifier si l'utilisateur est admin
-async checkIfAdmin() {
-    try {
-        const userId = this.getUserId();
-        
-        const { data, error } = await supabase
-            .from('radio_chat_admins')
-            .select('*')
-            .eq('user_id', userId)
-            .single();
-        
-        if (error && error.code !== 'PGRST116') { // PGRST116 = pas de résultat
-            console.error('Erreur vérification admin:', error);
-            return;
-        }
-        
-        this.isAdmin = !!data;
-        
-        if (this.isAdmin) {
-            console.log('👑 Vous êtes administrateur du chat');
-        }
-        
-    } catch (error) {
-        console.error('Erreur vérification admin:', error);
-    }
-}
 
 // === TOGGLE THÈME SOMBRE/CLAIR ===
     setupThemeToggle() {
