@@ -1469,23 +1469,6 @@ checkSharedRadio() {
 				this.hideContextMenu();
 			});
 		}
-		
-        document.getElementById('shareRadio').addEventListener('click', () => {
-            const stationId = this.contextMenu.dataset.stationId;
-            const station = this.stations.find(s => s.id === stationId);
-            
-            if (navigator.share) {
-                navigator.share({
-                    title: `Écouter ${station.name}`,
-                    text: station.description,
-                    url: window.location.href
-                }).catch(err => console.log('Erreur partage:', err));
-            } else {
-                this.showToast('Partage non disponible');
-            }
-            
-            this.hideContextMenu();
-        });
 
         // Fermer le menu contextuel en cliquant ailleurs
         document.addEventListener('click', (e) => {
