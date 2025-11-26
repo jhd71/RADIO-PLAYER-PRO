@@ -1334,7 +1334,7 @@ checkSharedRadio() {
     
     if (!radioId) {
         console.log('❌ Pas de radio dans l\'URL');
-        return false; // Retourne false si pas de radio
+        return false;
     }
     
     // Chercher la radio correspondante
@@ -1348,22 +1348,50 @@ checkSharedRadio() {
         return false;
     }
     
-    // Afficher un message de bienvenue
-    this.showToast(`🎵 Ouverture de ${station.name}...`);
+    // Préparer le player SANS lancer la lecture
+    this.currentStation = station;
+    this.audioPlayer.src = station.url;
+    this.isPlaying = false;
     
-    // Attendre un peu que tout soit chargé
-    setTimeout(() => {
-        console.log('▶️ Lancement de la radio:', station.name);
-        this.playRadio(station);
+    // Afficher le player
+    this.playerContainer.style.display = 'block';
+    this.playerContainer.classList.remove('minimized');
+    this.updatePlayerInfo();
+    this.updatePlayerUI();
+    this.updateRadioCards();
+    
+    // Afficher l'overlay avec bouton de démarrage
+    const overlay = document.getElementById('autoResumeOverlay');
+    const title = document.getElementById('autoResumeTitle');
+    const text = document.getElementById('autoResumeText');
+    const resumeBtn = document.getElementById('autoResumeBtn');
+    const cancelBtn = document.getElementById('autoResumeCancelBtn');
+    
+    if (overlay && title && text && resumeBtn && cancelBtn) {
+        title.textContent = `🎵 ${station.name}`;
+        text.textContent = `${station.description || 'Radio partagée'}\n\nCliquez pour démarrer la lecture`;
+        overlay.style.display = 'flex';
         
-        // Nettoyer l'URL (optionnel - enlève le paramètre)
-        if (window.history && window.history.replaceState) {
-            const cleanUrl = window.location.origin + window.location.pathname;
-            window.history.replaceState({}, document.title, cleanUrl);
-        }
-    }, 800);
+        // Bouton "Démarrer"
+        resumeBtn.onclick = () => {
+            overlay.style.display = 'none';
+            this.playRadio(station);
+            console.log('▶️ Lecture lancée par l\'utilisateur');
+        };
+        
+        // Bouton "Annuler"
+        cancelBtn.onclick = () => {
+            overlay.style.display = 'none';
+        };
+    }
     
-    return true; // Retourne true si une radio a été trouvée
+    // Nettoyer l'URL (optionnel - enlève le paramètre)
+    if (window.history && window.history.replaceState) {
+        const cleanUrl = window.location.origin + window.location.pathname;
+        window.history.replaceState({}, document.title, cleanUrl);
+    }
+    
+    return true;
 }
 
     // === ÉVÉNEMENTS ===
