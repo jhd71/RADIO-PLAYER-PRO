@@ -1323,36 +1323,48 @@ class RadioPlayerApp {
 	}
 
 	// === DÉTECTER UNE RADIO PARTAGÉE DANS L'URL ===
-	checkSharedRadio() {
-		// Récupérer les paramètres de l'URL
-		const urlParams = new URLSearchParams(window.location.search);
-		const radioId = urlParams.get('radio');
-		
-		if (!radioId) return; // Pas de radio dans l'URL
-		
-		// Chercher la radio correspondante
-		const station = this.stations.find(s => s.id === radioId);
-		
-		if (!station) {
-			console.log('Radio non trouvée:', radioId);
-			return;
-		}
-		
-		// Afficher un message de bienvenue
-		this.showToast(`🎵 Ouverture de ${station.name}...`);
-		
-		// Attendre un peu que tout soit chargé
-		setTimeout(() => {
-			// Lancer la radio automatiquement
-			this.playRadio(station);
-			
-			// Nettoyer l'URL (optionnel - enlève le paramètre)
-			if (window.history && window.history.replaceState) {
-				const cleanUrl = window.location.origin + window.location.pathname;
-				window.history.replaceState({}, document.title, cleanUrl);
-			}
-		}, 800);
-	}
+checkSharedRadio() {
+    console.log('🔍 Vérification radio partagée...');
+    
+    // Récupérer les paramètres de l'URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const radioId = urlParams.get('radio');
+    
+    console.log('📻 Radio ID dans URL:', radioId);
+    
+    if (!radioId) {
+        console.log('❌ Pas de radio dans l\'URL');
+        return false; // Retourne false si pas de radio
+    }
+    
+    // Chercher la radio correspondante
+    const station = this.stations.find(s => s.id === radioId);
+    
+    console.log('🎵 Station trouvée:', station);
+    
+    if (!station) {
+        console.log('❌ Radio non trouvée:', radioId);
+        this.showToast('Radio introuvable');
+        return false;
+    }
+    
+    // Afficher un message de bienvenue
+    this.showToast(`🎵 Ouverture de ${station.name}...`);
+    
+    // Attendre un peu que tout soit chargé
+    setTimeout(() => {
+        console.log('▶️ Lancement de la radio:', station.name);
+        this.playRadio(station);
+        
+        // Nettoyer l'URL (optionnel - enlève le paramètre)
+        if (window.history && window.history.replaceState) {
+            const cleanUrl = window.location.origin + window.location.pathname;
+            window.history.replaceState({}, document.title, cleanUrl);
+        }
+    }, 800);
+    
+    return true; // Retourne true si une radio a été trouvée
+}
 
     // === ÉVÉNEMENTS ===
         setupEventListeners() {
@@ -1629,8 +1641,11 @@ class RadioPlayerApp {
         });
 
         // Reprendre la dernière radio au démarrage (si l'option est activée)
+        // MAIS seulement si pas de radio partagée dans l'URL
         const lastStation = localStorage.getItem('lastStation');
-        if (this.autoResumeEnabled && lastStation) {
+        const hasSharedRadio = new URLSearchParams(window.location.search).has('radio');
+        
+        if (this.autoResumeEnabled && lastStation && !hasSharedRadio) {
             const station = this.stations.find(s => s.id === lastStation);
             if (station) {
                 // Préparer le player sans lancer la lecture
