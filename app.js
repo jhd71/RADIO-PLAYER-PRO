@@ -270,7 +270,7 @@ class RadioPlayerApp {
 		this.chatMessages = [];
 		this.username = this.getOrCreateUsername();
 		this.unreadMessages = 0;
-
+		this.isAdmin = false;
         this.deferredPrompt = null; // Événement PWA stocké pour l'installation
         this.isStopping = false; // Sert à ignorer les erreurs juste après un STOP volontaire
 
@@ -300,6 +300,7 @@ class RadioPlayerApp {
         this.setupCast();
         this.checkNetworkStatus();
         this.checkSharedRadio();
+		this.checkIfAdmin();
         this.applyStartupTab();
     }
 
@@ -1482,14 +1483,53 @@ renderChatMessages() {
     
     // Afficher les messages
     container.innerHTML = this.chatMessages.map(msg => `
-        <div class="chat-message">
+        <div class="chat-message ${this.isAdmin ? 'is-admin' : ''}">
             <div class="chat-message-header">
-                <span class="chat-message-username">${this.escapeHtml(msg.username)}</span>
-                <span class="chat-message-time">${this.formatChatTime(msg.created_at)}</span>
+                <span class="chat-message-username">
+                    ${this.escapeHtml(msg.username)}
+                    ${msg.user_id === this.getUserId() ? '<span class="admin-badge">Vous</span>' : ''}
+                </span>
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <span class="chat-message-time">${this.formatChatTime(msg.created_at)}</span>
+                    <button class="chat-message-delete" onclick="window.radioApp.deleteMessage('${msg.id}')" title="Supprimer">
+                        🗑️
+                    </button>
+                </div>
             </div>
             <div class="chat-message-text">${this.escapeHtml(msg.message)}</div>
         </div>
     `).join('');
+}
+
+// Supprimer un message (admin uniquement)
+async deleteMessage(messageId) {
+    if (!this.isAdmin) {
+        this.showToast('Action non autorisée');
+        return;
+    }
+    
+    if (!confirm('Supprimer ce message ?')) {
+        return;
+    }
+    
+    try {
+        const { error } = await supabase
+            .from('radio_chat_messages')
+            .delete()
+            .eq('id', messageId);
+        
+        if (error) throw error;
+        
+        // Retirer le message localement
+        this.chatMessages = this.chatMessages.filter(m => m.id !== messageId);
+        this.renderChatMessages();
+        
+        this.showToast('Message supprimé');
+        
+    } catch (error) {
+        console.error('Erreur suppression message:', error);
+        this.showToast('Erreur de suppression');
+    }
 }
 
 // Scroller vers le bas
@@ -1634,6 +1674,13 @@ playChatNotificationSound() {
     } catch (e) {
         // Pas grave si ça échoue
     }
+	
+	// Mettre à jour les badges de nouveaux messages
+updateChatBadges() {
+    // TODO: Compter les nouveaux messages par radio depuis Supabase
+    // Pour l'instant on ne fait rien
+}
+
 }
 
 	// Fallback si Web Share API pas disponible
@@ -1884,6 +1931,29 @@ checkSharedRadio() {
             });
         }
         
+		// Bouton emojis
+        const chatEmojiBtn = document.getElementById('chatEmojiBtn');
+        const chatEmojiPicker = document.getElementById('chatEmojiPicker');
+        
+        if (chatEmojiBtn && chatEmojiPicker) {
+            chatEmojiBtn.addEventListener('click', () => {
+                chatEmojiPicker.style.display = 
+                    chatEmojiPicker.style.display === 'none' ? 'grid' : 'none';
+            });
+            
+            // Ajouter emoji au clic
+            chatEmojiPicker.querySelectorAll('.emoji-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const input = document.getElementById('chatInput');
+                    if (input) {
+                        input.value += btn.textContent;
+                        input.focus();
+                        chatEmojiPicker.style.display = 'none';
+                    }
+                });
+            });
+        }
+		
         // Bouton envoyer message
         const chatSendBtn = document.getElementById('chatSendBtn');
         if (chatSendBtn) {
@@ -1903,6 +1973,33 @@ checkSharedRadio() {
             });
         }
     }
+
+// Vérifier si l'utilisateur est admin
+async checkIfAdmin() {
+    try {
+        const userId = this.getUserId();
+        
+        const { data, error } = await supabase
+            .from('radio_chat_admins')
+            .select('*')
+            .eq('user_id', userId)
+            .single();
+        
+        if (error && error.code !== 'PGRST116') { // PGRST116 = pas de résultat
+            console.error('Erreur vérification admin:', error);
+            return;
+        }
+        
+        this.isAdmin = !!data;
+        
+        if (this.isAdmin) {
+            console.log('👑 Vous êtes administrateur du chat');
+        }
+        
+    } catch (error) {
+        console.error('Erreur vérification admin:', error);
+    }
+}
 
 // === TOGGLE THÈME SOMBRE/CLAIR ===
     setupThemeToggle() {

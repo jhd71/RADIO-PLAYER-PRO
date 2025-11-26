@@ -275,16 +275,39 @@
         </div>
         
         <div class="chat-input-container">
-            <input type="text" 
-                   id="chatInput" 
-                   class="chat-input glass-effect" 
-                   placeholder="Votre message..." 
-                   maxlength="500"
-                   aria-label="Écrire un message">
-            <button id="chatSendBtn" class="glass-button" aria-label="Envoyer le message">
-                <span class="material-icons">send</span>
-            </button>
-        </div>
+    <button id="chatEmojiBtn" class="glass-button" aria-label="Ajouter un emoji" style="padding: 12px;">
+        <span>😊</span>
+    </button>
+    <input type="text" 
+           id="chatInput" 
+           class="chat-input glass-effect" 
+           placeholder="Votre message..." 
+           maxlength="500"
+           aria-label="Écrire un message">
+    <button id="chatSendBtn" class="glass-button" aria-label="Envoyer le message">
+        <span class="material-icons">send</span>
+    </button>
+</div>
+
+	<!-- Picker emojis -->
+	<div id="chatEmojiPicker" class="chat-emoji-picker" style="display: none;">
+		<button class="emoji-btn">😀</button>
+		<button class="emoji-btn">😂</button>
+		<button class="emoji-btn">😍</button>
+		<button class="emoji-btn">😊</button>
+		<button class="emoji-btn">😎</button>
+		<button class="emoji-btn">🤔</button>
+		<button class="emoji-btn">👍</button>
+		<button class="emoji-btn">👎</button>
+		<button class="emoji-btn">❤️</button>
+		<button class="emoji-btn">🔥</button>
+		<button class="emoji-btn">🎵</button>
+		<button class="emoji-btn">🎶</button>
+		<button class="emoji-btn">📻</button>
+		<button class="emoji-btn">🎧</button>
+		<button class="emoji-btn">⭐</button>
+		<button class="emoji-btn">✨</button>
+	</div>
         
         <div class="chat-info">
             <span class="material-icons" style="font-size: 16px;">info</span>
