@@ -2,6 +2,14 @@
 // RADIO PLAYER PRO - APPLICATION PRINCIPALE
 // VERSION CORRIGÉE ET AMÉLIORÉE
 // ========================================
+// ========================================
+// CONFIGURATION SUPABASE
+// ========================================
+const SUPABASE_URL = 'https://ylkypleeljhvearzkllk.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inlsa3lwbGVlbGpodmVhcnprbGxrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQwOTc4NjQsImV4cCI6MjA3OTY3Mzg2NH0.3FnT2mmjljyIaeFvJrA_BJIjB7hxDCOW4AWtKaAlF7A';
+
+// Initialiser Supabase
+const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 class RadioPlayerApp {
     constructor() {
@@ -256,6 +264,12 @@ class RadioPlayerApp {
         this.startOnFavorites = localStorage.getItem('startOnFavorites') === 'true';
         this.currentCategory = localStorage.getItem('currentCategory') || 'toutes';
         
+		// === CHAT EN DIRECT ===
+		this.chatOpen = false;
+		this.chatSubscription = null;
+		this.chatMessages = [];
+		this.username = this.getOrCreateUsername();
+		this.unreadMessages = 0;
 
         this.deferredPrompt = null; // Événement PWA stocké pour l'installation
         this.isStopping = false; // Sert à ignorer les erreurs juste après un STOP volontaire
@@ -563,6 +577,10 @@ class RadioPlayerApp {
         this.audioPlayer.src = '';
         this.currentStation = null;
         this.errorCount = 0;
+        
+        // Fermer le chat
+        this.closeChat();
+        
         this.playerContainer.style.display = 'none';
         this.updateRadioCards();
         this.stopVisualizer();
@@ -1298,6 +1316,326 @@ class RadioPlayerApp {
     }
 }
 
+// ========================================
+// GESTION DU CHAT EN DIRECT
+// ========================================
+
+// Générer ou récupérer un pseudo utilisateur
+getOrCreateUsername() {
+    let username = localStorage.getItem('radio_chat_username');
+    
+    if (!username) {
+        // Générer un pseudo aléatoire
+        const adjectives = ['Cool', 'Super', 'Mega', 'Ultra', 'Top', 'Pro', 'Happy', 'Fun'];
+        const nouns = ['Auditeur', 'Fan', 'Musicien', 'Radio', 'Listener', 'Player'];
+        const randomAdj = adjectives[Math.floor(Math.random() * adjectives.length)];
+        const randomNoun = nouns[Math.floor(Math.random() * nouns.length)];
+        const randomNum = Math.floor(Math.random() * 999);
+        
+        username = `${randomAdj}${randomNoun}${randomNum}`;
+        localStorage.setItem('radio_chat_username', username);
+    }
+    
+    return username;
+}
+
+// Ouvrir le panneau de chat
+openChat() {
+    if (!this.currentStation) {
+        this.showToast('Lancez une radio pour accéder au chat');
+        return;
+    }
+    
+    const overlay = document.getElementById('chatOverlay');
+    const radioNameSpan = document.getElementById('chatRadioName');
+    
+    if (overlay && radioNameSpan) {
+        radioNameSpan.textContent = this.currentStation.name;
+        overlay.style.display = 'flex';
+        this.chatOpen = true;
+        
+        // Réinitialiser le compteur de messages non lus
+        this.unreadMessages = 0;
+        this.updateChatBadge();
+        
+        // S'abonner aux messages de cette radio
+        this.subscribeToChat(this.currentStation.id);
+        
+        // Charger les messages existants
+        this.loadChatMessages(this.currentStation.id);
+        
+        // Focus sur l'input
+        setTimeout(() => {
+            const input = document.getElementById('chatInput');
+            if (input) input.focus();
+        }, 300);
+    }
+}
+
+// Fermer le panneau de chat
+closeChat() {
+    const overlay = document.getElementById('chatOverlay');
+    if (overlay) {
+        overlay.style.display = 'none';
+        this.chatOpen = false;
+        
+        // Se désabonner
+        this.unsubscribeFromChat();
+    }
+}
+
+// S'abonner aux messages en temps réel
+async subscribeToChat(radioId) {
+    // D'abord se désabonner si déjà abonné
+    this.unsubscribeFromChat();
+    
+    // S'abonner aux nouveaux messages
+    this.chatSubscription = supabase
+        .channel(`radio_chat_${radioId}`)
+        .on(
+            'postgres_changes',
+            {
+                event: 'INSERT',
+                schema: 'public',
+                table: 'radio_chat_messages',
+                filter: `radio_id=eq.${radioId}`
+            },
+            (payload) => {
+                this.handleNewChatMessage(payload.new);
+            }
+        )
+        .subscribe();
+    
+    console.log(`Abonné au chat de ${radioId}`);
+}
+
+// Se désabonner du chat
+unsubscribeFromChat() {
+    if (this.chatSubscription) {
+        supabase.removeChannel(this.chatSubscription);
+        this.chatSubscription = null;
+    }
+}
+
+// Charger les messages existants
+async loadChatMessages(radioId) {
+    try {
+        const { data, error } = await supabase
+            .from('radio_chat_messages')
+            .select('*')
+            .eq('radio_id', radioId)
+            .order('created_at', { ascending: true })
+            .limit(50); // Derniers 50 messages
+        
+        if (error) throw error;
+        
+        this.chatMessages = data || [];
+        this.renderChatMessages();
+        this.scrollChatToBottom();
+        
+    } catch (error) {
+        console.error('Erreur chargement messages:', error);
+        this.showToast('Erreur de chargement du chat');
+    }
+}
+
+// Gérer un nouveau message reçu
+handleNewChatMessage(message) {
+    this.chatMessages.push(message);
+    
+    // Limiter à 50 messages en mémoire
+    if (this.chatMessages.length > 50) {
+        this.chatMessages.shift();
+    }
+    
+    this.renderChatMessages();
+    this.scrollChatToBottom();
+    
+    // Si chat fermé, incrémenter le badge
+    if (!this.chatOpen) {
+        this.unreadMessages++;
+        this.updateChatBadge();
+    }
+    
+    // Son de notification (optionnel)
+    if (message.username !== this.username) {
+        this.playChatNotificationSound();
+    }
+}
+
+// Afficher les messages
+renderChatMessages() {
+    const container = document.getElementById('chatMessages');
+    if (!container) return;
+    
+    // Si pas de messages
+    if (this.chatMessages.length === 0) {
+        container.innerHTML = `
+            <div style="text-align: center; padding: 40px; color: var(--text-muted);">
+                <span class="material-icons" style="font-size: 48px; opacity: 0.5;">chat_bubble_outline</span>
+                <p>Aucun message pour le moment</p>
+                <p style="font-size: 0.9rem;">Soyez le premier à écrire ! 👋</p>
+            </div>
+        `;
+        return;
+    }
+    
+    // Afficher les messages
+    container.innerHTML = this.chatMessages.map(msg => `
+        <div class="chat-message">
+            <div class="chat-message-header">
+                <span class="chat-message-username">${this.escapeHtml(msg.username)}</span>
+                <span class="chat-message-time">${this.formatChatTime(msg.created_at)}</span>
+            </div>
+            <div class="chat-message-text">${this.escapeHtml(msg.message)}</div>
+        </div>
+    `).join('');
+}
+
+// Scroller vers le bas
+scrollChatToBottom() {
+    const container = document.getElementById('chatMessages');
+    if (container) {
+        setTimeout(() => {
+            container.scrollTop = container.scrollHeight;
+        }, 100);
+    }
+}
+
+// Envoyer un message
+async sendChatMessage() {
+    if (!this.currentStation) return;
+    
+    const input = document.getElementById('chatInput');
+    if (!input) return;
+    
+    const message = input.value.trim();
+    
+    if (!message) {
+        this.showToast('Écrivez un message');
+        return;
+    }
+    
+    if (message.length > 500) {
+        this.showToast('Message trop long (max 500 caractères)');
+        return;
+    }
+    
+    try {
+        // Envoyer le message à Supabase
+        const { error } = await supabase
+            .from('radio_chat_messages')
+            .insert([
+                {
+                    radio_id: this.currentStation.id,
+                    radio_name: this.currentStation.name,
+                    username: this.username,
+                    message: message,
+                    user_id: this.getUserId()
+                }
+            ]);
+        
+        if (error) throw error;
+        
+        // Vider l'input
+        input.value = '';
+        
+        // Tracking
+        if (window.dataLayer) {
+            window.dataLayer.push({
+                'event': 'chat_message_sent',
+                'radio_name': this.currentStation.name
+            });
+        }
+        
+    } catch (error) {
+        console.error('Erreur envoi message:', error);
+        this.showToast('Erreur d\'envoi du message');
+    }
+}
+
+// Obtenir un ID utilisateur unique
+getUserId() {
+    let userId = localStorage.getItem('radio_user_id');
+    
+    if (!userId) {
+        userId = 'user_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+        localStorage.setItem('radio_user_id', userId);
+    }
+    
+    return userId;
+}
+
+// Mettre à jour le badge de messages non lus
+updateChatBadge() {
+    const badge = document.getElementById('chatBadge');
+    if (!badge) return;
+    
+    if (this.unreadMessages > 0) {
+        badge.textContent = this.unreadMessages > 99 ? '99+' : this.unreadMessages;
+        badge.style.display = 'block';
+    } else {
+        badge.style.display = 'none';
+    }
+}
+
+// Formater l'heure du message
+formatChatTime(timestamp) {
+    const date = new Date(timestamp);
+    const now = new Date();
+    const diffMs = now - date;
+    const diffMins = Math.floor(diffMs / 60000);
+    
+    if (diffMins < 1) return 'À l\'instant';
+    if (diffMins < 60) return `Il y a ${diffMins} min`;
+    
+    const diffHours = Math.floor(diffMins / 60);
+    if (diffHours < 24) return `Il y a ${diffHours}h`;
+    
+    return date.toLocaleDateString('fr-FR', { 
+        day: 'numeric', 
+        month: 'short',
+        hour: '2-digit',
+        minute: '2-digit'
+    });
+}
+
+// Échapper le HTML pour éviter les injections
+escapeHtml(text) {
+    const map = {
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#039;'
+    };
+    return text.replace(/[&<>"']/g, m => map[m]);
+}
+
+// Son de notification (optionnel)
+playChatNotificationSound() {
+    // Créer un petit bip discret
+    try {
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        const oscillator = audioContext.createOscillator();
+        const gainNode = audioContext.createGain();
+        
+        oscillator.connect(gainNode);
+        gainNode.connect(audioContext.destination);
+        
+        oscillator.frequency.value = 800;
+        oscillator.type = 'sine';
+        
+        gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
+        
+        oscillator.start(audioContext.currentTime);
+        oscillator.stop(audioContext.currentTime + 0.1);
+    } catch (e) {
+        // Pas grave si ça échoue
+    }
+}
+
 	// Fallback si Web Share API pas disponible
 	fallbackShare(station) {
 		const shareText = `🎵 J'écoute ${station.name} sur RadioFM !\n👉 https://radiofm.ovh?radio=${station.id}`;
@@ -1517,6 +1855,53 @@ checkSharedRadio() {
         window.addEventListener('offline', () => {
             this.showToast('Connexion perdue');
         });
+		
+		// === CHAT EN DIRECT ===
+        
+        // Bouton ouvrir chat
+        const chatBtn = document.getElementById('chatBtn');
+        if (chatBtn) {
+            chatBtn.addEventListener('click', () => {
+                this.openChat();
+            });
+        }
+        
+        // Bouton fermer chat
+        const chatCloseBtn = document.getElementById('chatCloseBtn');
+        if (chatCloseBtn) {
+            chatCloseBtn.addEventListener('click', () => {
+                this.closeChat();
+            });
+        }
+        
+        // Fermer chat en cliquant sur l'overlay
+        const chatOverlay = document.getElementById('chatOverlay');
+        if (chatOverlay) {
+            chatOverlay.addEventListener('click', (e) => {
+                if (e.target === chatOverlay) {
+                    this.closeChat();
+                }
+            });
+        }
+        
+        // Bouton envoyer message
+        const chatSendBtn = document.getElementById('chatSendBtn');
+        if (chatSendBtn) {
+            chatSendBtn.addEventListener('click', () => {
+                this.sendChatMessage();
+            });
+        }
+        
+        // Envoyer avec Entrée
+        const chatInput = document.getElementById('chatInput');
+        if (chatInput) {
+            chatInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    this.sendChatMessage();
+                }
+            });
+        }
     }
 
 // === TOGGLE THÈME SOMBRE/CLAIR ===

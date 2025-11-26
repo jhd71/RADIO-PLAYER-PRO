@@ -43,6 +43,9 @@
         src="https://www.gstatic.com/cv/js/sender/v1/cast_sender.js?loadCastFramework=1">
     </script>
 
+<!-- Supabase SDK -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
     <!-- Material Icons -->
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     
@@ -174,23 +177,29 @@
             </div>
             
             <!-- Contrôles améliorés -->
-            <div class="player-controls">
-                <button class="control-btn glass-button" id="playPauseBtn" aria-label="Lecture ou pause">
-                    <span class="material-icons">play_arrow</span>
-                </button>
-                
-                <button class="control-btn glass-button" id="muteBtn" aria-label="Couper ou réactiver le son">
-                    <span class="material-icons">volume_up</span>
-                </button>
-                
-                <button class="control-btn glass-button danger" id="stopBtn" aria-label="Arrêter la lecture">
-                    <span class="material-icons">stop</span>
-                </button>
-                
-                <button class="control-btn glass-button" id="castBtn" title="Caster sur un appareil" aria-label="Caster sur Chromecast">
-                    <span class="material-icons">cast</span>
-                </button>
-            </div>
+		<div class="player-controls">
+			<button class="control-btn glass-button" id="playPauseBtn" aria-label="Lecture ou pause">
+				<span class="material-icons">play_arrow</span>
+			</button>
+			
+			<button class="control-btn glass-button" id="muteBtn" aria-label="Couper ou réactiver le son">
+				<span class="material-icons">volume_up</span>
+			</button>
+			
+			<button class="control-btn glass-button danger" id="stopBtn" aria-label="Arrêter la lecture">
+				<span class="material-icons">stop</span>
+			</button>
+			
+			<!-- NOUVEAU : Bouton Chat -->
+			<button class="control-btn glass-button" id="chatBtn" aria-label="Ouvrir le chat" title="Chat en direct">
+				<span class="material-icons">chat</span>
+				<span class="chat-badge" id="chatBadge" style="display: none;">0</span>
+			</button>
+			
+			<button class="control-btn glass-button" id="castBtn" title="Caster sur un appareil" aria-label="Caster sur Chromecast">
+				<span class="material-icons">cast</span>
+			</button>
+		</div>
             
             <!-- Slider de volume toujours visible quand le player est déployé -->
             <div class="volume-slider-container" id="volumeSliderContainer" style="display: flex;">
@@ -244,6 +253,45 @@
         <div class="loading-overlay" id="loadingOverlay" style="display: none;" aria-hidden="true">
             <div class="loading-spinner"></div>
         </div>
+		
+		<!-- Panneau de chat en direct -->
+<div id="chatOverlay" style="display: none;">
+    <div id="chatPanel" class="glass-effect">
+        <div class="chat-header">
+            <h3>
+                <span class="material-icons">chat</span>
+                Chat <span id="chatRadioName">RTL</span>
+            </h3>
+            <div style="display: flex; gap: 8px; align-items: center;">
+                <span class="chat-online-count" id="chatOnlineCount">0 personnes</span>
+                <button id="chatCloseBtn" class="glass-button" aria-label="Fermer le chat">
+                    <span class="material-icons">close</span>
+                </button>
+            </div>
+        </div>
+        
+        <div class="chat-messages" id="chatMessages">
+            <!-- Les messages apparaîtront ici -->
+        </div>
+        
+        <div class="chat-input-container">
+            <input type="text" 
+                   id="chatInput" 
+                   class="chat-input glass-effect" 
+                   placeholder="Votre message..." 
+                   maxlength="500"
+                   aria-label="Écrire un message">
+            <button id="chatSendBtn" class="glass-button" aria-label="Envoyer le message">
+                <span class="material-icons">send</span>
+            </button>
+        </div>
+        
+        <div class="chat-info">
+            <span class="material-icons" style="font-size: 16px;">info</span>
+            Soyez respectueux 🙏 Messages modérés
+        </div>
+    </div>
+</div>
     </div>
 
     <!-- Panneau des paramètres -->
