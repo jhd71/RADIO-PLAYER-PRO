@@ -285,6 +285,7 @@ class RadioPlayerApp {
         this.setupPWA();
         this.setupCast();
         this.checkNetworkStatus();
+        this.checkSharedRadio();
         this.applyStartupTab();
     }
 
@@ -1261,14 +1262,14 @@ class RadioPlayerApp {
         }, 3000);
     }
 
-// === PARTAGE SOCIAL ===
-shareStation(station) {
-    // Données à partager
-    const shareData = {
-        title: `J'écoute ${station.name} sur RadioFM`,
-        text: `🎵 En ce moment j'écoute ${station.name} - ${station.description}\n\nÉcoutez gratuitement sur RadioFM !`,
-        url: 'https://radiofm.ovh'
-    };
+	// === PARTAGE SOCIAL ===
+	shareStation(station) {
+		// Données à partager
+		const shareData = {
+			title: `J'écoute ${station.name} sur RadioFM`,
+			text: `🎵 En ce moment j'écoute ${station.name} - ${station.description}\n\nÉcoutez gratuitement sur RadioFM !`,
+			url: `https://radiofm.ovh?radio=${station.id}`
+		};
 
     // Vérifier si Web Share API est disponible (mobile surtout)
     if (navigator.share) {
@@ -1297,29 +1298,61 @@ shareStation(station) {
     }
 }
 
-// Fallback si Web Share API pas disponible
-fallbackShare(station) {
-    const shareText = `🎵 J'écoute ${station.name} sur RadioFM !\n👉 https://radiofm.ovh`;
-    
-    // Copier dans le presse-papier
-    navigator.clipboard.writeText(shareText)
-        .then(() => {
-            this.showToast('Lien copié ! Collez-le où vous voulez 📋');
-            
-            // Tracking
-            if (window.dataLayer) {
-                window.dataLayer.push({
-                    'event': 'radio_share',
-                    'radio_name': station.name,
-                    'share_method': 'clipboard'
-                });
-            }
-        })
-        .catch(() => {
-            // Si copie échoue, afficher le texte
-            this.showToast('Partagez : https://radiofm.ovh');
-        });
-}
+	// Fallback si Web Share API pas disponible
+	fallbackShare(station) {
+		const shareText = `🎵 J'écoute ${station.name} sur RadioFM !\n👉 https://radiofm.ovh?radio=${station.id}`;
+		
+		// Copier dans le presse-papier
+		navigator.clipboard.writeText(shareText)
+			.then(() => {
+				this.showToast('Lien copié ! Collez-le où vous voulez 📋');
+				
+				// Tracking
+				if (window.dataLayer) {
+					window.dataLayer.push({
+						'event': 'radio_share',
+						'radio_name': station.name,
+						'share_method': 'clipboard'
+					});
+				}
+			})
+			.catch(() => {
+				// Si copie échoue, afficher le texte
+				this.showToast('Partagez : https://radiofm.ovh');
+			});
+	}
+
+	// === DÉTECTER UNE RADIO PARTAGÉE DANS L'URL ===
+	checkSharedRadio() {
+		// Récupérer les paramètres de l'URL
+		const urlParams = new URLSearchParams(window.location.search);
+		const radioId = urlParams.get('radio');
+		
+		if (!radioId) return; // Pas de radio dans l'URL
+		
+		// Chercher la radio correspondante
+		const station = this.stations.find(s => s.id === radioId);
+		
+		if (!station) {
+			console.log('Radio non trouvée:', radioId);
+			return;
+		}
+		
+		// Afficher un message de bienvenue
+		this.showToast(`🎵 Ouverture de ${station.name}...`);
+		
+		// Attendre un peu que tout soit chargé
+		setTimeout(() => {
+			// Lancer la radio automatiquement
+			this.playRadio(station);
+			
+			// Nettoyer l'URL (optionnel - enlève le paramètre)
+			if (window.history && window.history.replaceState) {
+				const cleanUrl = window.location.origin + window.location.pathname;
+				window.history.replaceState({}, document.title, cleanUrl);
+			}
+		}, 800);
+	}
 
     // === ÉVÉNEMENTS ===
         setupEventListeners() {
