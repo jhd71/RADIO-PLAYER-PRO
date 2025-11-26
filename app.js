@@ -977,24 +977,6 @@ class RadioPlayerApp {
             });
         }
 
-// Gestion de la case "reprendre la dernière radio"
-        if (autoResumeCheckbox) {
-            autoResumeCheckbox.checked = this.autoResumeEnabled;
-            autoResumeCheckbox.addEventListener('change', (e) => {
-                this.autoResumeEnabled = e.target.checked;
-                localStorage.setItem(
-                    'autoResumeLastStation',
-                    this.autoResumeEnabled ? 'true' : 'false'
-                );
-
-                if (this.autoResumeEnabled) {
-                    this.showToast('Reprise automatique activée');
-                } else {
-                    this.showToast('Reprise automatique désactivée');
-                }
-            });
-        }
-
         // Gestion de la case "démarrer sur favoris"
         const startOnFavoritesCheckbox = document.getElementById('startOnFavoritesCheckbox');
         if (startOnFavoritesCheckbox) {
@@ -1279,6 +1261,66 @@ class RadioPlayerApp {
         }, 3000);
     }
 
+// === PARTAGE SOCIAL ===
+shareStation(station) {
+    // Données à partager
+    const shareData = {
+        title: `J'écoute ${station.name} sur RadioFM`,
+        text: `🎵 En ce moment j'écoute ${station.name} - ${station.description}\n\nÉcoutez gratuitement sur RadioFM !`,
+        url: 'https://radiofm.ovh'
+    };
+
+    // Vérifier si Web Share API est disponible (mobile surtout)
+    if (navigator.share) {
+        navigator.share(shareData)
+            .then(() => {
+                this.showToast('Merci pour le partage ! 🎉');
+                
+                // Tracking Google Tag Manager
+                if (window.dataLayer) {
+                    window.dataLayer.push({
+                        'event': 'radio_share',
+                        'radio_name': station.name,
+                        'share_method': 'native'
+                    });
+                }
+            })
+            .catch((error) => {
+                if (error.name !== 'AbortError') {
+                    console.error('Erreur partage:', error);
+                    this.fallbackShare(station);
+                }
+            });
+    } else {
+        // Fallback pour desktop (copier le lien)
+        this.fallbackShare(station);
+    }
+}
+
+// Fallback si Web Share API pas disponible
+fallbackShare(station) {
+    const shareText = `🎵 J'écoute ${station.name} sur RadioFM !\n👉 https://radiofm.ovh`;
+    
+    // Copier dans le presse-papier
+    navigator.clipboard.writeText(shareText)
+        .then(() => {
+            this.showToast('Lien copié ! Collez-le où vous voulez 📋');
+            
+            // Tracking
+            if (window.dataLayer) {
+                window.dataLayer.push({
+                    'event': 'radio_share',
+                    'radio_name': station.name,
+                    'share_method': 'clipboard'
+                });
+            }
+        })
+        .catch(() => {
+            // Si copie échoue, afficher le texte
+            this.showToast('Partagez : https://radiofm.ovh');
+        });
+}
+
     // === ÉVÉNEMENTS ===
         setupEventListeners() {
         // Swipe horizontal pour changer d'onglet
@@ -1370,6 +1412,19 @@ class RadioPlayerApp {
             this.hideContextMenu();
         });
 
+		// Menu contextuel - Partager
+		const shareBtn = document.getElementById('shareRadio');
+		if (shareBtn) {
+			shareBtn.addEventListener('click', () => {
+				const stationId = this.contextMenu.dataset.stationId;
+				const station = this.stations.find(s => s.id === stationId);
+				if (station) {
+					this.shareStation(station);
+				}
+				this.hideContextMenu();
+			});
+		}
+		
         document.getElementById('shareRadio').addEventListener('click', () => {
             const stationId = this.contextMenu.dataset.stationId;
             const station = this.stations.find(s => s.id === stationId);
