@@ -403,6 +403,7 @@ class RadioPlayerApp {
                  onerror="this.src='images/radio-logos/default.png'">
             <span class="radio-name">${station.name}</span>
             <span class="material-icons favorite-indicator">favorite</span>
+            <span class="radio-card-chat-badge radio-badge-${station.id}" style="display: none;">0</span>
         `;
         
         // Événements
@@ -1713,8 +1714,8 @@ async updateChatBadges() {
                 continue;
             }
             
-            // Mettre à jour le badge
-            const badges = document.querySelectorAll(`[data-station="${station.id}"]`);
+            // Mettre à jour le badge avec la BONNE classe
+            const badges = document.querySelectorAll(`.radio-badge-${station.id}`);
             badges.forEach(badge => {
                 if (count > 0) {
                     badge.textContent = count > 99 ? '99+' : count;
@@ -1727,6 +1728,18 @@ async updateChatBadges() {
     } catch (error) {
         console.error('Erreur updateChatBadges:', error);
     }
+}
+
+// Marquer une radio comme visitée (pour réinitialiser le badge)
+markChatAsRead(radioId) {
+    const lastVisitKey = `last_chat_visit_${radioId}`;
+    localStorage.setItem(lastVisitKey, new Date().toISOString());
+    
+    // Cacher le badge immédiatement avec la BONNE classe
+    const badges = document.querySelectorAll(`.radio-badge-${radioId}`);
+    badges.forEach(badge => {
+        badge.style.display = 'none';
+    });
 }
 
 // Marquer une radio comme visitée (pour réinitialiser le badge)
