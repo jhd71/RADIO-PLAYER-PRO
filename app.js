@@ -278,9 +278,11 @@ class RadioPlayerApp {
         // === CHAT EN DIRECT ===
         this.chatOpen = false;
         this.chatSubscription = null;
+        this.globalChatSubscription = null; // Abonnement global pour TOUTES les radios
         this.chatMessages = [];
         this.username = this.getOrCreateUsername();
         this.unreadMessages = 0;
+        this.badgePollingInterval = null; // Polling pour les badges
 
         // === ADMIN ===
         this.isAdmin = false;
@@ -321,6 +323,15 @@ class RadioPlayerApp {
         this.applyStartupTab();
         this.updateChatBadges();
         this.checkSharedRadio();
+        
+        // S'abonner à TOUS les nouveaux messages (pour les badges globaux)
+        this.subscribeToAllChats();
+        
+        // Polling des badges toutes les 30 secondes (backup)
+        this.startBadgePolling();
+        
+        // Gérer le bouton retour Android
+        this.setupAndroidBackButton();
     }
 
     // =====================================================
@@ -2067,10 +2078,10 @@ class RadioPlayerApp {
     }
 
     // =====================================================
-    // CHAT EN DIRECT - handleNewChatMessage() [CORRIGÉ]
+    // CHAT EN DIRECT - handleNewChatMessage()
     // =====================================================
     handleNewChatMessage(message) {
-        console.log('💬 Nouveau message reçu:', message);
+        console.log('💬 Nouveau message reçu (canal radio):', message);
 
         this.chatMessages.push(message);
 
@@ -2081,36 +2092,8 @@ class RadioPlayerApp {
         this.renderChatMessages();
         this.scrollChatToBottom();
 
-        // Si chat fermé, mettre à jour les badges
-        if (!this.chatOpen) {
-            console.log('📢 Chat fermé, affichage badges');
-            this.unreadMessages++;
-
-            // Badge sur le bouton chat du player
-            const playerBadge = document.getElementById('chatBadge');
-            if (playerBadge && this.currentStation) {
-                playerBadge.style.display = 'block';
-                playerBadge.textContent = this.unreadMessages > 99 ? '99+' : this.unreadMessages;
-                console.log('✅ Badge player affiché:', this.unreadMessages);
-            }
-
-            // Badge sur la carte de la radio (CORRIGÉ)
-            if (this.currentStation) {
-                const cardBadges = document.querySelectorAll(`.radio-badge-${this.currentStation.id}`);
-                cardBadges.forEach(badge => {
-                    badge.style.display = 'block';
-                    badge.textContent = this.unreadMessages > 99 ? '99+' : this.unreadMessages;
-                });
-                console.log('✅ Badge carte affiché pour:', this.currentStation.id);
-            }
-
-            // Son de notification seulement si message d'un autre utilisateur
-            if (message.username !== this.username) {
-                this.playChatNotificationSound();
-            }
-        } else {
-            console.log('✅ Chat ouvert, pas de badge');
-        }
+        // Les badges sont gérés par handleGlobalNewMessage()
+        // Ici on gère seulement l'affichage des messages dans le panneau chat
     }
 
     // =====================================================
@@ -2525,6 +2508,149 @@ class RadioPlayerApp {
         }
 
         console.log(`✅ Chat marqué comme lu pour ${radioId}`);
+    }
+
+    // =====================================================
+    // BADGES CHAT - subscribeToAllChats() [NOUVEAU]
+    // =====================================================
+    subscribeToAllChats() {
+        // Se désabonner si déjà abonné
+        if (this.globalChatSubscription) {
+            supabase.removeChannel(this.globalChatSubscription);
+        }
+
+        // S'abonner à TOUS les nouveaux messages (sans filtre sur radio_id)
+        this.globalChatSubscription = supabase
+            .channel('global_chat_messages')
+            .on(
+                'postgres_changes',
+                {
+                    event: 'INSERT',
+                    schema: 'public',
+                    table: 'radio_chat_messages'
+                },
+                (payload) => {
+                    this.handleGlobalNewMessage(payload.new);
+                }
+            )
+            .subscribe();
+
+        console.log('🌍 Abonné à TOUS les chats (global)');
+    }
+
+    // =====================================================
+    // BADGES CHAT - handleGlobalNewMessage() [NOUVEAU]
+    // =====================================================
+    handleGlobalNewMessage(message) {
+        console.log('🌍 Nouveau message global:', message.radio_id, message.message);
+
+        const radioId = message.radio_id;
+
+        // Si c'est la radio en cours ET le chat est ouvert, ne pas afficher de badge
+        if (this.currentStation && this.currentStation.id === radioId && this.chatOpen) {
+            console.log('📭 Chat ouvert pour cette radio, pas de badge');
+            return;
+        }
+
+        // Vérifier si le message est plus récent que la dernière lecture
+        const lastReadKey = `radio_chat_last_read_${radioId}`;
+        const lastRead = localStorage.getItem(lastReadKey);
+
+        if (lastRead && new Date(message.created_at) <= new Date(lastRead)) {
+            console.log('📭 Message déjà lu, pas de badge');
+            return;
+        }
+
+        // Mettre à jour le badge sur la carte de cette radio
+        const cardBadges = document.querySelectorAll(`.radio-badge-${radioId}`);
+        cardBadges.forEach(badge => {
+            let currentCount = parseInt(badge.textContent) || 0;
+            currentCount++;
+            badge.textContent = currentCount > 99 ? '99+' : currentCount;
+            badge.style.display = 'block';
+        });
+
+        console.log('✅ Badge mis à jour pour:', radioId);
+
+        // Si c'est la radio en cours (mais chat fermé), mettre à jour le badge du player
+        if (this.currentStation && this.currentStation.id === radioId && !this.chatOpen) {
+            this.unreadMessages++;
+            const playerBadge = document.getElementById('chatBadge');
+            if (playerBadge) {
+                playerBadge.style.display = 'block';
+                playerBadge.textContent = this.unreadMessages > 99 ? '99+' : this.unreadMessages;
+            }
+
+            // Son de notification si ce n'est pas notre message
+            if (message.username !== this.username) {
+                this.playChatNotificationSound();
+            }
+        }
+    }
+
+    // =====================================================
+    // BADGES CHAT - startBadgePolling() [NOUVEAU]
+    // =====================================================
+    startBadgePolling() {
+        // Polling toutes les 30 secondes (backup si l'abonnement global échoue)
+        this.badgePollingInterval = setInterval(() => {
+            this.updateChatBadges();
+        }, 30000);
+
+        console.log('⏱️ Polling des badges démarré (30s)');
+    }
+
+    // =====================================================
+    // BADGES CHAT - stopBadgePolling() [NOUVEAU]
+    // =====================================================
+    stopBadgePolling() {
+        if (this.badgePollingInterval) {
+            clearInterval(this.badgePollingInterval);
+            this.badgePollingInterval = null;
+        }
+    }
+
+    // =====================================================
+    // ANDROID - setupAndroidBackButton() [NOUVEAU]
+    // =====================================================
+    setupAndroidBackButton() {
+        // Détecter si c'est Android
+        const isAndroid = /Android/i.test(navigator.userAgent);
+        if (!isAndroid) return;
+
+        // Créer un historique factice pour intercepter le bouton retour
+        history.pushState({ page: 'main' }, '', '');
+
+        window.addEventListener('popstate', (event) => {
+            // Empêcher la fermeture de l'app
+            history.pushState({ page: 'main' }, '', '');
+
+            // Si le chat est ouvert, le fermer
+            if (this.chatOpen) {
+                this.closeChat();
+                return;
+            }
+
+            // Si les paramètres sont ouverts, les fermer
+            const settingsOverlay = document.getElementById('settingsOverlay');
+            if (settingsOverlay && settingsOverlay.style.display === 'flex') {
+                settingsOverlay.style.display = 'none';
+                return;
+            }
+
+            // Si le menu contextuel est ouvert, le fermer
+            if (this.contextMenu && this.contextMenu.style.display === 'block') {
+                this.hideContextMenu();
+                return;
+            }
+
+            // Si une radio joue, afficher un toast
+            if (this.isPlaying) {
+                this.showToast('Utilisez le bouton Home pour minimiser');
+            }
+        });
+
+        console.log('📱 Gestion bouton retour Android activée');
     }
 
     // =====================================================
