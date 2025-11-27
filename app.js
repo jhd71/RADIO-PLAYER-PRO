@@ -1590,6 +1590,8 @@ async loadChatMessages(radioId) {
 
 // Gérer un nouveau message reçu
 handleNewChatMessage(message) {
+    console.log('💬 Nouveau message reçu:', message);
+    
     this.chatMessages.push(message);
     
     // Limiter à 50 messages en mémoire
@@ -1600,19 +1602,29 @@ handleNewChatMessage(message) {
     this.renderChatMessages();
     this.scrollChatToBottom();
     
-    // Si chat fermé, incrémenter le badge
+    // Si chat fermé, mettre à jour les badges
     if (!this.chatOpen) {
+        console.log('📢 Chat fermé, affichage badges');
         this.unreadMessages++;
-        this.updateChatBadge();
+        
+        // Badge sur le bouton chat du player
+        const playerBadge = document.getElementById('chatBadge');
+        if (playerBadge && this.currentStation) {
+            playerBadge.style.display = 'block';
+            playerBadge.textContent = this.unreadMessages;
+            console.log('✅ Badge player affiché:', this.unreadMessages);
+        }
+        
+        // Mettre à jour tous les badges sur les cartes radio
+        this.updateChatBadges();
+        
+        // Son de notification seulement si message d'un autre utilisateur
+        if (message.username !== this.username) {
+            this.playChatNotificationSound();
+        }
+    } else {
+        console.log('✅ Chat ouvert, pas de badge');
     }
-    
-    // Son de notification (optionnel)
-    if (message.username !== this.username) {
-        this.playChatNotificationSound();
-    }
-    
-    // Mettre à jour les badges sur les cartes radio
-    this.updateChatBadges();
 }
 
 // Afficher les messages
