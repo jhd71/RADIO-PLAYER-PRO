@@ -1,4 +1,9 @@
-const CACHE_NAME = 'radio-player-v5';
+// =====================================================
+// RADIOFM - SERVICE WORKER
+// VERSION CORRIGÉE ET OPTIMISÉE
+// =====================================================
+
+const CACHE_NAME = 'radio-player-v6';
 const RUNTIME_CACHE = 'radio-runtime-v1';
 
 // Fichiers à mettre en cache
@@ -12,7 +17,9 @@ const STATIC_CACHE_URLS = [
     'https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap'
 ];
 
-// === INSTALLATION ===
+// =====================================================
+// INSTALLATION
+// =====================================================
 self.addEventListener('install', (event) => {
     console.log('Service Worker: Installation...');
     
@@ -23,7 +30,7 @@ self.addEventListener('install', (event) => {
         <head>
             <meta charset="UTF-8">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>Radio Player Pro - Hors ligne</title>
+            <title>RadioFM - Hors ligne</title>
             <style>
                 body {
                     margin: 0;
@@ -83,13 +90,12 @@ self.addEventListener('install', (event) => {
         </body>
         </html>
     `, {
-        headers: { 'Content-Type': 'text/html' }
+        headers: { 'Content-Type': 'text/html; charset=utf-8' }
     });
     
     event.waitUntil(
         caches.open(CACHE_NAME)
             .then(cache => {
-                // Mettre en cache les fichiers statiques
                 return Promise.all([
                     cache.addAll(STATIC_CACHE_URLS.filter(url => !url.startsWith('https://'))),
                     cache.put('/offline.html', offlineResponse)
@@ -99,7 +105,9 @@ self.addEventListener('install', (event) => {
     );
 });
 
-// === ACTIVATION ===
+// =====================================================
+// ACTIVATION
+// =====================================================
 self.addEventListener('activate', (event) => {
     console.log('Service Worker: Activation...');
     
@@ -121,7 +129,9 @@ self.addEventListener('activate', (event) => {
     );
 });
 
-// === FETCH ===
+// =====================================================
+// FETCH (Interception des requêtes)
+// =====================================================
 self.addEventListener('fetch', (event) => {
     const { request } = event;
     const url = new URL(request.url);
@@ -132,12 +142,14 @@ self.addEventListener('fetch', (event) => {
     }
     
     // Pour les flux audio (streaming), ne pas mettre en cache
-    if (request.url.includes('.mp3') || request.url.includes('.aac') || 
-        request.url.includes('stream') || request.url.includes('icecast')) {
+    if (request.url.includes('.mp3') || 
+        request.url.includes('.aac') || 
+        request.url.includes('stream') || 
+        request.url.includes('icecast') ||
+        request.url.includes('streaming')) {
         event.respondWith(
             fetch(request)
                 .catch(() => {
-                    // En cas d'erreur réseau pour l'audio
                     return new Response('', {
                         status: 503,
                         statusText: 'Service Unavailable'
@@ -148,7 +160,7 @@ self.addEventListener('fetch', (event) => {
     }
     
     // Pour les images de logos
-if (request.url.includes('/images/radio-logos/')) {
+    if (request.url.includes('/images/radio-logos/')) {
         event.respondWith(
             caches.match(request)
                 .then(response => {
@@ -158,7 +170,6 @@ if (request.url.includes('/images/radio-logos/')) {
                     
                     return fetch(request)
                         .then(response => {
-                            // Ne pas mettre en cache les erreurs
                             if (!response || response.status !== 200) {
                                 return response;
                             }
@@ -173,16 +184,14 @@ if (request.url.includes('/images/radio-logos/')) {
                             return response;
                         })
                         .catch(() => {
-                            // Retourner une image par défaut
-							return caches.match('/images/radio-logos/default.png');
-
+                            return caches.match('/images/radio-logos/default.png');
                         });
                 })
         );
         return;
     }
     
-    // Pour les ressources statiques
+    // Pour les ressources statiques (même origine)
     if (url.origin === location.origin) {
         event.respondWith(
             caches.match(request)
@@ -193,7 +202,6 @@ if (request.url.includes('/images/radio-logos/')) {
                     
                     return fetch(request)
                         .then(response => {
-                            // Ne pas mettre en cache les erreurs
                             if (!response || response.status !== 200 || response.type !== 'basic') {
                                 return response;
                             }
@@ -209,7 +217,6 @@ if (request.url.includes('/images/radio-logos/')) {
                         });
                 })
                 .catch(() => {
-                    // Retourner la page offline si disponible
                     if (request.destination === 'document') {
                         return caches.match('/offline.html');
                     }
@@ -218,7 +225,7 @@ if (request.url.includes('/images/radio-logos/')) {
         return;
     }
     
-    // Pour les ressources externes (fonts, etc.)
+    // Pour les ressources externes (fonts, CDN, etc.)
     event.respondWith(
         caches.match(request)
             .then(response => {
@@ -244,28 +251,64 @@ if (request.url.includes('/images/radio-logos/')) {
                     });
             })
             .catch(() => {
-                // Erreur réseau
                 console.error('Fetch failed:', request.url);
             })
     );
 });
 
-// === MESSAGES ===
+// =====================================================
+// MESSAGES (UN SEUL LISTENER - CORRIGÉ)
+// =====================================================
 self.addEventListener('message', (event) => {
-    if (event.data && event.data.type === 'SKIP_WAITING') {
-        self.skipWaiting();
+    if (!event.data || !event.data.type) {
+        return;
     }
     
-    if (event.data && event.data.type === 'CLEAR_CACHE') {
-        caches.keys().then(cacheNames => {
-            cacheNames.forEach(cacheName => {
-                caches.delete(cacheName);
+    switch (event.data.type) {
+        case 'SKIP_WAITING':
+            self.skipWaiting();
+            break;
+            
+        case 'CLEAR_CACHE':
+            caches.keys().then(cacheNames => {
+                cacheNames.forEach(cacheName => {
+                    caches.delete(cacheName);
+                });
             });
-        });
+            break;
+            
+        case 'KEEP_ALIVE':
+            // Notification persistante pour garder l'audio actif en arrière-plan (Android)
+            if (Notification.permission === 'granted') {
+                self.registration.showNotification('RadioFM 📻', {
+                    body: event.data.stationName + ' en lecture',
+                    icon: '/icons/icon-192.png',
+                    badge: '/icons/icon-72.png',
+                    tag: 'radio-playing',
+                    requireInteraction: false,
+                    silent: true
+                }).catch(err => {
+                    console.log('Notification non disponible:', err);
+                });
+            }
+            break;
+            
+        case 'STOP_NOTIFICATION':
+            // Fermer la notification de lecture
+            self.registration.getNotifications({ tag: 'radio-playing' })
+                .then(notifications => {
+                    notifications.forEach(notification => notification.close());
+                })
+                .catch(err => {
+                    console.log('Erreur fermeture notification:', err);
+                });
+            break;
     }
 });
 
-// === PUSH NOTIFICATIONS (pour futur usage) ===
+// =====================================================
+// PUSH NOTIFICATIONS (pour futur usage)
+// =====================================================
 self.addEventListener('push', (event) => {
     const options = {
         body: event.data ? event.data.text() : 'Nouvelle notification',
@@ -291,58 +334,46 @@ self.addEventListener('push', (event) => {
     };
     
     event.waitUntil(
-        self.registration.showNotification('Radio Player Pro', options)
+        self.registration.showNotification('RadioFM', options)
     );
 });
 
-// === NOTIFICATION CLICK ===
+// =====================================================
+// NOTIFICATION CLICK
+// =====================================================
 self.addEventListener('notificationclick', (event) => {
     event.notification.close();
     
-    if (event.action === 'explore') {
+    if (event.action === 'explore' || !event.action) {
+        // Ouvrir l'application ou focus si déjà ouverte
         event.waitUntil(
-            clients.openWindow('/')
+            clients.matchAll({ type: 'window', includeUncontrolled: true })
+                .then(clientList => {
+                    // Si une fenêtre est déjà ouverte, on la focus
+                    for (const client of clientList) {
+                        if (client.url.includes(self.location.origin) && 'focus' in client) {
+                            return client.focus();
+                        }
+                    }
+                    // Sinon on ouvre une nouvelle fenêtre
+                    if (clients.openWindow) {
+                        return clients.openWindow('/');
+                    }
+                })
         );
     }
 });
 
-// === SYNC (pour futur usage) ===
+// =====================================================
+// BACKGROUND SYNC (pour futur usage)
+// =====================================================
 self.addEventListener('sync', (event) => {
     if (event.tag === 'sync-favorites') {
         event.waitUntil(
             // Synchroniser les favoris avec le serveur
-            console.log('Synchronisation des favoris...')
-        );
-    }
-});
-
-// Garder l'audio actif en arrière-plan
-self.addEventListener('message', (event) => {
-    if (event.data && event.data.type === 'KEEP_ALIVE') {
-        // Vérifier si on a la permission
-        if (Notification.permission === 'granted') {
-            // Créer une notification persistante
-            self.registration.showNotification('RadioFM 📻', {
-                body: event.data.stationName + ' en lecture',
-                icon: '/images/icon-192.png',
-                badge: '/images/icon-192.png',
-                tag: 'radio-playing',
-                requireInteraction: false,
-                silent: true
-            }).catch(err => {
-                console.log('Notification non disponible:', err);
-            });
-        }
-    }
-    
-    if (event.data && event.data.type === 'STOP_NOTIFICATION') {
-        // Fermer la notification
-        self.registration.getNotifications({ tag: 'radio-playing' })
-            .then(notifications => {
-                notifications.forEach(notification => notification.close());
+            Promise.resolve().then(() => {
+                console.log('Synchronisation des favoris...');
             })
-            .catch(err => {
-                console.log('Erreur fermeture notification:', err);
-            });
+        );
     }
 });
