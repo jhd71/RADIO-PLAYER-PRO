@@ -1483,6 +1483,9 @@ getOrCreateUsername() {
 
 // Ouvrir le panneau de chat
 openChat() {
+    console.log('🚪 openChat() appelée');
+    console.log('📻 Station:', this.currentStation);
+    
     if (!this.currentStation) {
         this.showToast('Lancez une radio pour accéder au chat');
         return;
@@ -1868,10 +1871,11 @@ async updateChatBadges() {
 
 // Marquer le chat comme lu
     markChatAsRead(radioId) {
+        console.log('🎯 markChatAsRead() APPELÉE pour:', radioId);
+        
         const now = new Date().toISOString();
         localStorage.setItem(`radio_chat_last_read_${radioId}`, now);
         
-        console.log('🔍 markChatAsRead appelé pour:', radioId);
         console.log('🔍 Badge carte:', document.querySelector(`.radio-badge-${radioId}`));
         console.log('🔍 Badge player:', document.getElementById('chatBadge'));
         
@@ -1883,6 +1887,9 @@ async updateChatBadges() {
         if (cardBadge) {
             cardBadge.style.display = 'none';
             cardBadge.textContent = '0';
+            console.log('✅ Badge carte caché');
+        } else {
+            console.log('❌ Badge carte non trouvé');
         }
         
         // Cacher le badge sur le bouton chat du player
@@ -1890,22 +1897,13 @@ async updateChatBadges() {
         if (playerBadge) {
             playerBadge.style.display = 'none';
             playerBadge.textContent = '0';
+            console.log('✅ Badge player caché');
+        } else {
+            console.log('❌ Badge player non trouvé');
         }
         
         console.log(`✅ Chat marqué comme lu pour ${radioId}`);
     }
-
-// Marquer une radio comme visitée (pour réinitialiser le badge)
-markChatAsRead(radioId) {
-    const lastVisitKey = `last_chat_visit_${radioId}`;
-    localStorage.setItem(lastVisitKey, new Date().toISOString());
-    
-    // Cacher le badge immédiatement
-    const badges = document.querySelectorAll(`[data-station="${radioId}"]`);
-    badges.forEach(badge => {
-        badge.style.display = 'none';
-    });
-}
 
 	// Fallback si Web Share API pas disponible
 	fallbackShare(station) {
