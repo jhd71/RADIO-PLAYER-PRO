@@ -1,4 +1,4 @@
-const CACHE_NAME = 'radio-player-v4';
+const CACHE_NAME = 'radio-player-v5';
 const RUNTIME_CACHE = 'radio-runtime-v1';
 
 // Fichiers à mettre en cache
@@ -313,5 +313,27 @@ self.addEventListener('sync', (event) => {
             // Synchroniser les favoris avec le serveur
             console.log('Synchronisation des favoris...')
         );
+    }
+});
+
+// Garder l'audio actif en arrière-plan
+self.addEventListener('message', (event) => {
+    if (event.data && event.data.type === 'KEEP_ALIVE') {
+        // Créer une notification persistante
+        self.registration.showNotification('RadioFM', {
+            body: event.data.stationName + ' en lecture',
+            icon: '/images/icon-192.png',
+            badge: '/images/icon-192.png',
+            tag: 'radio-playing',
+            requireInteraction: false,
+            silent: true
+        });
+    }
+    
+    if (event.data && event.data.type === 'STOP_NOTIFICATION') {
+        // Fermer la notification
+        self.registration.getNotifications({ tag: 'radio-playing' }).then(notifications => {
+            notifications.forEach(notification => notification.close());
+        });
     }
 });

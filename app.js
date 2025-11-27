@@ -538,6 +538,14 @@ class RadioPlayerApp {
             this.showToast('Impossible de lire cette radio');
         });
         
+        // Notification persistante pour Android
+        if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+            navigator.serviceWorker.controller.postMessage({
+                type: 'KEEP_ALIVE',
+                stationName: station.name
+            });
+        }
+        
         // Afficher le player
         this.playerContainer.style.display = 'block';
         this.updatePlayerInfo();
@@ -578,6 +586,12 @@ class RadioPlayerApp {
         this.isPlaying = false;
         this.audioPlayer.pause();
         this.audioPlayer.src = '';
+		// Arrêter la notification
+        if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+            navigator.serviceWorker.controller.postMessage({
+                type: 'STOP_NOTIFICATION'
+            });
+        }
         this.currentStation = null;
         this.errorCount = 0;
         
@@ -1851,7 +1865,10 @@ markChatAsRead(radioId) {
     const badges = document.querySelectorAll(`.radio-badge-${radioId}`);
     badges.forEach(badge => {
         badge.style.display = 'none';
+        badge.textContent = '0';
     });
+    
+    console.log(`✅ Badge effacé pour ${radioId}`);
 }
 
 // Marquer une radio comme visitée (pour réinitialiser le badge)
