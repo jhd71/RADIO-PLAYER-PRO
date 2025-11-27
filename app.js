@@ -1871,6 +1871,10 @@ async updateChatBadges() {
         const now = new Date().toISOString();
         localStorage.setItem(`radio_chat_last_read_${radioId}`, now);
         
+        console.log('🔍 markChatAsRead appelé pour:', radioId);
+        console.log('🔍 Badge carte:', document.querySelector(`.radio-badge-${radioId}`));
+        console.log('🔍 Badge player:', document.getElementById('chatBadge'));
+        
         // Réinitialiser le compteur
         this.unreadMessages = 0;
         
