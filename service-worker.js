@@ -319,21 +319,30 @@ self.addEventListener('sync', (event) => {
 // Garder l'audio actif en arrière-plan
 self.addEventListener('message', (event) => {
     if (event.data && event.data.type === 'KEEP_ALIVE') {
-        // Créer une notification persistante
-        self.registration.showNotification('RadioFM', {
-            body: event.data.stationName + ' en lecture',
-            icon: '/images/icon-192.png',
-            badge: '/images/icon-192.png',
-            tag: 'radio-playing',
-            requireInteraction: false,
-            silent: true
-        });
+        // Vérifier si on a la permission
+        if (Notification.permission === 'granted') {
+            // Créer une notification persistante
+            self.registration.showNotification('RadioFM 📻', {
+                body: event.data.stationName + ' en lecture',
+                icon: '/images/icon-192.png',
+                badge: '/images/icon-192.png',
+                tag: 'radio-playing',
+                requireInteraction: false,
+                silent: true
+            }).catch(err => {
+                console.log('Notification non disponible:', err);
+            });
+        }
     }
     
     if (event.data && event.data.type === 'STOP_NOTIFICATION') {
         // Fermer la notification
-        self.registration.getNotifications({ tag: 'radio-playing' }).then(notifications => {
-            notifications.forEach(notification => notification.close());
-        });
+        self.registration.getNotifications({ tag: 'radio-playing' })
+            .then(notifications => {
+                notifications.forEach(notification => notification.close());
+            })
+            .catch(err => {
+                console.log('Erreur fermeture notification:', err);
+            });
     }
 });

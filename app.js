@@ -538,12 +538,26 @@ class RadioPlayerApp {
             this.showToast('Impossible de lire cette radio');
         });
         
-        // Notification persistante pour Android
+        // Notification persistante pour Android (uniquement si permission accordée)
         if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
-            navigator.serviceWorker.controller.postMessage({
-                type: 'KEEP_ALIVE',
-                stationName: station.name
-            });
+            // Demander la permission à la première lecture
+            if (Notification.permission === 'default') {
+                this.requestNotificationPermission().then(granted => {
+                    if (granted) {
+                        navigator.serviceWorker.controller.postMessage({
+                            type: 'KEEP_ALIVE',
+                            stationName: station.name
+                        });
+                    }
+                });
+            } else if (Notification.permission === 'granted') {
+                // Permission déjà accordée
+                navigator.serviceWorker.controller.postMessage({
+                    type: 'KEEP_ALIVE',
+                    stationName: station.name
+                });
+            }
+            // Si refusée, on ne fait rien (l'app fonctionne quand même)
         }
         
         // Afficher le player
@@ -2202,6 +2216,29 @@ checkSharedRadio() {
                 }
             });
         }
+        
+        // === NOTIFICATIONS ===
+        
+        // Afficher la section seulement sur Android
+        const isAndroid = /Android/i.test(navigator.userAgent);
+        const notificationSection = document.getElementById('notificationSection');
+        
+        if (isAndroid && notificationSection) {
+            notificationSection.style.display = 'block';
+            
+            // Mettre à jour le statut
+            this.updateNotificationStatus();
+        }
+        
+        // Bouton activer notifications
+        const enableNotificationsBtn = document.getElementById('enableNotificationsBtn');
+        if (enableNotificationsBtn) {
+            enableNotificationsBtn.addEventListener('click', () => {
+                this.requestNotificationPermission().then(() => {
+                    this.updateNotificationStatus();
+                });
+            });
+        }
     }
 
 // === TOGGLE THÈME SOMBRE/CLAIR ===
@@ -2249,6 +2286,66 @@ checkSharedRadio() {
                 // Toast de confirmation
                 this.showToast(isDark ? '🌙 Thème sombre activé' : '☀️ Thème clair activé');
             });
+        }
+    }
+	
+	// === DEMANDER PERMISSION NOTIFICATIONS ===
+    async requestNotificationPermission() {
+        // Seulement sur Android
+        const isAndroid = /Android/i.test(navigator.userAgent);
+        
+        if (!isAndroid) {
+            return false;
+        }
+        
+        // Si déjà accordée
+        if (Notification.permission === 'granted') {
+            console.log('✅ Permission notifications déjà accordée');
+            return true;
+        }
+        
+        // Si déjà refusée
+        if (Notification.permission === 'denied') {
+            console.log('❌ Permission notifications refusée');
+            return false;
+        }
+        
+        // Demander la permission
+        try {
+            const permission = await Notification.requestPermission();
+            if (permission === 'granted') {
+                console.log('✅ Permission notifications accordée');
+                this.showToast('Notifications activées pour la lecture en arrière-plan');
+                return true;
+            } else {
+                console.log('❌ Permission notifications refusée par l\'utilisateur');
+                return false;
+            }
+        } catch (error) {
+            console.error('Erreur demande permission:', error);
+            return false;
+        }
+    }
+	
+	// Mettre à jour le statut des notifications
+    updateNotificationStatus() {
+        const statusElement = document.getElementById('notificationStatus');
+        const buttonElement = document.getElementById('enableNotificationsBtn');
+        
+        if (!statusElement || !buttonElement) return;
+        
+        if (Notification.permission === 'granted') {
+            statusElement.textContent = '✅ Notifications activées';
+            statusElement.style.color = '#4caf50';
+            buttonElement.style.display = 'none';
+        } else if (Notification.permission === 'denied') {
+            statusElement.textContent = '❌ Notifications refusées (réactivez dans les paramètres Android)';
+            statusElement.style.color = '#f44336';
+            buttonElement.style.display = 'none';
+        } else {
+            statusElement.textContent = '⚠️ Notifications non activées';
+            statusElement.style.color = '#ffc107';
+            buttonElement.style.display = 'block';
         }
     }
 	
