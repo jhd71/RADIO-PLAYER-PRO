@@ -1496,10 +1496,6 @@ openChat() {
         overlay.style.display = 'flex';
         this.chatOpen = true;
         
-        // Réinitialiser le compteur de messages non lus
-        this.unreadMessages = 0;
-        this.updateChatBadge();
-        
         // Marquer comme lu DÈS L'OUVERTURE
         this.markChatAsRead(this.currentStation.id);
         
@@ -1870,20 +1866,30 @@ async updateChatBadges() {
     }
 }
 
-// Marquer une radio comme visitée (pour réinitialiser le badge)
-markChatAsRead(radioId) {
-    const lastVisitKey = `last_chat_visit_${radioId}`;
-    localStorage.setItem(lastVisitKey, new Date().toISOString());
-    
-    // Cacher le badge immédiatement avec la BONNE classe
-    const badges = document.querySelectorAll(`.radio-badge-${radioId}`);
-    badges.forEach(badge => {
-        badge.style.display = 'none';
-        badge.textContent = '0';
-    });
-    
-    console.log(`✅ Badge effacé pour ${radioId}`);
-}
+// Marquer le chat comme lu
+    markChatAsRead(radioId) {
+        const now = new Date().toISOString();
+        localStorage.setItem(`radio_chat_last_read_${radioId}`, now);
+        
+        // Réinitialiser le compteur
+        this.unreadMessages = 0;
+        
+        // Cacher le badge sur la carte radio
+        const cardBadge = document.querySelector(`.radio-badge-${radioId}`);
+        if (cardBadge) {
+            cardBadge.style.display = 'none';
+            cardBadge.textContent = '0';
+        }
+        
+        // Cacher le badge sur le bouton chat du player
+        const playerBadge = document.getElementById('chatBadge');
+        if (playerBadge) {
+            playerBadge.style.display = 'none';
+            playerBadge.textContent = '0';
+        }
+        
+        console.log(`✅ Chat marqué comme lu pour ${radioId}`);
+    }
 
 // Marquer une radio comme visitée (pour réinitialiser le badge)
 markChatAsRead(radioId) {
