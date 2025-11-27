@@ -279,6 +279,8 @@ class RadioPlayerApp {
         this.chatOpen = false;
         this.chatSubscription = null;
         this.globalChatSubscription = null; // Abonnement global pour TOUTES les radios
+        this.presenceChannel = null; // Canal de présence pour compter les utilisateurs
+        this.onlineUsers = 0; // Nombre d'utilisateurs connectés
         this.chatMessages = [];
         this.username = this.getOrCreateUsername();
         this.unreadMessages = 0;
@@ -2040,6 +2042,74 @@ class RadioPlayerApp {
             .subscribe();
 
         console.log(`✅ Abonné au chat de ${radioId}`);
+
+        // S'abonner à la présence pour compter les utilisateurs
+        this.joinPresence(radioId);
+    }
+
+    // =====================================================
+    // CHAT EN DIRECT - joinPresence() [NOUVEAU]
+    // =====================================================
+    joinPresence(radioId) {
+        // Se désabonner de l'ancien canal de présence
+        this.leavePresence();
+
+        // Créer un canal de présence pour cette radio
+        this.presenceChannel = supabase.channel(`presence_${radioId}`, {
+            config: {
+                presence: {
+                    key: this.getUserId()
+                }
+            }
+        });
+
+        // Écouter les changements de présence
+        this.presenceChannel
+            .on('presence', { event: 'sync' }, () => {
+                const state = this.presenceChannel.presenceState();
+                this.onlineUsers = Object.keys(state).length;
+                this.updateOnlineCount();
+                console.log(`👥 Utilisateurs en ligne: ${this.onlineUsers}`);
+            })
+            .on('presence', { event: 'join' }, ({ key, newPresences }) => {
+                console.log(`👋 ${key} a rejoint le chat`);
+            })
+            .on('presence', { event: 'leave' }, ({ key, leftPresences }) => {
+                console.log(`👋 ${key} a quitté le chat`);
+            })
+            .subscribe(async (status) => {
+                if (status === 'SUBSCRIBED') {
+                    // Envoyer notre présence
+                    await this.presenceChannel.track({
+                        username: this.username,
+                        online_at: new Date().toISOString()
+                    });
+                    console.log(`✅ Présence activée pour ${radioId}`);
+                }
+            });
+    }
+
+    // =====================================================
+    // CHAT EN DIRECT - leavePresence() [NOUVEAU]
+    // =====================================================
+    leavePresence() {
+        if (this.presenceChannel) {
+            this.presenceChannel.untrack();
+            supabase.removeChannel(this.presenceChannel);
+            this.presenceChannel = null;
+            this.onlineUsers = 0;
+            this.updateOnlineCount();
+        }
+    }
+
+    // =====================================================
+    // CHAT EN DIRECT - updateOnlineCount() [NOUVEAU]
+    // =====================================================
+    updateOnlineCount() {
+        const countElement = document.getElementById('chatOnlineCount');
+        if (countElement) {
+            countElement.textContent = `${this.onlineUsers} personne${this.onlineUsers > 1 ? 's' : ''}`;
+        }
     }
 
     // =====================================================
@@ -2051,6 +2121,9 @@ class RadioPlayerApp {
             this.chatSubscription = null;
             console.log('🔌 Désabonné du chat');
         }
+
+        // Quitter la présence aussi
+        this.leavePresence();
     }
 
     // =====================================================
