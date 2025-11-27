@@ -1263,6 +1263,11 @@ class RadioPlayerApp {
             return;
         }
 
+        // Si on change de radio, se désabonner de l'ancienne
+        if (this.currentStation && this.currentStation.id !== station.id) {
+            this.unsubscribeFromChat();
+        }
+
         this.errorCount = 0;
         this.currentStation = station;
         this.audioPlayer.src = station.url;
@@ -1271,6 +1276,9 @@ class RadioPlayerApp {
             console.error('Erreur lecture:', error);
             this.showToast('Impossible de lire cette radio');
         });
+
+        // S'abonner au chat de cette radio (même si panneau fermé)
+        this.subscribeToChat(station.id);
 
         // Notification persistante pour Android
         if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
@@ -1342,11 +1350,18 @@ class RadioPlayerApp {
             });
         }
 
+        // Se désabonner du chat (car on arrête la radio)
+        this.unsubscribeFromChat();
+
         this.currentStation = null;
         this.errorCount = 0;
 
-        // Fermer le chat
-        this.closeChat();
+        // Fermer le panneau chat si ouvert
+        const chatOverlay = document.getElementById('chatOverlay');
+        if (chatOverlay) {
+            chatOverlay.style.display = 'none';
+            this.chatOpen = false;
+        }
 
         this.playerContainer.style.display = 'none';
         this.updateRadioCards();
@@ -1953,8 +1968,10 @@ class RadioPlayerApp {
             // Marquer comme lu DÈS L'OUVERTURE
             this.markChatAsRead(this.currentStation.id);
 
-            // S'abonner aux messages de cette radio
-            this.subscribeToChat(this.currentStation.id);
+            // S'abonner seulement si pas déjà abonné
+            if (!this.chatSubscription) {
+                this.subscribeToChat(this.currentStation.id);
+            }
 
             // Charger les messages existants
             this.loadChatMessages(this.currentStation.id);
@@ -1981,8 +1998,9 @@ class RadioPlayerApp {
                 this.markChatAsRead(this.currentStation.id);
             }
 
-            // Se désabonner
-            this.unsubscribeFromChat();
+            // NE PAS se désabonner ici !
+            // On reste abonné pour recevoir les nouveaux messages
+            // et afficher le badge quand le chat est fermé
         }
     }
 
