@@ -1399,6 +1399,7 @@ async loginAdmin() {
     try {
         // Hash du mot de passe
         const passwordHash = await this.hashPassword(password);
+        console.log('🔑 Hash généré:', passwordHash);
         
         // Vérifier dans Supabase
         const { data, error } = await supabase
