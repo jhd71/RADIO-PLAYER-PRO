@@ -1,105 +1,122 @@
-// api/nowplaying.js - API Vercel pour récupérer les métadonnées radio
+// api/nowplaying.js - API Vercel pour récupérer les métadonnées radio (VERSION AMÉLIORÉE)
 
-export default async function handler(req, res) {
-    // Autoriser CORS
-    res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Access-Control-Allow-Methods', 'GET');
-    
-    const { url } = req.query;
-    
+export const config = {
+    runtime: 'edge',
+};
+
+export default async function handler(req) {
+    const { searchParams } = new URL(req.url);
+    const url = searchParams.get('url');
+
+    // Headers CORS
+    const headers = {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'GET',
+        'Content-Type': 'application/json',
+    };
+
     if (!url) {
-        return res.status(400).json({ error: 'URL manquante' });
+        return new Response(JSON.stringify({ error: 'URL manquante' }), {
+            status: 400,
+            headers,
+        });
     }
 
     try {
-        // Faire une requête vers le flux avec les headers ICY
+        // Faire une requête avec les headers ICY
         const controller = new AbortController();
-        const timeout = setTimeout(() => controller.abort(), 5000);
+        const timeout = setTimeout(() => controller.abort(), 8000);
 
         const response = await fetch(url, {
             method: 'GET',
             headers: {
                 'Icy-MetaData': '1',
-                'User-Agent': 'RadioFM/1.0'
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
             },
-            signal: controller.signal
+            signal: controller.signal,
         });
 
         clearTimeout(timeout);
 
         // Récupérer les headers ICY
         const icyName = response.headers.get('icy-name') || '';
-        const icyDescription = response.headers.get('icy-description') || '';
-        const icyGenre = response.headers.get('icy-genre') || '';
-        const icyBr = response.headers.get('icy-br') || '';
         const icyMetaInt = response.headers.get('icy-metaint');
 
-        let nowPlaying = '';
+        let nowPlaying = null;
 
-        // Si le flux supporte les métadonnées en temps réel
         if (icyMetaInt) {
             const metaInt = parseInt(icyMetaInt, 10);
-            
-            // Lire assez de données pour atteindre les métadonnées
             const reader = response.body.getReader();
-            let bytesRead = 0;
-            let chunks = [];
-
-            while (bytesRead < metaInt + 4080) {
-                const { done, value } = await reader.read();
-                if (done) break;
-                chunks.push(value);
-                bytesRead += value.length;
-                
-                // Limiter pour ne pas trop télécharger
-                if (bytesRead > 50000) break;
-            }
-
-            reader.cancel();
-
-            // Combiner les chunks
-            const allData = new Uint8Array(bytesRead);
-            let offset = 0;
-            for (const chunk of chunks) {
-                allData.set(chunk, offset);
-                offset += chunk.length;
-            }
-
-            // Chercher les métadonnées après metaInt octets
-            if (allData.length > metaInt) {
-                const metaLength = allData[metaInt] * 16;
-                if (metaLength > 0 && allData.length > metaInt + 1 + metaLength) {
-                    const metaData = new TextDecoder().decode(
-                        allData.slice(metaInt + 1, metaInt + 1 + metaLength)
-                    );
+            
+            // Lire suffisamment de données pour trouver les métadonnées
+            let buffer = new Uint8Array(0);
+            const targetSize = metaInt + 4096; // Assez pour les métadonnées
+            
+            try {
+                while (buffer.length < targetSize) {
+                    const { done, value } = await reader.read();
+                    if (done) break;
                     
-                    // Extraire StreamTitle
-                    const match = metaData.match(/StreamTitle='([^']*?)'/);
+                    // Concaténer les buffers
+                    const newBuffer = new Uint8Array(buffer.length + value.length);
+                    newBuffer.set(buffer);
+                    newBuffer.set(value, buffer.length);
+                    buffer = newBuffer;
+                    
+                    // Limite de sécurité
+                    if (buffer.length > 100000) break;
+                }
+                
+                await reader.cancel();
+            } catch (e) {
+                // Ignorer les erreurs de lecture
+            }
+
+            // Extraire les métadonnées
+            if (buffer.length > metaInt) {
+                const metaLength = buffer[metaInt] * 16;
+                
+                if (metaLength > 0 && buffer.length >= metaInt + 1 + metaLength) {
+                    const metaBytes = buffer.slice(metaInt + 1, metaInt + 1 + metaLength);
+                    const metaString = new TextDecoder('utf-8', { fatal: false }).decode(metaBytes);
+                    
+                    // Chercher StreamTitle
+                    const match = metaString.match(/StreamTitle='(.+?)';/);
                     if (match && match[1]) {
-                        nowPlaying = match[1].trim();
+                        nowPlaying = match[1]
+                            .replace(/\0/g, '')
+                            .replace(/\s+/g, ' ')
+                            .trim();
+                        
+                        // Ignorer si c'est juste le nom de la station ou vide
+                        if (nowPlaying.length < 3 || 
+                            nowPlaying.toLowerCase() === icyName.toLowerCase() ||
+                            nowPlaying === '-' ||
+                            nowPlaying === 'Unknown') {
+                            nowPlaying = null;
+                        }
                     }
                 }
             }
+        } else {
+            // Pas de métadonnées ICY, essayer de fermer proprement
+            try {
+                const reader = response.body.getReader();
+                await reader.cancel();
+            } catch (e) {}
         }
 
-        // Nettoyer le titre (enlever les caractères bizarres)
-        nowPlaying = nowPlaying.replace(/\0/g, '').trim();
-
-        return res.status(200).json({
+        return new Response(JSON.stringify({
             success: true,
-            nowPlaying: nowPlaying || null,
+            nowPlaying: nowPlaying,
             stationName: icyName || null,
-            description: icyDescription || null,
-            genre: icyGenre || null,
-            bitrate: icyBr || null
-        });
+        }), { status: 200, headers });
 
     } catch (error) {
-        console.error('Erreur nowplaying:', error.message);
-        return res.status(200).json({
+        return new Response(JSON.stringify({
             success: false,
             nowPlaying: null,
-            error: error.message
-        });
+            error: error.message,
+        }), { status: 200, headers });
     }
 }
