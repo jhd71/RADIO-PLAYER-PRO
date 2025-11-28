@@ -202,7 +202,7 @@ class RadioPlayerApp {
 			{
                 id: 'RTL',
                 name: 'RTL',
-                url: 'https://streamer-02.rtl.fr/rtl-1-44-128?listen=webCwsBCggNCQgLDQUGBAcGBg',
+                url: 'https://streamer-03.rtl.fr/rtl-1-44-128',
                 logo: 'images/radio-logos/rtl.png',
                 description: 'Info & divertissement',
                 category: 'info'
