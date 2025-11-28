@@ -1496,8 +1496,12 @@ body.dark-theme .theme-toggle-btn {
 }
 
 /* ========================================
-   CHAT EN DIRECT
+   CHAT EN DIRECT - CSS CORRIGÉ ET COMPLET
+   REMPLACEZ TOUTE LA SECTION CHAT (lignes 1498-1784)
+   PAR CE CODE
    ======================================== */
+
+/* === OVERLAY DU CHAT === */
 #chatOverlay {
     position: fixed;
     top: 0;
@@ -1506,6 +1510,7 @@ body.dark-theme .theme-toggle-btn {
     bottom: 0;
     background: rgba(0, 0, 0, 0.7);
     backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
     z-index: 1001;
     display: flex;
     align-items: center;
@@ -1514,55 +1519,108 @@ body.dark-theme .theme-toggle-btn {
     animation: fadeIn 0.3s ease;
 }
 
+/* === PANNEAU DU CHAT === */
 #chatPanel {
     max-width: 500px;
     width: 100%;
     height: 600px;
-    max-height: 90vh;
+    max-height: 85vh;
     display: flex;
     flex-direction: column;
     border-radius: 20px;
     overflow: hidden;
+    position: relative;
 }
 
+/* === HEADER DU CHAT === */
 .chat-header {
-    padding: 20px;
+    padding: 16px 20px;
     display: flex;
     justify-content: space-between;
     align-items: center;
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    flex-shrink: 0;
+    min-height: 60px;
 }
 
 .chat-header h3 {
     display: flex;
     align-items: center;
     gap: 8px;
-    font-size: 1.2rem;
+    font-size: 1rem;
     margin: 0;
+    flex-shrink: 0;
+    white-space: nowrap;
 }
 
+.chat-header h3 .material-icons {
+    font-size: 20px;
+}
+
+.chat-header h3 #chatRadioName {
+    font-weight: 600;
+    max-width: 120px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Partie droite du header (personnes + bouton fermer) */
+.chat-header > div {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-shrink: 0;
+}
+
+/* Compteur de personnes en ligne */
 .chat-online-count {
-    font-size: 0.85rem;
+    font-size: 0.8rem;
     color: var(--text-secondary);
     display: flex;
     align-items: center;
     gap: 4px;
+    white-space: nowrap;
 }
 
 .chat-online-count::before {
-    content: '🟢';
-    font-size: 10px;
+    content: '';
+    width: 8px;
+    height: 8px;
+    background: #4caf50;
+    border-radius: 50%;
+    display: inline-block;
 }
 
+/* Bouton fermer */
+#chatCloseBtn {
+    width: 36px;
+    height: 36px;
+    min-width: 36px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+}
+
+#chatCloseBtn .material-icons {
+    font-size: 20px;
+}
+
+/* === ZONE DES MESSAGES === */
 .chat-messages {
     flex: 1;
     overflow-y: auto;
+    overflow-x: hidden;
     padding: 16px;
     display: flex;
     flex-direction: column;
     gap: 12px;
+    min-height: 0; /* Important pour le scroll */
 }
 
+/* === UN MESSAGE === */
 .chat-message {
     display: flex;
     flex-direction: column;
@@ -1577,40 +1635,90 @@ body.dark-theme .theme-toggle-btn {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
 }
 
 .chat-message-username {
     font-weight: 600;
     color: var(--primary-color);
     font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 6px;
 }
 
 .chat-message-time {
     font-size: 0.75rem;
     color: var(--text-muted);
+    white-space: nowrap;
 }
 
 .chat-message-text {
     color: var(--text-primary);
     font-size: 0.95rem;
     word-wrap: break-word;
+    word-break: break-word;
+    line-height: 1.4;
 }
 
+/* === BOUTON SUPPRIMER (ADMIN) === */
+.chat-message-delete {
+    background: rgba(244, 67, 54, 0.2);
+    border: 1px solid rgba(244, 67, 54, 0.4);
+    color: #ff5252;
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: none;
+    flex-shrink: 0;
+}
+
+.chat-message-delete:hover {
+    background: rgba(244, 67, 54, 0.4);
+}
+
+.chat-message.is-admin .chat-message-delete {
+    display: inline-flex;
+    align-items: center;
+}
+
+/* === BADGE ADMIN/VOUS === */
+.admin-badge {
+    background: var(--primary-color);
+    color: white;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 0.7rem;
+    font-weight: 600;
+}
+
+/* === ZONE DE SAISIE === */
 .chat-input-container {
     display: flex;
+    align-items: center;
     gap: 8px;
-    padding: 16px;
+    padding: 12px 16px;
     border-top: 1px solid rgba(255, 255, 255, 0.1);
+    flex-shrink: 0;
+    position: relative;
 }
 
 .chat-input {
     flex: 1;
     padding: 12px 16px;
     border: none;
-    border-radius: 12px;
+    border-radius: 24px;
     background: rgba(255, 255, 255, 0.1);
     color: var(--text-primary);
     font-size: 0.95rem;
+    min-width: 0; /* Important pour flex */
+}
+
+.chat-input::placeholder {
+    color: var(--text-muted);
 }
 
 .chat-input:focus {
@@ -1618,17 +1726,90 @@ body.dark-theme .theme-toggle-btn {
     background: rgba(255, 255, 255, 0.15);
 }
 
+/* Boutons emoji et envoyer */
+#chatEmojiBtn,
+#chatSendBtn {
+    width: 44px;
+    height: 44px;
+    min-width: 44px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+#chatEmojiBtn {
+    font-size: 1.3rem;
+}
+
+#chatSendBtn .material-icons {
+    font-size: 20px;
+}
+
+/* === PICKER EMOJIS === */
+.chat-emoji-picker {
+    position: absolute;
+    bottom: 100%;
+    left: 16px;
+    right: 16px;
+    margin-bottom: 8px;
+    background: rgba(30, 30, 40, 0.95);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 16px;
+    padding: 12px;
+    display: grid;
+    grid-template-columns: repeat(8, 1fr);
+    gap: 4px;
+    box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.4);
+    z-index: 1002;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.emoji-btn {
+    background: transparent;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.emoji-btn:hover {
+    background: rgba(255, 255, 255, 0.15);
+    transform: scale(1.15);
+}
+
+.emoji-btn:active {
+    transform: scale(0.95);
+}
+
+/* === INFO EN BAS === */
 .chat-info {
-    padding: 12px 16px;
+    padding: 10px 16px;
     background: rgba(255, 200, 0, 0.1);
     display: flex;
     align-items: center;
+    justify-content: center;
     gap: 8px;
-    font-size: 0.85rem;
+    font-size: 0.8rem;
     color: var(--text-secondary);
+    flex-shrink: 0;
 }
 
-/* Badge de notification chat */
+.chat-info .material-icons {
+    font-size: 14px;
+}
+
+/* === BADGE NOTIFICATION CHAT === */
 .control-btn {
     position: relative;
 }
@@ -1639,83 +1820,16 @@ body.dark-theme .theme-toggle-btn {
     right: -4px;
     background: var(--accent-color);
     color: white;
-    font-size: 0.7rem;
-    font-weight: 600;
-    padding: 2px 6px;
+    font-size: 0.65rem;
+    font-weight: 700;
+    padding: 2px 5px;
     border-radius: 10px;
-    min-width: 18px;
+    min-width: 16px;
     text-align: center;
+    line-height: 1.2;
 }
 
-/* Bouton supprimer message (admin) */
-.chat-message-delete {
-    background: rgba(244, 67, 54, 0.2);
-    border: 1px solid rgba(244, 67, 54, 0.4);
-    color: #ff5252;
-    padding: 4px 8px;
-    border-radius: 6px;
-    font-size: 0.75rem;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    display: none; /* Caché par défaut */
-}
-
-.chat-message-delete:hover {
-    background: rgba(244, 67, 54, 0.4);
-}
-
-.chat-message.is-admin .chat-message-delete {
-    display: inline-block; /* Visible pour admin */
-}
-
-.chat-emoji-picker {
-    position: absolute;
-    bottom: 70px;
-    left: 16px;
-    right: 16px; /* Ajouté pour limiter la largeur */
-    max-width: calc(100% - 32px); /* Ajouté */
-    background: var(--glass-bg);
-    backdrop-filter: blur(20px);
-    border: 1px solid var(--glass-border);
-    border-radius: 12px;
-    padding: 12px;
-    display: grid;
-    grid-template-columns: repeat(6, 1fr); /* 6 au lieu de 8 */
-    gap: 8px;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-    z-index: 1002;
-}
-
-.emoji-btn {
-    background: transparent;
-    border: none;
-    font-size: 1.3rem; /* Réduit de 1.5rem */
-    cursor: pointer;
-    padding: 8px; /* Augmenté de 4px */
-    border-radius: 6px;
-    transition: all 0.2s ease;
-}
-
-.emoji-btn:hover {
-    background: rgba(255, 255, 255, 0.1);
-    transform: scale(1.2);
-}
-
-/* Mobile : encore plus petit */
-@media (max-width: 768px) {
-    .chat-emoji-picker {
-        grid-template-columns: repeat(4, 1fr); /* 4 colonnes sur mobile */
-        padding: 8px;
-        gap: 4px;
-    }
-    
-    .emoji-btn {
-        font-size: 1.2rem;
-        padding: 6px;
-    }
-}
-
-/* Badge nouveaux messages sur carte radio */
+/* === BADGE MESSAGES SUR CARTE RADIO === */
 .radio-card-chat-badge {
     position: absolute;
     top: 8px;
@@ -1729,56 +1843,274 @@ body.dark-theme .theme-toggle-btn {
     min-width: 18px;
     text-align: center;
     animation: pulse 2s infinite;
+    z-index: 2;
 }
 
-/* Badge admin */
-.admin-badge {
-    background: var(--primary-color);
+/* ========================================
+   BADGE NOMBRE D'AUDITEURS SUR LES CARTES
+   À AJOUTER À LA FIN DE style.css
+   ======================================== */
+
+/* Badge auditeurs sur carte radio */
+.radio-card-listeners-badge {
+    position: absolute;
+    bottom: 8px;
+    right: 8px;
+    background: rgba(76, 175, 80, 0.9);
     color: white;
-    padding: 2px 6px;
-    border-radius: 4px;
     font-size: 0.7rem;
     font-weight: 600;
-    margin-left: 6px;
+    padding: 3px 6px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
 }
 
-@keyframes slideIn {
-    from {
-        opacity: 0;
-        transform: translateY(10px);
+.radio-card-listeners-badge .material-icons {
+    font-size: 12px;
+}
+
+/* Animation quand le nombre change */
+@keyframes listenerPulse {
+    0% {
+        transform: scale(1);
     }
-    to {
-        opacity: 1;
-        transform: translateY(0);
+    50% {
+        transform: scale(1.1);
+    }
+    100% {
+        transform: scale(1);
     }
 }
 
-/* Mobile */
-@media (max-width: 768px) {
+.radio-card-listeners-badge.updated {
+    animation: listenerPulse 0.3s ease;
+}
+
+/* Position du badge messages (en haut à gauche) */
+.radio-card-chat-badge {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+}
+
+/* Sur mobile, badges légèrement plus petits */
+@media (max-width: 480px) {
+    .radio-card-listeners-badge {
+        font-size: 0.65rem;
+        padding: 2px 5px;
+    }
+    
+    .radio-card-listeners-badge .material-icons {
+        font-size: 10px;
+    }
+}
+
+/* ========================================
+   RESPONSIVE - TABLETTE (600px - 768px)
+   ======================================== */
+@media (min-width: 600px) and (max-width: 768px) {
     #chatPanel {
-        height: 100vh;
-        max-height: 100vh;
+        max-width: 450px;
+        height: 70vh;
+        max-height: 70vh;
+        border-radius: 20px;
+    }
+    
+    .chat-header h3 #chatRadioName {
+        max-width: 150px;
+    }
+    
+    .chat-emoji-picker {
+        grid-template-columns: repeat(8, 1fr);
+    }
+}
+
+/* ========================================
+   RESPONSIVE - MOBILE (< 600px)
+   ======================================== */
+@media (max-width: 599px) {
+    #chatOverlay {
+        padding: 0;
+        align-items: flex-end;
+    }
+    
+    #chatPanel {
+        width: 100%;
+        max-width: 100%;
+        height: 100%;
+        max-height: 100%;
         border-radius: 0;
     }
+    
+    .chat-header {
+        padding: 12px 16px;
+        min-height: 56px;
+        padding-top: max(12px, env(safe-area-inset-top));
+    }
+    
+    .chat-header h3 {
+        font-size: 0.95rem;
+    }
+    
+    .chat-header h3 .material-icons {
+        font-size: 18px;
+    }
+    
+    .chat-header h3 #chatRadioName {
+        max-width: 100px;
+        font-size: 0.9rem;
+    }
+    
+    .chat-online-count {
+        font-size: 0.75rem;
+    }
+    
+    #chatCloseBtn {
+        width: 32px;
+        height: 32px;
+        min-width: 32px;
+    }
+    
+    #chatCloseBtn .material-icons {
+        font-size: 18px;
+    }
+    
+    .chat-messages {
+        padding: 12px;
+        gap: 10px;
+    }
+    
+    .chat-message {
+        padding: 10px;
+    }
+    
+    .chat-message-username {
+        font-size: 0.85rem;
+    }
+    
+    .chat-message-text {
+        font-size: 0.9rem;
+    }
+    
+    .chat-input-container {
+        padding: 10px 12px;
+        padding-bottom: max(10px, env(safe-area-inset-bottom));
+    }
+    
+    .chat-input {
+        padding: 10px 14px;
+        font-size: 16px; /* Évite le zoom sur iOS */
+    }
+    
+    #chatEmojiBtn,
+    #chatSendBtn {
+        width: 40px;
+        height: 40px;
+        min-width: 40px;
+    }
+    
+    .chat-emoji-picker {
+        left: 12px;
+        right: 12px;
+        padding: 10px;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 6px;
+        border-radius: 12px;
+    }
+    
+    .emoji-btn {
+        font-size: 1.4rem;
+        padding: 10px;
+    }
+    
+    .chat-info {
+        padding: 8px 12px;
+        font-size: 0.75rem;
+    }
+    
+    /* Badge auditeurs plus petit sur mobile */
+    .radio-card-listeners-badge {
+        font-size: 0.65rem;
+        padding: 2px 5px;
+    }
+    
+    .radio-card-listeners-badge .material-icons {
+        font-size: 10px;
+    }
 }
 
-/* === FIX POUR IPHONE X ET PLUS === */
+/* ========================================
+   RESPONSIVE - PETIT MOBILE (< 380px)
+   ======================================== */
+@media (max-width: 379px) {
+    .chat-header h3 {
+        font-size: 0.85rem;
+        gap: 4px;
+    }
+    
+    .chat-header h3 #chatRadioName {
+        max-width: 80px;
+        font-size: 0.85rem;
+    }
+    
+    .chat-online-count {
+        font-size: 0.7rem;
+    }
+    
+    .chat-emoji-picker {
+        grid-template-columns: repeat(4, 1fr);
+    }
+    
+    .emoji-btn {
+        font-size: 1.2rem;
+        padding: 8px;
+    }
+}
+
+/* ========================================
+   FIX POUR IPHONE X ET PLUS (Safe Areas)
+   ======================================== */
 @supports (padding-top: env(safe-area-inset-top)) {
     @media (max-width: 768px) {
-        .app-header {
-            padding-top: calc(env(safe-area-inset-top) + 16px) !important;
+        #chatPanel {
+            padding-top: 0;
         }
-
-        .player-container {
-            padding-bottom: calc(env(safe-area-inset-bottom) + 12px) !important;
+        
+        .chat-header {
+            padding-top: calc(env(safe-area-inset-top) + 12px);
         }
-
-        #pwaInstallBanner {
-            bottom: calc(env(safe-area-inset-bottom) + 16px) !important;
+        
+        .chat-input-container {
+            padding-bottom: calc(env(safe-area-inset-bottom) + 10px);
         }
-
-        #settingsPanel {
-            margin-bottom: env(safe-area-inset-bottom) !important;
+        
+        .chat-info {
+            padding-bottom: calc(env(safe-area-inset-bottom) + 8px);
         }
     }
+}
+
+/* ========================================
+   THÈME SOMBRE - AJUSTEMENTS CHAT
+   ======================================== */
+body.dark-theme .chat-emoji-picker {
+    background: rgba(20, 20, 30, 0.98);
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+body.dark-theme .chat-message {
+    background: rgba(255, 255, 255, 0.03);
+}
+
+body.dark-theme .chat-input {
+    background: rgba(255, 255, 255, 0.08);
+}
+
+body.dark-theme .chat-input:focus {
+    background: rgba(255, 255, 255, 0.12);
 }
