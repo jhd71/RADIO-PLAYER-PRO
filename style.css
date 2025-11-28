@@ -748,7 +748,8 @@ body.dark-theme .player-container {
 /* Titre en cours (Now Playing) */
 .player-now-playing {
     font-size: 0.8rem;
-    color: var(--primary-color);
+    color: #ffffff;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
     margin-top: 4px;
     display: flex;
     align-items: center;
@@ -757,11 +758,15 @@ body.dark-theme .player-container {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    max-width: 200px;
+    max-width: 250px;
+    background: rgba(0, 0, 0, 0.25);
+    padding: 3px 8px;
+    border-radius: 12px;
 }
 
 .player-now-playing .material-icons {
     animation: pulse 1.5s ease-in-out infinite;
+    color: #ffeb3b;
 }
 
 @keyframes fadeInSlide {
