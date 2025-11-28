@@ -1846,12 +1846,7 @@ body.dark-theme .theme-toggle-btn {
     z-index: 2;
 }
 
-/* ========================================
-   BADGE NOMBRE D'AUDITEURS SUR LES CARTES
-   À AJOUTER À LA FIN DE style.css
-   ======================================== */
-
-/* Badge auditeurs sur carte radio */
+/* === BADGE AUDITEURS SUR CARTE RADIO === */
 .radio-card-listeners-badge {
     position: absolute;
     bottom: 8px;
@@ -1868,45 +1863,31 @@ body.dark-theme .theme-toggle-btn {
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
     backdrop-filter: blur(5px);
     -webkit-backdrop-filter: blur(5px);
+    z-index: 2;
 }
 
 .radio-card-listeners-badge .material-icons {
     font-size: 12px;
 }
 
-/* Animation quand le nombre change */
-@keyframes listenerPulse {
-    0% {
-        transform: scale(1);
+/* === ANIMATIONS === */
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
     }
     50% {
-        transform: scale(1.1);
-    }
-    100% {
-        transform: scale(1);
-    }
-}
-
-.radio-card-listeners-badge.updated {
-    animation: listenerPulse 0.3s ease;
-}
-
-/* Position du badge messages (en haut à gauche) */
-.radio-card-chat-badge {
-    position: absolute;
-    top: 8px;
-    left: 8px;
-}
-
-/* Sur mobile, badges légèrement plus petits */
-@media (max-width: 480px) {
-    .radio-card-listeners-badge {
-        font-size: 0.65rem;
-        padding: 2px 5px;
-    }
-    
-    .radio-card-listeners-badge .material-icons {
-        font-size: 10px;
+        opacity: 0.7;
     }
 }
 
@@ -2113,4 +2094,89 @@ body.dark-theme .chat-input {
 
 body.dark-theme .chat-input:focus {
     background: rgba(255, 255, 255, 0.12);
+}
+
+/* ========================================
+   BADGE NOMBRE D'AUDITEURS SUR LES CARTES
+   À AJOUTER À LA FIN DE style.css
+   ======================================== */
+
+/* Badge auditeurs sur carte radio */
+.radio-card-listeners-badge {
+    position: absolute;
+    bottom: 8px;
+    right: 8px;
+    background: rgba(76, 175, 80, 0.9);
+    color: white;
+    font-size: 0.7rem;
+    font-weight: 600;
+    padding: 3px 6px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+}
+
+.radio-card-listeners-badge .material-icons {
+    font-size: 12px;
+}
+
+/* Animation quand le nombre change */
+@keyframes listenerPulse {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.1);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+.radio-card-listeners-badge.updated {
+    animation: listenerPulse 0.3s ease;
+}
+
+/* Position du badge messages (en haut à gauche) */
+.radio-card-chat-badge {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+}
+
+/* Sur mobile, badges légèrement plus petits */
+@media (max-width: 480px) {
+    .radio-card-listeners-badge {
+        font-size: 0.65rem;
+        padding: 2px 5px;
+    }
+    
+    .radio-card-listeners-badge .material-icons {
+        font-size: 10px;
+    }
+}
+
+/* === FIX POUR IPHONE X ET PLUS === */
+@supports (padding-top: env(safe-area-inset-top)) {
+    @media (max-width: 768px) {
+        .app-header {
+            padding-top: calc(env(safe-area-inset-top) + 16px) !important;
+        }
+
+        .player-container {
+            padding-bottom: calc(env(safe-area-inset-bottom) + 12px) !important;
+        }
+
+        #pwaInstallBanner {
+            bottom: calc(env(safe-area-inset-bottom) + 16px) !important;
+        }
+
+        #settingsPanel {
+            margin-bottom: env(safe-area-inset-bottom) !important;
+        }
+    }
 }
