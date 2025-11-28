@@ -1750,7 +1750,7 @@ body.dark-theme .theme-toggle-btn {
 
 /* === PICKER EMOJIS === */
 .chat-emoji-picker {
-    position: absolute;
+    position: initial;
     bottom: 100%;
     left: 16px;
     right: 16px;
