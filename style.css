@@ -146,6 +146,41 @@ body {
     background: rgba(244, 67, 54, 0.3);
 }
 
+/* Boutons mode minuteur sommeil */
+.sleep-mode-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    font-size: 0.85rem;
+    opacity: 0.7;
+    transition: all 0.3s ease;
+}
+
+.sleep-mode-btn.active {
+    opacity: 1;
+    background: rgba(74, 144, 226, 0.3);
+    border-color: var(--primary-color);
+}
+
+.sleep-mode-btn:hover {
+    opacity: 1;
+}
+
+/* Input time style glass */
+input[type="time"].glass-select {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    color: var(--text-primary);
+    font-size: 1rem;
+}
+
+input[type="time"].glass-select::-webkit-calendar-picker-indicator {
+    filter: invert(1);
+    cursor: pointer;
+}
+
 /* Conteneur des boutons du minuteur */
 #settingsPanel section > div[style*="display:flex"] {
     display: flex !important;

@@ -269,6 +269,7 @@ class RadioPlayerApp {
         // === MINUTEUR DE SOMMEIL ===
         this.sleepTimerId = null;
         this.sleepTimerEndTime = null;
+        this.sleepTimerMode = 'delay'; // 'delay' ou 'time'
 
         // === PARAMÈTRES ===
         this.autoResumeEnabled = localStorage.getItem('autoResumeLastStation') === 'true';
@@ -399,6 +400,38 @@ class RadioPlayerApp {
             });
         });
 
+// === MINUTEUR SOMMEIL - MODES ===
+        const sleepModeDelay = document.getElementById('sleepModeDelay');
+        const sleepModeTime = document.getElementById('sleepModeTime');
+        const sleepDelayMode = document.getElementById('sleepDelayMode');
+        const sleepTimeMode = document.getElementById('sleepTimeMode');
+
+        if (sleepModeDelay && sleepModeTime) {
+            sleepModeDelay.addEventListener('click', () => {
+                this.sleepTimerMode = 'delay';
+                sleepModeDelay.classList.add('active');
+                sleepModeTime.classList.remove('active');
+                sleepDelayMode.style.display = 'block';
+                sleepTimeMode.style.display = 'none';
+            });
+
+            sleepModeTime.addEventListener('click', () => {
+                this.sleepTimerMode = 'time';
+                sleepModeTime.classList.add('active');
+                sleepModeDelay.classList.remove('active');
+                sleepTimeMode.style.display = 'block';
+                sleepDelayMode.style.display = 'none';
+                
+                // Pré-remplir avec une heure par défaut (dans 1h)
+                const sleepTimerTime = document.getElementById('sleepTimerTime');
+                if (sleepTimerTime && !sleepTimerTime.value) {
+                    const now = new Date();
+                    now.setHours(now.getHours() + 1);
+                    sleepTimerTime.value = now.toTimeString().slice(0, 5);
+                }
+            });
+        }
+		
         // === FILTRE DE CATÉGORIE ===
         const categorySelect = document.getElementById('categorySelect');
         if (categorySelect) {
@@ -674,8 +707,9 @@ class RadioPlayerApp {
             }
         });
 
-        if (startBtn && sleepSelect) {
+        if (startBtn) {
             startBtn.addEventListener('click', () => {
+                // Si un minuteur est déjà actif, l'annuler
                 if (this.sleepTimerEndTime) {
                     this.cancelSleepTimer();
                     this.updateSleepTimerInfo();
@@ -683,14 +717,28 @@ class RadioPlayerApp {
                     return;
                 }
 
-                const minutes = parseInt(sleepSelect.value, 10);
+                // Mode DURÉE
+                if (this.sleepTimerMode === 'delay') {
+                    const minutes = parseInt(sleepSelect.value, 10);
 
-                if (isNaN(minutes) || minutes <= 0) {
-                    this.showToast('⚠️ Sélectionnez une durée');
-                } else {
-                    this.startSleepTimer(minutes);
-                    this.updateSleepTimerInfo();
-                    this.showToast(`⏱️ La radio s'arrêtera dans ${minutes} min`);
+                    if (isNaN(minutes) || minutes <= 0) {
+                        this.showToast('⚠️ Sélectionnez une durée');
+                    } else {
+                        this.startSleepTimer(minutes);
+                        this.updateSleepTimerInfo();
+                    }
+                } 
+                // Mode HEURE PRÉCISE
+                else if (this.sleepTimerMode === 'time') {
+                    const sleepTimerTime = document.getElementById('sleepTimerTime');
+                    const timeValue = sleepTimerTime ? sleepTimerTime.value : '';
+
+                    if (!timeValue) {
+                        this.showToast('⚠️ Sélectionnez une heure');
+                    } else {
+                        this.startSleepTimerAtTime(timeValue);
+                        this.updateSleepTimerInfo();
+                    }
                 }
             });
         }
@@ -1696,7 +1744,45 @@ class RadioPlayerApp {
             this.sleepTimerEndTime = null;
             localStorage.removeItem('sleepTimerEndTime');
             this.updateSleepTimerInfo();
+            this.showToast('⏰ Minuteur terminé - Radio arrêtée');
         }, remainingMs);
+    }
+
+    // =====================================================
+    // MINUTEUR SOMMEIL - startSleepTimerAtTime()
+    // =====================================================
+    startSleepTimerAtTime(timeString) {
+        this.cancelSleepTimer();
+
+        const [hours, minutes] = timeString.split(':').map(Number);
+        const now = new Date();
+        const target = new Date();
+        
+        target.setHours(hours, minutes, 0, 0);
+        
+        // Si l'heure est déjà passée, programmer pour demain
+        if (target <= now) {
+            target.setDate(target.getDate() + 1);
+        }
+
+        this.sleepTimerEndTime = target.getTime();
+        localStorage.setItem('sleepTimerEndTime', String(this.sleepTimerEndTime));
+
+        const remainingMs = this.sleepTimerEndTime - now.getTime();
+
+        this.sleepTimerId = setTimeout(() => {
+            this.stopRadio();
+            this.sleepTimerId = null;
+            this.sleepTimerEndTime = null;
+            localStorage.removeItem('sleepTimerEndTime');
+            this.updateSleepTimerInfo();
+            this.showToast('⏰ Minuteur terminé - Radio arrêtée');
+        }, remainingMs);
+
+        // Afficher si c'est pour aujourd'hui ou demain
+        const isToday = target.getDate() === now.getDate();
+        const dayText = isToday ? "aujourd'hui" : "demain";
+        this.showToast(`⏰ Arrêt programmé ${dayText} à ${timeString}`);
     }
 
     // =====================================================
@@ -1808,8 +1894,18 @@ class RadioPlayerApp {
         }
 
         const remainingMinutes = Math.round(remainingMs / 60000);
+        
+        // Formater l'heure d'arrêt
+        const endDate = new Date(this.sleepTimerEndTime);
+        const endTimeStr = endDate.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
 
-        info.textContent = `La radio s'arrêtera dans environ ${remainingMinutes} min`;
+        if (remainingMinutes >= 60) {
+            const hours = Math.floor(remainingMinutes / 60);
+            const mins = remainingMinutes % 60;
+            info.textContent = `Arrêt à ${endTimeStr} (dans ${hours}h${mins > 0 ? mins + 'min' : ''})`;
+        } else {
+            info.textContent = `Arrêt à ${endTimeStr} (dans ${remainingMinutes} min)`;
+        }
 
         if (startBtn) {
             startBtn.innerHTML = '<span class="material-icons">stop</span> Arrêter le minuteur';

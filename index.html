@@ -341,26 +341,53 @@
                 <section>
                     <h3>Minuteur de sommeil</h3>
                     <p>
-                        La radio s'arrêtera automatiquement après la durée choisie.
+                        La radio s'arrêtera automatiquement après la durée choisie ou à une heure précise.
                     </p>
-                    <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
-                        <label for="sleepTimerSelect" style="white-space:nowrap;">Arrêt dans :</label>
-                        <select id="sleepTimerSelect" aria-label="Durée du minuteur de sommeil">
-                            <option value="0">Désactivé</option>
-                            <option value="15">15 min</option>
-                            <option value="30">30 min</option>
-                            <option value="45">45 min</option>
-                            <option value="60">1 h</option>
-                            <option value="75">1 h 15</option>
-                            <option value="90">1 h 30</option>
-                            <option value="105">1 h 45</option>
-                            <option value="120">2 h</option>
-                        </select>
+                    
+                    <!-- Choix du mode -->
+                    <div class="sleep-timer-modes" style="display: flex; gap: 8px; margin-bottom: 12px;">
+                        <button id="sleepModeDelay" class="glass-button sleep-mode-btn active" style="flex: 1; padding: 10px;">
+                            <span class="material-icons" style="font-size: 18px;">hourglass_empty</span>
+                            <span>Durée</span>
+                        </button>
+                        <button id="sleepModeTime" class="glass-button sleep-mode-btn" style="flex: 1; padding: 10px;">
+                            <span class="material-icons" style="font-size: 18px;">schedule</span>
+                            <span>Heure précise</span>
+                        </button>
                     </div>
+                    
+                    <!-- Mode Durée -->
+                    <div id="sleepDelayMode" style="margin-bottom: 12px;">
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <label for="sleepTimerSelect" style="white-space: nowrap;">Arrêt dans :</label>
+                            <select id="sleepTimerSelect" class="glass-select" aria-label="Durée du minuteur de sommeil">
+                                <option value="0">Choisir...</option>
+                                <option value="15">15 min</option>
+                                <option value="30">30 min</option>
+                                <option value="45">45 min</option>
+                                <option value="60">1 h</option>
+                                <option value="90">1 h 30</option>
+                                <option value="120">2 h</option>
+                                <option value="180">3 h</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <!-- Mode Heure précise -->
+                    <div id="sleepTimeMode" style="display: none; margin-bottom: 12px;">
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <label for="sleepTimerTime" style="white-space: nowrap;">Arrêt à :</label>
+                            <input type="time" id="sleepTimerTime" class="glass-select" style="padding: 8px 12px; flex: 1;" aria-label="Heure d'arrêt">
+                        </div>
+                        <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 6px;">
+                            💡 Si l'heure est passée, l'arrêt sera programmé pour demain
+                        </p>
+                    </div>
+                    
                     <div style="display: flex; gap: 8px; margin-bottom: 6px; width: 100%;">
                         <button id="sleepTimerStartBtn" class="glass-button" style="flex: 1;" aria-label="Démarrer le minuteur de sommeil">
                             <span class="material-icons" style="font-size: 20px;">timer</span>
-                            <span>Démarrer le minuteur</span>
+                            <span>Démarrer</span>
                         </button>
                         <button id="sleepTimerCancelBtn" class="glass-button" style="flex: 1; display: none;" aria-label="Annuler le minuteur de sommeil">
                             <span class="material-icons" style="font-size: 20px;">close</span>
