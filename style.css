@@ -745,6 +745,46 @@ body.dark-theme .player-container {
     color: var(--text-secondary);
 }
 
+/* Titre en cours (Now Playing) */
+.player-now-playing {
+    font-size: 0.8rem;
+    color: var(--primary-color);
+    margin-top: 4px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    animation: fadeInSlide 0.3s ease;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 200px;
+}
+
+.player-now-playing .material-icons {
+    animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes fadeInSlide {
+    from {
+        opacity: 0;
+        transform: translateY(-5px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+/* Cacher le titre en cours quand minimisé */
+.player-container.minimized .player-now-playing {
+    display: none;
+}
+
 /* === VISUALIZER === */
 .visualizer {
     display: flex;

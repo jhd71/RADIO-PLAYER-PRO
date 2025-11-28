@@ -296,6 +296,10 @@ class RadioPlayerApp {
         // === PWA ===
         this.deferredPrompt = null;
 
+		// === NOW PLAYING (Titre en cours) ===
+        this.nowPlayingInterval = null;
+        this.lastNowPlaying = '';
+		
         // === ÉLÉMENTS DOM ===
         this.audioPlayer = document.getElementById('audioPlayer');
         this.playerContainer = document.getElementById('playerContainer');
@@ -1373,6 +1377,9 @@ class RadioPlayerApp {
 
         localStorage.setItem('lastStation', station.id);
 
+        // Démarrer la récupération du titre en cours
+        this.startNowPlayingPolling();
+
         this.showToast(`Lecture de ${station.name}`);
     }
 
@@ -1422,6 +1429,9 @@ class RadioPlayerApp {
         // Se désabonner du chat (car on arrête la radio)
         this.unsubscribeFromChat();
 
+		// Arrêter la récupération du titre en cours
+        this.stopNowPlayingPolling();
+		
         // Retirer la présence globale (on n'écoute plus)
         this.updateGlobalPresence(null);
 
@@ -2938,6 +2948,92 @@ class RadioPlayerApp {
         });
     }
 
+// =====================================================
+    // NOW PLAYING - fetchNowPlaying()
+    // =====================================================
+    async fetchNowPlaying() {
+        if (!this.currentStation || !this.isPlaying) {
+            this.hideNowPlaying();
+            return;
+        }
+
+        try {
+            const encodedUrl = encodeURIComponent(this.currentStation.url);
+            const response = await fetch(`/api/nowplaying?url=${encodedUrl}`);
+            const data = await response.json();
+
+            if (data.success && data.nowPlaying) {
+                this.showNowPlaying(data.nowPlaying);
+            } else {
+                this.hideNowPlaying();
+            }
+        } catch (error) {
+            console.log('Erreur récupération titre:', error.message);
+            this.hideNowPlaying();
+        }
+    }
+
+    // =====================================================
+    // NOW PLAYING - showNowPlaying()
+    // =====================================================
+    showNowPlaying(title) {
+        const container = document.getElementById('playerNowPlaying');
+        const textSpan = document.getElementById('nowPlayingText');
+        
+        if (!container || !textSpan) return;
+
+        // Ne mettre à jour que si le titre a changé
+        if (title !== this.lastNowPlaying) {
+            this.lastNowPlaying = title;
+            textSpan.textContent = title;
+            container.style.display = 'flex';
+            
+            // Animation de changement
+            container.style.animation = 'none';
+            setTimeout(() => {
+                container.style.animation = 'fadeInSlide 0.3s ease';
+            }, 10);
+        }
+    }
+
+    // =====================================================
+    // NOW PLAYING - hideNowPlaying()
+    // =====================================================
+    hideNowPlaying() {
+        const container = document.getElementById('playerNowPlaying');
+        if (container) {
+            container.style.display = 'none';
+        }
+        this.lastNowPlaying = '';
+    }
+
+    // =====================================================
+    // NOW PLAYING - startNowPlayingPolling()
+    // =====================================================
+    startNowPlayingPolling() {
+        // Arrêter le polling précédent s'il existe
+        this.stopNowPlayingPolling();
+
+        // Récupérer immédiatement
+        this.fetchNowPlaying();
+
+        // Puis toutes les 15 secondes
+        this.nowPlayingInterval = setInterval(() => {
+            this.fetchNowPlaying();
+        }, 15000);
+    }
+
+    // =====================================================
+    // NOW PLAYING - stopNowPlayingPolling()
+    // =====================================================
+    stopNowPlayingPolling() {
+        if (this.nowPlayingInterval) {
+            clearInterval(this.nowPlayingInterval);
+            this.nowPlayingInterval = null;
+        }
+        this.hideNowPlaying();
+    }
+	
     // =====================================================
     // UTILITAIRES - showToast()
     // =====================================================
