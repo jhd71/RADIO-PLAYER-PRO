@@ -134,47 +134,7 @@ class RadioPlayerApp {
                 logo: 'images/radio-logos/Alouette-Nouveaux-Talents.png',
                 description: '1ère Radio Régionale de France',
                 category: 'locale'
-            },
-            {
-                id: 'RTL',
-                name: 'RTL',
-                url: 'https://streamer-03.rtl.fr/rtl-1-44-128',
-                logo: 'images/radio-logos/rtl.png',
-                description: 'Info & divertissement',
-                category: 'info'
-            },
-            {
-                id: 'Europe-1',
-                name: 'Europe 1',
-                url: 'https://europe1.lmn.fm/europe1.mp3',
-                logo: 'images/radio-logos/europe1.png',
-                description: 'Talk & actualités',
-                category: 'info'
-            },
-            {
-                id: 'RMC',
-                name: 'RMC',
-                url: 'https://audio.bfmtv.com/rmcradio_128.mp3',
-                logo: 'images/radio-logos/rmc.png',
-                description: 'Sport & info',
-                category: 'info'
-            },
-            {
-                id: 'France-Info',
-                name: 'France Info',
-                url: 'https://icecast.radiofrance.fr/franceinfo-midfi.mp3',
-                logo: 'images/radio-logos/france-info.png',
-                description: 'Info en continu',
-                category: 'info'
-            },
-            {
-                id: 'France-Inter',
-                name: 'France Inter',
-                url: 'https://icecast.radiofrance.fr/franceinter-midfi.mp3',
-                logo: 'images/radio-logos/France-Inter.png',
-                description: 'Service public radio',
-                category: 'info'
-            },
+            },          
             {
                 id: 'Vibration',
                 name: 'Vibration',
@@ -198,15 +158,7 @@ class RadioPlayerApp {
                 logo: 'images/radio-logos/Virage-Radio.png',
                 description: 'Rock & pop',
                 category: 'rock'
-            },
-            {
-                id: 'BFM-Radio',
-                name: 'BFM Radio',
-                url: 'http://audio.bfmtv.com/bfmradio_128.mp3',
-                logo: 'images/radio-logos/BFM-Radio.png',
-                description: 'Info en continu',
-                category: 'info'
-            },
+            },            
             {
                 id: 'Sud-Radio',
                 name: 'Sud Radio',
@@ -246,6 +198,54 @@ class RadioPlayerApp {
                 logo: 'images/radio-logos/Kiss-fm.png',
                 description: 'Urban & R&B',
                 category: 'thematique'
+            },
+			{
+                id: 'RTL',
+                name: 'RTL',
+                url: 'https://streamer-03.rtl.fr/rtl-1-44-128',
+                logo: 'images/radio-logos/rtl.png',
+                description: 'Info & divertissement',
+                category: 'info'
+            },
+            {
+                id: 'Europe-1',
+                name: 'Europe 1',
+                url: 'https://europe1.lmn.fm/europe1.mp3',
+                logo: 'images/radio-logos/europe1.png',
+                description: 'Talk & actualités',
+                category: 'info'
+            },
+            {
+                id: 'RMC',
+                name: 'RMC',
+                url: 'https://audio.bfmtv.com/rmcradio_128.mp3',
+                logo: 'images/radio-logos/rmc.png',
+                description: 'Sport & info',
+                category: 'info'
+            },
+			{
+                id: 'France-Info',
+                name: 'France Info',
+                url: 'https://icecast.radiofrance.fr/franceinfo-midfi.mp3',
+                logo: 'images/radio-logos/france-info.png',
+                description: 'Info en continu',
+                category: 'info'
+            },
+			{
+                id: 'BFM-Radio',
+                name: 'BFM Radio',
+                url: 'http://audio.bfmtv.com/bfmradio_128.mp3',
+                logo: 'images/radio-logos/BFM-Radio.png',
+                description: 'Info en continu',
+                category: 'info'
+            },
+            {
+                id: 'France-Inter',
+                name: 'France Inter',
+                url: 'https://icecast.radiofrance.fr/franceinter-midfi.mp3',
+                logo: 'images/radio-logos/France-Inter.png',
+                description: 'Service public radio',
+                category: 'info'
             }
         ];
 
