@@ -202,7 +202,7 @@ class RadioPlayerApp {
 			{
                 id: 'RTL',
                 name: 'RTL',
-                url: 'https://streamer-03.rtl.fr/rtl-1-44-128',
+                url: 'https://hls.m6radio.quortex.io/radio/national/rtl/long/audio-64000/index.m3u8?Policy=eyJTdGF0ZW1lbnQiOlt7IlJlc291cmNlIjoiaHR0cHM6Ly9obHMubTZyYWRpby5xdW9ydGV4LmlvL3JhZGlvL25hdGlvbmFsL3J0bC9sb25nL2F1ZGlvLTY0MDAwL2luZGV4Lm0zdTg~KiIsIkNvbmRpdGlvbiI6eyJEYXRlTGVzc1RoYW4iOnsiQVdTOkVwb2NoVGltZSI6MTc2NDQwNzA1NH19fV19&Signature=JAmCJBPNLL2JCno98Z9KKk~VW~WJ09hD3Z~-5NaoPDDZhA3t~YwJJWi32LKqjRM2PmJMW2KSFtkKTOoXYbzFui6~HKG7FnuDoIP6SBEFW-gUhWcIeoIHpG9bVqPO0JsSPOs74X1vIIRQrsevK3oOE4LotsgkrI8B4ryNIuIyFTcPAf57ziW~cXPNKKJqS3Dh-K0hMY4hvAF7fUFcCYYozBhUwAynsWC5cm~IYq179PhYDHHPfLJ6UkDUezXpq9KEoT8j65sQAvry4I46EfNKxc2Shkg0WyjlS~Xn5JQowa1lkjhc9nm9sGZDT-kcPeNMvtfVuAqZ1--zUJVGrZVdww__&Key-Pair-Id=KJP0D6SNZH3C7&CMCD=cid%3D%22rtl%22%2Cot%3D%22m%22%2Csf%3D%22h%22%2Csid%3D%22648a09a5-8ab7-42b1-b064-385a2428cb38%22%2Cd%3D%225760%22%2Crid%3D%22webOU6MESMYnoHzvZJe8ie5Mi%22%2Ccc%3D%22FR%22%2Cuid%3D%22unset%22%2Ccdn%3D%22quortex%22',
                 logo: 'images/radio-logos/rtl.png',
                 description: 'Info & divertissement',
                 category: 'info'
