@@ -395,14 +395,7 @@ class RadioPlayerApp {
         // === ONGLETS (UNE SEULE FOIS) ===
         document.querySelectorAll('.tab-button').forEach(button => {
             button.addEventListener('click', () => {
-                document.querySelectorAll('.tab-button').forEach(b => b.classList.remove('active'));
-                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-
-                button.classList.add('active');
-                const tabId = button.dataset.tab + '-tab';
-                document.getElementById(tabId).classList.add('active');
-
-                this.toggleCategoryFilter(button.dataset.tab);
+                this.switchToTab(button.dataset.tab);
             });
         });
 
