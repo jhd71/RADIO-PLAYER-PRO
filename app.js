@@ -74,7 +74,6 @@ class RadioPlayerApp {
                 description: 'Info locale Bourgogne',
                 category: 'locale'
             },
-            {
 
             // =====================================================
             // GÉNÉRALISTES
