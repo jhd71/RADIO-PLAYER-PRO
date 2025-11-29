@@ -25,7 +25,15 @@ class RadioPlayerApp {
         this.stations = [
             // =====================================================
             // LOCALES / RÉGIONALES
-            // =====================================================           
+            // =====================================================
+			{
+                id: 'France-Bleu-Bourgogne',
+                name: 'France Bleu Bourgogne',
+                url: 'https://icecast.radiofrance.fr/fbbourgogne-midfi.mp3',
+                logo: 'images/radio-logos/France-Bleu-Bourgogne.png',
+                description: 'Info locale Bourgogne',
+                category: 'locale'
+            },
             {
                 id: 'Radio-Prevert',
                 name: 'Radio Prevert',
@@ -64,14 +72,6 @@ class RadioPlayerApp {
                 url: 'https://alouettenouveauxtalents.ice.infomaniak.ch/alouettenouveauxtalents-128.mp3',
                 logo: 'images/radio-logos/Alouette-Nouveaux-Talents.png',
                 description: '1ère Radio Régionale de France',
-                category: 'locale'
-            },
-            {
-                id: 'France-Bleu-Bourgogne',
-                name: 'France Bleu Bourgogne',
-                url: 'https://icecast.radiofrance.fr/fbbourgogne-midfi.mp3',
-                logo: 'images/radio-logos/France-Bleu-Bourgogne.png',
-                description: 'Info locale Bourgogne',
                 category: 'locale'
             },
 
