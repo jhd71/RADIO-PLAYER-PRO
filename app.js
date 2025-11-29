@@ -300,6 +300,9 @@ class RadioPlayerApp {
         this.nowPlayingInterval = null;
         this.lastNowPlaying = '';
 		
+		// === THÈME COULEUR ===
+        this.currentColorTheme = localStorage.getItem('colorTheme') || 'default';
+		
         // === ÉLÉMENTS DOM ===
         this.audioPlayer = document.getElementById('audioPlayer');
         this.playerContainer = document.getElementById('playerContainer');
@@ -411,6 +414,33 @@ class RadioPlayerApp {
             });
         });
 
+	// === THÈME COULEUR ===
+        this.applyColorTheme(this.currentColorTheme);
+        
+        document.querySelectorAll('.theme-color-btn').forEach(btn => {
+            // Marquer le thème actuel comme actif
+            if (btn.dataset.theme === this.currentColorTheme) {
+                btn.classList.add('active');
+            } else {
+                btn.classList.remove('active');
+            }
+            
+            btn.addEventListener('click', () => {
+                const theme = btn.dataset.theme;
+                this.applyColorTheme(theme);
+                
+                // Mettre à jour l'UI
+                document.querySelectorAll('.theme-color-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                
+                // Sauvegarder
+                this.currentColorTheme = theme;
+                localStorage.setItem('colorTheme', theme);
+                
+                this.showToast(`🎨 Thème ${btn.title} appliqué`);
+            });
+        });
+		
 	// === MINUTEUR SOMMEIL - BOUTON PLAYER ===
         const sleepTimerBtn = document.getElementById('sleepTimerBtn');
         const sleepTimerPopup = document.getElementById('sleepTimerPopup');
@@ -1837,6 +1867,26 @@ class RadioPlayerApp {
         this.renderFavorites();
     }
 
+	// =====================================================
+    // THÈME COULEUR - applyColorTheme()
+    // =====================================================
+    applyColorTheme(theme) {
+        // Supprimer tous les thèmes couleur existants
+        document.body.classList.remove(
+            'theme-ocean',
+            'theme-nature', 
+            'theme-sunset',
+            'theme-rose',
+            'theme-turquoise',
+            'theme-midnight'
+        );
+        
+        // Appliquer le nouveau thème (sauf si default)
+        if (theme && theme !== 'default') {
+            document.body.classList.add(`theme-${theme}`);
+        }
+    }
+	
 	// =====================================================
     // MINUTEUR SOMMEIL - updateSleepPopupUI()
     // =====================================================
