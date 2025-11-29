@@ -419,6 +419,18 @@ class RadioPlayerApp {
             // Ouvrir/Fermer le popup
             sleepTimerBtn.addEventListener('click', (e) => {
                 e.stopPropagation();
+                
+                // Si le player est minimisé, le déplier d'abord
+                if (this.playerMinimized) {
+                    this.togglePlayerSize();
+                    // Attendre l'animation puis ouvrir le popup
+                    setTimeout(() => {
+                        sleepTimerPopup.style.display = 'block';
+                        this.updateSleepPopupUI();
+                    }, 300);
+                    return;
+                }
+                
                 const isVisible = sleepTimerPopup.style.display === 'block';
                 sleepTimerPopup.style.display = isVisible ? 'none' : 'block';
                 
