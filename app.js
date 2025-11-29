@@ -23,6 +23,9 @@ class RadioPlayerApp {
     constructor() {
         // === LISTE DES RADIOS ===
         this.stations = [
+            // =====================================================
+            // LOCALES / RÉGIONALES
+            // =====================================================
             {
                 id: 'Ici-Bourgogne',
                 name: 'Ici Bourgogne',
@@ -40,68 +43,12 @@ class RadioPlayerApp {
                 category: 'locale'
             },
             {
-                id: 'La-Radio-Sans-pub',
-                name: 'La Radio Sans pub',
-                url: 'https://live1.jupinfo.fr:8443/play',
-                logo: 'images/radio-logos/La-Radio-Sans-pub.png',
-                description: '100% Hits 24/24',
-                category: 'generaliste'
-            },
-            {
-                id: 'Skyrock',
-                name: 'Skyrock',
-                url: 'https://icecast.skyrock.net/s/natio_aac_128k?tvr_name=tunein16&tvr_section1=64aac',
-                logo: 'images/radio-logos/Skyrock.png',
-                description: 'Skyrock 1er sur le rap',
-                category: 'thematique'
-            },
-            {
-                id: 'NRJ',
-                name: 'NRJ',
-                url: 'https://streaming.nrjaudio.fm/oumvmk8fnozc?origine=fluxurlradio',
-                logo: 'images/radio-logos/nrj.png',
-                description: 'Hits & musique',
-                category: 'generaliste'
-            },
-            {
-                id: 'Fun-Radio',
-                name: 'Fun Radio',
-                url: 'https://streamer-02.rtl.fr/fun-1-44-128',
-                logo: 'images/radio-logos/Fun-Radio.png',
-                description: 'Le son dancefloor',
-                category: 'generaliste'
-            },
-            {
-                id: 'Nostalgie',
-                name: 'Nostalgie',
-                url: 'https://streaming.nrjaudio.fm/oug7girb92oc?origine=fluxradios',
-                logo: 'images/radio-logos/nostalgie.png',
-                description: 'Oldies & classics',
-                category: 'thematique'
-            },
-            {
-                id: 'Cherie-FM',
-                name: 'Chérie FM',
-                url: 'https://streaming.nrjaudio.fm/ouuku85n3nje?origine=fluxradios',
-                logo: 'images/radio-logos/cherie-fm.png',
-                description: 'Love songs',
-                category: 'thematique'
-            },
-            {
                 id: 'Frequence-Plus',
                 name: 'Fréquence Plus',
                 url: 'https://fplus-chalonsursaone.ice.infomaniak.ch/fplus-chalonsursaone-128.mp3',
                 logo: 'images/radio-logos/Frequence-Plus.png',
                 description: 'A plein tubes, Chalon',
                 category: 'locale'
-            },
-            {
-                id: 'M-Radio',
-                name: 'M Radio',
-                url: 'https://mradio-lyon.ice.infomaniak.ch/mradio-lyon.mp3',
-                logo: 'images/radio-logos/M-Radio.png',
-                description: 'Numéro 1 sur la chanson française',
-                category: 'thematique'
             },
             {
                 id: 'Cerise-FM',
@@ -120,25 +67,69 @@ class RadioPlayerApp {
                 category: 'locale'
             },
             {
-                id: 'RTL2',
-                name: 'RTL2',
-                url: 'https://streamer-02.rtl.fr/rtl2-1-44-128',
-                logo: 'images/radio-logos/RTL2.png',
-                description: 'Le Son Pop-Rock',
-                category: 'rock'
-            },
-            {
                 id: 'Alouette-Nouveaux-Talents',
                 name: 'Alouette Nouveaux Talents',
                 url: 'https://alouettenouveauxtalents.ice.infomaniak.ch/alouettenouveauxtalents-128.mp3',
                 logo: 'images/radio-logos/Alouette-Nouveaux-Talents.png',
                 description: '1ère Radio Régionale de France',
                 category: 'locale'
-            },          
+            },
+            {
+                id: 'France-Bleu-Bourgogne',
+                name: 'France Bleu Bourgogne',
+                url: 'https://icecast.radiofrance.fr/fbbourgogne-midfi.mp3',
+                logo: 'images/radio-logos/France-Bleu-Bourgogne.png',
+                description: 'Info locale Bourgogne',
+                category: 'locale'
+            },
+            {
+                id: 'France-Bleu-Auxerre',
+                name: 'France Bleu Auxerre',
+                url: 'https://icecast.radiofrance.fr/fbauxerre-midfi.mp3',
+                logo: 'images/radio-logos/France-Bleu-Auxerre.png',
+                description: 'Info locale Yonne',
+                category: 'locale'
+            },
+            {
+                id: 'France-Bleu-Besancon',
+                name: 'France Bleu Besançon',
+                url: 'https://icecast.radiofrance.fr/fbbesancon-midfi.mp3',
+                logo: 'images/radio-logos/France-Bleu-Besancon.png',
+                description: 'Info locale Franche-Comté',
+                category: 'locale'
+            },
+
+            // =====================================================
+            // GÉNÉRALISTES
+            // =====================================================
+            {
+                id: 'La-Radio-Sans-pub',
+                name: 'La Radio Sans pub',
+                url: 'https://live1.jupinfo.fr:8443/play',
+                logo: 'images/radio-logos/La-Radio-Sans-pub.png',
+                description: '100% Hits 24/24',
+                category: 'generaliste'
+            },
+            {
+                id: 'NRJ',
+                name: 'NRJ',
+                url: 'https://streaming.nrjaudio.fm/oumvmk8fnozc?origine=fluxurlradio',
+                logo: 'images/radio-logos/nrj.png',
+                description: 'Hits & musique',
+                category: 'generaliste'
+            },
+            {
+                id: 'Fun-Radio',
+                name: 'Fun Radio',
+                url: 'https://streamer-02.rtl.fr/fun-1-44-128',
+                logo: 'images/radio-logos/Fun-Radio.png',
+                description: 'Le son dancefloor',
+                category: 'generaliste'
+            },
             {
                 id: 'Vibration',
                 name: 'Vibration',
-                url: 'http://vibration.ice.infomaniak.ch/vibration-high.mp3',
+                url: 'https://vibration.ice.infomaniak.ch/vibration-high.mp3',
                 logo: 'images/radio-logos/Vibration.png',
                 description: 'Hits & variétés',
                 category: 'generaliste'
@@ -152,13 +143,89 @@ class RadioPlayerApp {
                 category: 'generaliste'
             },
             {
-                id: 'Virage-Radio',
-                name: 'Virage Radio',
-                url: 'http://virageradio.ice.infomaniak.ch/virageradio-high.mp3',
-                logo: 'images/radio-logos/Virage-Radio.png',
-                description: 'Rock & pop',
-                category: 'rock'
-            },            
+                id: 'Virgin-Radio',
+                name: 'Virgin Radio',
+                url: 'https://icecast.virginradio.fr/virginradio.mp3',
+                logo: 'images/radio-logos/Virgin-Radio.png',
+                description: 'Pop Rock Electro',
+                category: 'generaliste'
+            },
+            {
+                id: 'RFM',
+                name: 'RFM',
+                url: 'https://rfm.ice.infomaniak.ch/rfm-high.mp3',
+                logo: 'images/radio-logos/RFM.png',
+                description: 'Le meilleur de la musique',
+                category: 'generaliste'
+            },
+            {
+                id: 'Contact-FM',
+                name: 'Contact FM',
+                url: 'https://contactfm.ice.infomaniak.ch/contactfm-high.mp3',
+                logo: 'images/radio-logos/Contact-FM.png',
+                description: 'Hits & nouveautés',
+                category: 'generaliste'
+            },
+
+            // =====================================================
+            // INFO / TALK
+            // =====================================================
+            {
+                id: 'France-Info',
+                name: 'France Info',
+                url: 'https://icecast.radiofrance.fr/franceinfo-midfi.mp3',
+                logo: 'images/radio-logos/france-info.png',
+                description: 'Info en continu',
+                category: 'info'
+            },
+            {
+                id: 'France-Inter',
+                name: 'France Inter',
+                url: 'https://icecast.radiofrance.fr/franceinter-midfi.mp3',
+                logo: 'images/radio-logos/France-Inter.png',
+                description: 'Service public radio',
+                category: 'info'
+            },
+            {
+                id: 'France-Culture',
+                name: 'France Culture',
+                url: 'https://icecast.radiofrance.fr/franceculture-midfi.mp3',
+                logo: 'images/radio-logos/France-Culture.png',
+                description: 'Culture & société',
+                category: 'info'
+            },
+            {
+                id: 'RTL',
+                name: 'RTL',
+                url: 'https://streamer-03.rtl.fr/rtl-1-44-128',
+                logo: 'images/radio-logos/rtl.png',
+                description: 'Info & divertissement',
+                category: 'info'
+            },
+            {
+                id: 'Europe-1',
+                name: 'Europe 1',
+                url: 'https://europe1.lmn.fm/europe1.mp3',
+                logo: 'images/radio-logos/europe1.png',
+                description: 'Talk & actualités',
+                category: 'info'
+            },
+            {
+                id: 'RMC',
+                name: 'RMC',
+                url: 'https://audio.bfmtv.com/rmcradio_128.mp3',
+                logo: 'images/radio-logos/rmc.png',
+                description: 'Sport & info',
+                category: 'info'
+            },
+            {
+                id: 'BFM-Radio',
+                name: 'BFM Radio',
+                url: 'https://audio.bfmtv.com/bfmradio_128.mp3',
+                logo: 'images/radio-logos/BFM-Radio.png',
+                description: 'Info en continu',
+                category: 'info'
+            },
             {
                 id: 'Sud-Radio',
                 name: 'Sud Radio',
@@ -166,6 +233,86 @@ class RadioPlayerApp {
                 logo: 'images/radio-logos/Sud-Radio.png',
                 description: 'Talk & débats',
                 category: 'info'
+            },
+            {
+                id: 'Radio-Classique',
+                name: 'Radio Classique',
+                url: 'https://radioclassique.ice.infomaniak.ch/radioclassique-high.mp3',
+                logo: 'images/radio-logos/Radio-Classique.png',
+                description: 'Musique classique & info',
+                category: 'info'
+            },
+
+            // =====================================================
+            // ROCK
+            // =====================================================
+            {
+                id: 'RTL2',
+                name: 'RTL2',
+                url: 'https://streamer-02.rtl.fr/rtl2-1-44-128',
+                logo: 'images/radio-logos/RTL2.png',
+                description: 'Le Son Pop-Rock',
+                category: 'rock'
+            },
+            {
+                id: 'Virage-Radio',
+                name: 'Virage Radio',
+                url: 'https://virageradio.ice.infomaniak.ch/virageradio-high.mp3',
+                logo: 'images/radio-logos/Virage-Radio.png',
+                description: 'Rock & pop',
+                category: 'rock'
+            },
+            {
+                id: 'OUI-FM',
+                name: 'OUI FM',
+                url: 'https://ouifm.ice.infomaniak.ch/ouifm-high.mp3',
+                logo: 'images/radio-logos/OUI-FM.png',
+                description: 'Rock indé & alternatif',
+                category: 'rock'
+            },
+            {
+                id: 'Rock-70',
+                name: 'Rock 70',
+                url: 'https://rock70.ice.infomaniak.ch/rock70-128.mp3',
+                logo: 'images/radio-logos/Rock-70.png',
+                description: 'Le rock des années 70',
+                category: 'rock'
+            },
+
+            // =====================================================
+            // THÉMATIQUES
+            // =====================================================
+            {
+                id: 'Skyrock',
+                name: 'Skyrock',
+                url: 'https://icecast.skyrock.net/s/natio_aac_128k?tvr_name=tunein16&tvr_section1=64aac',
+                logo: 'images/radio-logos/Skyrock.png',
+                description: 'Skyrock 1er sur le rap',
+                category: 'thematique'
+            },
+            {
+                id: 'Nostalgie',
+                name: 'Nostalgie',
+                url: 'https://streaming.nrjaudio.fm/oug7girb92oc?origine=fluxradios',
+                logo: 'images/radio-logos/nostalgie.png',
+                description: 'Oldies & classics',
+                category: 'thematique'
+            },
+            {
+                id: 'Cherie-FM',
+                name: 'Chérie FM',
+                url: 'https://streaming.nrjaudio.fm/ouuku85n3nje?origine=fluxradios',
+                logo: 'images/radio-logos/cherie-fm.png',
+                description: 'Love songs',
+                category: 'thematique'
+            },
+            {
+                id: 'M-Radio',
+                name: 'M Radio',
+                url: 'https://mradio-lyon.ice.infomaniak.ch/mradio-lyon.mp3',
+                logo: 'images/radio-logos/M-Radio.png',
+                description: 'Numéro 1 sur la chanson française',
+                category: 'thematique'
             },
             {
                 id: 'Voltage-80s',
@@ -194,58 +341,66 @@ class RadioPlayerApp {
             {
                 id: 'Kiss-FM',
                 name: 'Kiss FM',
-                url: 'http://kissfm2.ice.infomaniak.ch/kissfm2-128.mp3',
+                url: 'https://kissfm2.ice.infomaniak.ch/kissfm2-128.mp3',
                 logo: 'images/radio-logos/Kiss-fm.png',
                 description: 'Urban & R&B',
                 category: 'thematique'
             },
-			{
-                id: 'RTL',
-                name: 'RTL',
-                url: 'https://streamer-03.rtl.fr/rtl-1-44-128',
-                logo: 'images/radio-logos/rtl.png',
-                description: 'Info & divertissement',
-                category: 'info'
+            {
+                id: 'FIP',
+                name: 'FIP',
+                url: 'https://icecast.radiofrance.fr/fip-midfi.mp3',
+                logo: 'images/radio-logos/FIP.png',
+                description: 'Éclectique & sans pub',
+                category: 'thematique'
             },
             {
-                id: 'Europe-1',
-                name: 'Europe 1',
-                url: 'https://europe1.lmn.fm/europe1.mp3',
-                logo: 'images/radio-logos/europe1.png',
-                description: 'Talk & actualités',
-                category: 'info'
+                id: 'Mouv',
+                name: 'Mouv\'',
+                url: 'https://icecast.radiofrance.fr/mouv-midfi.mp3',
+                logo: 'images/radio-logos/Mouv.png',
+                description: 'Hip-hop & urbain',
+                category: 'thematique'
             },
             {
-                id: 'RMC',
-                name: 'RMC',
-                url: 'https://audio.bfmtv.com/rmcradio_128.mp3',
-                logo: 'images/radio-logos/rmc.png',
-                description: 'Sport & info',
-                category: 'info'
-            },
-			{
-                id: 'France-Info',
-                name: 'France Info',
-                url: 'https://icecast.radiofrance.fr/franceinfo-midfi.mp3',
-                logo: 'images/radio-logos/france-info.png',
-                description: 'Info en continu',
-                category: 'info'
-            },
-			{
-                id: 'BFM-Radio',
-                name: 'BFM Radio',
-                url: 'http://audio.bfmtv.com/bfmradio_128.mp3',
-                logo: 'images/radio-logos/BFM-Radio.png',
-                description: 'Info en continu',
-                category: 'info'
+                id: 'Jazz-Radio',
+                name: 'Jazz Radio',
+                url: 'https://jazzradio.ice.infomaniak.ch/jazzradio-high.mp3',
+                logo: 'images/radio-logos/Jazz-Radio.png',
+                description: '100% Jazz',
+                category: 'thematique'
             },
             {
-                id: 'France-Inter',
-                name: 'France Inter',
-                url: 'https://icecast.radiofrance.fr/franceinter-midfi.mp3',
-                logo: 'images/radio-logos/France-Inter.png',
-                description: 'Service public radio',
-                category: 'info'
+                id: 'Radio-Nova',
+                name: 'Radio Nova',
+                url: 'https://novazz.ice.infomaniak.ch/novazz-128.mp3',
+                logo: 'images/radio-logos/Radio-Nova.png',
+                description: 'Soul Funk World',
+                category: 'thematique'
+            },
+            {
+                id: 'TSF-Jazz',
+                name: 'TSF Jazz',
+                url: 'https://tsfjazz.ice.infomaniak.ch/tsfjazz-high.mp3',
+                logo: 'images/radio-logos/TSF-Jazz.png',
+                description: 'Jazz & plus',
+                category: 'thematique'
+            },
+            {
+                id: 'Rire-et-Chansons',
+                name: 'Rire et Chansons',
+                url: 'https://streaming.nrjaudio.fm/oui6bjw8g5ca?origine=fluxradios',
+                logo: 'images/radio-logos/Rire-et-Chansons.png',
+                description: 'Humour & musique',
+                category: 'thematique'
+            },
+            {
+                id: 'Radio-Scoop',
+                name: 'Radio Scoop',
+                url: 'https://radioscoop.ice.infomaniak.ch/radioscoop-high.mp3',
+                logo: 'images/radio-logos/Radio-Scoop.png',
+                description: 'Hits & bonne humeur',
+                category: 'thematique'
             }
         ];
 
