@@ -790,6 +790,190 @@ body.dark-theme .player-container {
     display: none;
 }
 
+/* === BOUTON MINUTEUR DANS LE PLAYER === */
+#sleepTimerBtn {
+    position: relative;
+}
+
+#sleepTimerBtn.active {
+    background: rgba(255, 193, 7, 0.3);
+    border-color: #ffc107;
+}
+
+#sleepTimerBtn.active .material-icons {
+    color: #ffc107;
+}
+
+.sleep-timer-badge {
+    position: absolute;
+    bottom: -2px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 0.6rem;
+    font-weight: 700;
+    color: #ffc107;
+    background: rgba(0, 0, 0, 0.6);
+    padding: 1px 4px;
+    border-radius: 8px;
+    min-width: 28px;
+    text-align: center;
+}
+
+/* === POPUP MINUTEUR === */
+.sleep-timer-popup {
+    position: absolute;
+    bottom: 100%;
+    right: 10px;
+    margin-bottom: 10px;
+    background: rgba(30, 30, 50, 0.95);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 16px;
+    padding: 12px;
+    min-width: 180px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+    z-index: 1000;
+    animation: popupSlideIn 0.2s ease;
+}
+
+@keyframes popupSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.sleep-popup-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: #fff;
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.sleep-popup-header .material-icons {
+    font-size: 20px;
+    color: #ffc107;
+}
+
+.sleep-popup-options {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 6px;
+    margin-bottom: 8px;
+}
+
+.sleep-option {
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    padding: 10px 12px;
+    color: #fff;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+}
+
+.sleep-option:hover {
+    background: rgba(255, 255, 255, 0.15);
+    transform: scale(1.02);
+}
+
+.sleep-option:active {
+    transform: scale(0.98);
+}
+
+.sleep-option.active {
+    background: rgba(255, 193, 7, 0.3);
+    border-color: #ffc107;
+    color: #ffc107;
+}
+
+.sleep-popup-divider {
+    height: 1px;
+    background: rgba(255, 255, 255, 0.1);
+    margin: 8px 0;
+}
+
+.sleep-option-time {
+    width: 100%;
+    justify-content: flex-start;
+    background: rgba(74, 144, 226, 0.15);
+    border-color: rgba(74, 144, 226, 0.3);
+}
+
+.sleep-option-time .material-icons {
+    font-size: 18px;
+    color: var(--primary-color);
+}
+
+.sleep-time-input {
+    width: 100%;
+    padding: 10px 12px;
+    margin-top: 6px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
+    color: #fff;
+    font-size: 1rem;
+    text-align: center;
+}
+
+.sleep-time-input::-webkit-calendar-picker-indicator {
+    filter: invert(1);
+    cursor: pointer;
+}
+
+.sleep-option-cancel {
+    width: 100%;
+    justify-content: flex-start;
+    background: rgba(244, 67, 54, 0.15);
+    border-color: rgba(244, 67, 54, 0.3);
+    color: #f44336;
+    margin-top: 6px;
+}
+
+.sleep-option-cancel .material-icons {
+    color: #f44336;
+}
+
+.sleep-popup-status {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 12px;
+    margin-top: 8px;
+    background: rgba(76, 175, 80, 0.15);
+    border: 1px solid rgba(76, 175, 80, 0.3);
+    border-radius: 10px;
+    color: #4caf50;
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+
+.sleep-popup-status .material-icons {
+    font-size: 18px;
+    animation: pulse 1.5s ease-in-out infinite;
+}
+
+/* Cacher le popup en mode minimisé */
+.player-container.minimized .sleep-timer-popup {
+    display: none !important;
+}
+
 /* === VISUALIZER === */
 .visualizer {
     display: flex;

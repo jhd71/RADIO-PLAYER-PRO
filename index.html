@@ -209,6 +209,42 @@
 			<button class="control-btn glass-button" id="castBtn" title="Caster sur un appareil" aria-label="Caster sur Chromecast">
 				<span class="material-icons">cast</span>
 			</button>
+			
+			<!-- Bouton Minuteur Sommeil -->
+			<button class="control-btn glass-button" id="sleepTimerBtn" title="Minuteur sommeil" aria-label="Programmer l'arrêt">
+				<span class="material-icons">bedtime</span>
+				<span class="sleep-timer-badge" id="sleepTimerBadge" style="display: none;">0</span>
+			</button>
+		</div>
+		
+		<!-- Popup Minuteur Sommeil -->
+		<div class="sleep-timer-popup" id="sleepTimerPopup" style="display: none;">
+			<div class="sleep-popup-header">
+				<span class="material-icons">bedtime</span>
+				<span>Minuteur sommeil</span>
+			</div>
+			<div class="sleep-popup-options">
+				<button class="sleep-option" data-minutes="15">15 min</button>
+				<button class="sleep-option" data-minutes="30">30 min</button>
+				<button class="sleep-option" data-minutes="45">45 min</button>
+				<button class="sleep-option" data-minutes="60">1 heure</button>
+				<button class="sleep-option" data-minutes="90">1h30</button>
+				<button class="sleep-option" data-minutes="120">2 heures</button>
+			</div>
+			<div class="sleep-popup-divider"></div>
+			<button class="sleep-option sleep-option-time" id="sleepOptionTime">
+				<span class="material-icons">schedule</span>
+				<span>Heure précise...</span>
+			</button>
+			<input type="time" id="sleepPopupTime" class="sleep-time-input" style="display: none;">
+			<button class="sleep-option sleep-option-cancel" id="sleepOptionCancel" style="display: none;">
+				<span class="material-icons">close</span>
+				<span>Annuler le minuteur</span>
+			</button>
+			<div class="sleep-popup-status" id="sleepPopupStatus" style="display: none;">
+				<span class="material-icons">timer</span>
+				<span id="sleepPopupStatusText">Arrêt dans 45 min</span>
+			</div>
 		</div>
             
             <!-- Slider de volume toujours visible quand le player est déployé -->

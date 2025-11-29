@@ -339,6 +339,13 @@ class RadioPlayerApp {
         // Polling des badges toutes les 30 secondes (backup)
         this.startBadgePolling();
         
+		// Rafraîchir le badge minuteur toutes les 30 secondes
+        setInterval(() => {
+            if (this.sleepTimerEndTime) {
+                this.updateSleepTimerBadge();
+            }
+        }, 30000);
+		
         // Gérer le bouton retour Android
         this.setupAndroidBackButton();
         
@@ -404,7 +411,90 @@ class RadioPlayerApp {
             });
         });
 
-// === MINUTEUR SOMMEIL - MODES ===
+	// === MINUTEUR SOMMEIL - BOUTON PLAYER ===
+        const sleepTimerBtn = document.getElementById('sleepTimerBtn');
+        const sleepTimerPopup = document.getElementById('sleepTimerPopup');
+        
+        if (sleepTimerBtn && sleepTimerPopup) {
+            // Ouvrir/Fermer le popup
+            sleepTimerBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const isVisible = sleepTimerPopup.style.display === 'block';
+                sleepTimerPopup.style.display = isVisible ? 'none' : 'block';
+                
+                if (!isVisible) {
+                    this.updateSleepPopupUI();
+                }
+            });
+            
+            // Fermer le popup en cliquant ailleurs
+            document.addEventListener('click', (e) => {
+                if (!sleepTimerPopup.contains(e.target) && e.target !== sleepTimerBtn) {
+                    sleepTimerPopup.style.display = 'none';
+                }
+            });
+            
+            // Options de durée rapide
+            document.querySelectorAll('.sleep-option[data-minutes]').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const minutes = parseInt(btn.dataset.minutes, 10);
+                    this.startSleepTimer(minutes);
+                    this.updateSleepTimerInfo();
+                    this.updateSleepPopupUI();
+                    this.updateSleepTimerBadge();
+                    
+                    // Fermer le popup après sélection
+                    setTimeout(() => {
+                        sleepTimerPopup.style.display = 'none';
+                    }, 300);
+                });
+            });
+            
+            // Option heure précise
+            const sleepOptionTime = document.getElementById('sleepOptionTime');
+            const sleepPopupTime = document.getElementById('sleepPopupTime');
+            
+            if (sleepOptionTime && sleepPopupTime) {
+                sleepOptionTime.addEventListener('click', () => {
+                    const isVisible = sleepPopupTime.style.display === 'block';
+                    sleepPopupTime.style.display = isVisible ? 'none' : 'block';
+                    
+                    if (!isVisible) {
+                        // Pré-remplir avec +1h
+                        const now = new Date();
+                        now.setHours(now.getHours() + 1);
+                        sleepPopupTime.value = now.toTimeString().slice(0, 5);
+                    }
+                });
+                
+                sleepPopupTime.addEventListener('change', () => {
+                    if (sleepPopupTime.value) {
+                        this.startSleepTimerAtTime(sleepPopupTime.value);
+                        this.updateSleepTimerInfo();
+                        this.updateSleepPopupUI();
+                        this.updateSleepTimerBadge();
+                        sleepPopupTime.style.display = 'none';
+                        
+                        setTimeout(() => {
+                            sleepTimerPopup.style.display = 'none';
+                        }, 300);
+                    }
+                });
+            }
+            
+            // Bouton annuler
+            const sleepOptionCancel = document.getElementById('sleepOptionCancel');
+            if (sleepOptionCancel) {
+                sleepOptionCancel.addEventListener('click', () => {
+                    this.cancelSleepTimer();
+                    this.updateSleepTimerInfo();
+                    this.updateSleepPopupUI();
+                    this.updateSleepTimerBadge();
+                    this.showToast('Minuteur annulé');
+                });
+            }
+        }
+			// === MINUTEUR SOMMEIL - MODES ===
         const sleepModeDelay = document.getElementById('sleepModeDelay');
         const sleepModeTime = document.getElementById('sleepModeTime');
         const sleepDelayMode = document.getElementById('sleepDelayMode');
@@ -1735,6 +1825,80 @@ class RadioPlayerApp {
         this.renderFavorites();
     }
 
+	// =====================================================
+    // MINUTEUR SOMMEIL - updateSleepPopupUI()
+    // =====================================================
+    updateSleepPopupUI() {
+        const cancelBtn = document.getElementById('sleepOptionCancel');
+        const statusDiv = document.getElementById('sleepPopupStatus');
+        const statusText = document.getElementById('sleepPopupStatusText');
+        const options = document.querySelectorAll('.sleep-option[data-minutes]');
+        
+        if (this.sleepTimerEndTime) {
+            // Minuteur actif
+            if (cancelBtn) cancelBtn.style.display = 'flex';
+            if (statusDiv) statusDiv.style.display = 'flex';
+            
+            // Mettre à jour le texte du statut
+            const remainingMs = this.sleepTimerEndTime - Date.now();
+            const remainingMinutes = Math.round(remainingMs / 60000);
+            const endDate = new Date(this.sleepTimerEndTime);
+            const endTimeStr = endDate.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+            
+            if (statusText) {
+                if (remainingMinutes >= 60) {
+                    const hours = Math.floor(remainingMinutes / 60);
+                    const mins = remainingMinutes % 60;
+                    statusText.textContent = `Arrêt à ${endTimeStr} (${hours}h${mins > 0 ? mins : ''})`;
+                } else {
+                    statusText.textContent = `Arrêt à ${endTimeStr} (${remainingMinutes} min)`;
+                }
+            }
+            
+            // Marquer l'option active si elle correspond
+            options.forEach(opt => {
+                opt.classList.remove('active');
+            });
+        } else {
+            // Pas de minuteur
+            if (cancelBtn) cancelBtn.style.display = 'none';
+            if (statusDiv) statusDiv.style.display = 'none';
+            
+            options.forEach(opt => {
+                opt.classList.remove('active');
+            });
+        }
+    }
+
+    // =====================================================
+    // MINUTEUR SOMMEIL - updateSleepTimerBadge()
+    // =====================================================
+    updateSleepTimerBadge() {
+        const btn = document.getElementById('sleepTimerBtn');
+        const badge = document.getElementById('sleepTimerBadge');
+        
+        if (!btn || !badge) return;
+        
+        if (this.sleepTimerEndTime) {
+            const remainingMs = this.sleepTimerEndTime - Date.now();
+            const remainingMinutes = Math.round(remainingMs / 60000);
+            
+            btn.classList.add('active');
+            badge.style.display = 'block';
+            
+            if (remainingMinutes >= 60) {
+                const hours = Math.floor(remainingMinutes / 60);
+                const mins = remainingMinutes % 60;
+                badge.textContent = `${hours}h${mins > 0 ? mins : ''}`;
+            } else {
+                badge.textContent = `${remainingMinutes}m`;
+            }
+        } else {
+            btn.classList.remove('active');
+            badge.style.display = 'none';
+        }
+    }
+	
     // =====================================================
     // MINUTEUR SOMMEIL - startSleepTimer()
     // =====================================================
@@ -1754,8 +1918,13 @@ class RadioPlayerApp {
             this.sleepTimerEndTime = null;
             localStorage.removeItem('sleepTimerEndTime');
             this.updateSleepTimerInfo();
+            this.updateSleepTimerBadge();
             this.showToast('⏰ Minuteur terminé - Radio arrêtée');
         }, remainingMs);
+        
+        // Mettre à jour le badge
+        this.updateSleepTimerBadge();
+        this.showToast(`⏱️ Arrêt dans ${minutes} min`);
     }
 
     // =====================================================
@@ -1789,6 +1958,9 @@ class RadioPlayerApp {
             this.showToast('⏰ Minuteur terminé - Radio arrêtée');
         }, remainingMs);
 
+        // Mettre à jour le badge
+        this.updateSleepTimerBadge();
+        
         // Afficher si c'est pour aujourd'hui ou demain
         const isToday = target.getDate() === now.getDate();
         const dayText = isToday ? "aujourd'hui" : "demain";
@@ -1805,6 +1977,7 @@ class RadioPlayerApp {
         this.sleepTimerId = null;
         this.sleepTimerEndTime = null;
         localStorage.removeItem('sleepTimerEndTime');
+        this.updateSleepTimerBadge();
     }
 
     // =====================================================
@@ -1846,9 +2019,11 @@ class RadioPlayerApp {
             this.sleepTimerEndTime = null;
             localStorage.removeItem('sleepTimerEndTime');
             this.updateSleepTimerInfo();
+            this.updateSleepTimerBadge();
         }, remainingMs);
 
         this.updateSleepTimerInfo();
+        this.updateSleepTimerBadge();
     }
 
     // =====================================================
