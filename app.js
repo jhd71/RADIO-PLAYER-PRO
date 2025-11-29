@@ -27,10 +27,10 @@ class RadioPlayerApp {
             // LOCALES / RÉGIONALES
             // =====================================================
 			{
-                id: 'France-Bleu-Bourgogne',
-                name: 'France Bleu Bourgogne',
+                id: 'Ici-Bourgogne',
+                name: 'Ici-Bourgogne',
                 url: 'https://icecast.radiofrance.fr/fbbourgogne-midfi.mp3',
-                logo: 'images/radio-logos/France-Bleu-Bourgogne.png',
+                logo: 'images/radio-logos/Ici-Bourgogne.png',
                 description: 'Info locale Bourgogne',
                 category: 'locale'
             },
