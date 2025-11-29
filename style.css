@@ -1115,6 +1115,17 @@ body.dark-theme .player-container {
     font-weight: 600;
 }
 
+.theme-default-badge {
+    font-size: 0.6rem;
+    position: absolute;
+    top: 4px;
+    right: 4px;
+}
+
+.theme-color-btn {
+    position: relative;
+}
+
 /* Responsive pour petits écrans */
 @media (max-width: 360px) {
     .theme-color-grid {
