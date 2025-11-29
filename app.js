@@ -75,21 +75,6 @@ class RadioPlayerApp {
                 category: 'locale'
             },
             {
-                id: 'France-Bleu-Auxerre',
-                name: 'France Bleu Auxerre',
-                url: 'https://icecast.radiofrance.fr/fbauxerre-midfi.mp3',
-                logo: 'images/radio-logos/France-Bleu-Auxerre.png',
-                description: 'Info locale Yonne',
-                category: 'locale'
-            },
-            {
-                id: 'France-Bleu-Besancon',
-                name: 'France Bleu Besançon',
-                url: 'https://icecast.radiofrance.fr/fbbesancon-midfi.mp3',
-                logo: 'images/radio-logos/France-Bleu-Besancon.png',
-                description: 'Info locale Franche-Comté',
-                category: 'locale'
-            },
 
             // =====================================================
             // GÉNÉRALISTES
