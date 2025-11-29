@@ -25,15 +25,7 @@ class RadioPlayerApp {
         this.stations = [
             // =====================================================
             // LOCALES / RÉGIONALES
-            // =====================================================
-            {
-                id: 'Ici-Bourgogne',
-                name: 'Ici Bourgogne',
-                url: 'https://icecast.radiofrance.fr/fbbourgogne-midfi.mp3',
-                logo: 'images/radio-logos/Ici-Bourgogne.png',
-                description: 'Info Bourgogne',
-                category: 'locale'
-            },
+            // =====================================================           
             {
                 id: 'Radio-Prevert',
                 name: 'Radio Prevert',
@@ -142,30 +134,6 @@ class RadioPlayerApp {
                 description: 'Pop-rock français',
                 category: 'generaliste'
             },
-            {
-                id: 'Virgin-Radio',
-                name: 'Virgin Radio',
-                url: 'https://icecast.virginradio.fr/virginradio.mp3',
-                logo: 'images/radio-logos/Virgin-Radio.png',
-                description: 'Pop Rock Electro',
-                category: 'generaliste'
-            },
-            {
-                id: 'RFM',
-                name: 'RFM',
-                url: 'https://rfm.ice.infomaniak.ch/rfm-high.mp3',
-                logo: 'images/radio-logos/RFM.png',
-                description: 'Le meilleur de la musique',
-                category: 'generaliste'
-            },
-            {
-                id: 'Contact-FM',
-                name: 'Contact FM',
-                url: 'https://contactfm.ice.infomaniak.ch/contactfm-high.mp3',
-                logo: 'images/radio-logos/Contact-FM.png',
-                description: 'Hits & nouveautés',
-                category: 'generaliste'
-            },
 
             // =====================================================
             // INFO / TALK
@@ -184,14 +152,6 @@ class RadioPlayerApp {
                 url: 'https://icecast.radiofrance.fr/franceinter-midfi.mp3',
                 logo: 'images/radio-logos/France-Inter.png',
                 description: 'Service public radio',
-                category: 'info'
-            },
-            {
-                id: 'France-Culture',
-                name: 'France Culture',
-                url: 'https://icecast.radiofrance.fr/franceculture-midfi.mp3',
-                logo: 'images/radio-logos/France-Culture.png',
-                description: 'Culture & société',
                 category: 'info'
             },
             {
@@ -234,14 +194,6 @@ class RadioPlayerApp {
                 description: 'Talk & débats',
                 category: 'info'
             },
-            {
-                id: 'Radio-Classique',
-                name: 'Radio Classique',
-                url: 'https://radioclassique.ice.infomaniak.ch/radioclassique-high.mp3',
-                logo: 'images/radio-logos/Radio-Classique.png',
-                description: 'Musique classique & info',
-                category: 'info'
-            },
 
             // =====================================================
             // ROCK
@@ -268,14 +220,6 @@ class RadioPlayerApp {
                 url: 'https://ouifm.ice.infomaniak.ch/ouifm-high.mp3',
                 logo: 'images/radio-logos/OUI-FM.png',
                 description: 'Rock indé & alternatif',
-                category: 'rock'
-            },
-            {
-                id: 'Rock-70',
-                name: 'Rock 70',
-                url: 'https://rock70.ice.infomaniak.ch/rock70-128.mp3',
-                logo: 'images/radio-logos/Rock-70.png',
-                description: 'Le rock des années 70',
                 category: 'rock'
             },
 
@@ -363,43 +307,11 @@ class RadioPlayerApp {
                 category: 'thematique'
             },
             {
-                id: 'Jazz-Radio',
-                name: 'Jazz Radio',
-                url: 'https://jazzradio.ice.infomaniak.ch/jazzradio-high.mp3',
-                logo: 'images/radio-logos/Jazz-Radio.png',
-                description: '100% Jazz',
-                category: 'thematique'
-            },
-            {
                 id: 'Radio-Nova',
                 name: 'Radio Nova',
                 url: 'https://novazz.ice.infomaniak.ch/novazz-128.mp3',
                 logo: 'images/radio-logos/Radio-Nova.png',
                 description: 'Soul Funk World',
-                category: 'thematique'
-            },
-            {
-                id: 'TSF-Jazz',
-                name: 'TSF Jazz',
-                url: 'https://tsfjazz.ice.infomaniak.ch/tsfjazz-high.mp3',
-                logo: 'images/radio-logos/TSF-Jazz.png',
-                description: 'Jazz & plus',
-                category: 'thematique'
-            },
-            {
-                id: 'Rire-et-Chansons',
-                name: 'Rire et Chansons',
-                url: 'https://streaming.nrjaudio.fm/oui6bjw8g5ca?origine=fluxradios',
-                logo: 'images/radio-logos/Rire-et-Chansons.png',
-                description: 'Humour & musique',
-                category: 'thematique'
-            },
-            {
-                id: 'Radio-Scoop',
-                name: 'Radio Scoop',
-                url: 'https://radioscoop.ice.infomaniak.ch/radioscoop-high.mp3',
-                logo: 'images/radio-logos/Radio-Scoop.png',
-                description: 'Hits & bonne humeur',
                 category: 'thematique'
             }
         ];
