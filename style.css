@@ -577,6 +577,133 @@ input[type="time"].glass-select::-webkit-calendar-picker-indicator {
     padding-bottom: 320px;
 }
 
+/* === MODE LISTE === */
+.radios-grid.list-view {
+    grid-template-columns: 1fr;
+    gap: 8px;
+}
+
+.radios-grid.list-view .radio-card {
+    flex-direction: row;
+    align-items: center;
+    padding: 10px 14px;
+    gap: 12px;
+}
+
+.radios-grid.list-view .radio-logo {
+    width: 50px;
+    height: 50px;
+    min-width: 50px;
+    margin-bottom: 0;
+}
+
+.radios-grid.list-view .radio-info {
+    flex: 1;
+    text-align: left;
+    min-width: 0;
+}
+
+.radios-grid.list-view .radio-name {
+    font-size: 0.95rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.radios-grid.list-view .radio-description {
+    display: block;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-top: 2px;
+}
+
+.radios-grid.list-view .radio-badges {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-left: auto;
+}
+
+/* Cacher l'astuce en mode liste */
+.radios-grid.list-view::before {
+    display: none;
+}
+
+/* === BOUTONS VUE GRILLE/LISTE === */
+.category-filter {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.filter-left {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex: 1;
+}
+
+.view-toggle {
+    display: flex;
+    gap: 4px;
+    background: rgba(0, 0, 0, 0.2);
+    padding: 4px;
+    border-radius: 10px;
+}
+
+.view-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border: none;
+    border-radius: 8px;
+    background: transparent;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.view-btn:hover {
+    color: var(--text-primary);
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.view-btn.active {
+    background: rgba(255, 255, 255, 0.2);
+    color: var(--text-primary);
+}
+
+.view-btn .material-icons {
+    font-size: 20px;
+}
+
+/* === RADIO CARD STRUCTURE === */
+.radio-card .radio-info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 0;
+}
+
+.radio-card .radio-description {
+    display: none;
+}
+
+.radio-card .radio-badges {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
 @media (min-width: 400px) {
     .radios-grid {
         grid-template-columns: repeat(3, 1fr);

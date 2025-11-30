@@ -353,6 +353,9 @@ class RadioPlayerApp {
 		
 		// === THÈME COULEUR ===
         this.currentColorTheme = localStorage.getItem('colorTheme') || 'default';
+        
+        // === MODE D'AFFICHAGE (grille/liste) ===
+        this.viewMode = localStorage.getItem('viewMode') || 'grid';
 		
         // === ÉLÉMENTS DOM ===
         this.audioPlayer = document.getElementById('audioPlayer');
@@ -454,19 +457,37 @@ class RadioPlayerApp {
         });
     }
 
-    // =====================================================
-    // CONFIGURATION - setupEventListeners()
-    // =====================================================
+				// =====================================================
+				// CONFIGURATION - setupEventListeners()
+				// =====================================================
     setupEventListeners() {
-        // === ONGLETS (UNE SEULE FOIS) ===
+				// === ONGLETS (UNE SEULE FOIS) ===
         document.querySelectorAll('.tab-button').forEach(button => {
             button.addEventListener('click', () => {
                 this.switchToTab(button.dataset.tab);
             });
         });
 
-	// === THÈME COULEUR ===
+				// === THÈME COULEUR ===
         this.applyColorTheme(this.currentColorTheme);
+        
+				// === MODE D'AFFICHAGE (grille/liste) ===
+        this.applyViewMode(this.viewMode);
+        
+        document.querySelectorAll('.view-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const mode = btn.dataset.view;
+                this.applyViewMode(mode);
+                
+                // Mettre à jour l'UI des boutons
+                document.querySelectorAll('.view-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                
+                // Sauvegarder
+                this.viewMode = mode;
+                localStorage.setItem('viewMode', mode);
+            });
+        });
         
         document.querySelectorAll('.theme-color-btn').forEach(btn => {
             // Marquer le thème actuel comme actif
@@ -1264,13 +1285,18 @@ class RadioPlayerApp {
             <img class="radio-logo" src="${station.logo}" alt="${station.name}" 
                  loading="lazy"
                  onerror="this.src='images/radio-logos/default.png'">
-            <span class="radio-name">${station.name}</span>
-            <span class="material-icons favorite-indicator">favorite</span>
-            <span class="radio-card-chat-badge radio-badge-${station.id}" style="display: none;">0</span>
-            <span class="radio-card-listeners-badge listeners-badge-${station.id}" style="display: ${listenersCount > 0 ? 'flex' : 'none'};">
-                <span class="material-icons" style="font-size: 12px;">headphones</span>
-                <span class="listeners-count">${listenersCount}</span>
-            </span>
+            <div class="radio-info">
+                <span class="radio-name">${station.name}</span>
+                <span class="radio-description">${station.description}</span>
+            </div>
+            <div class="radio-badges">
+                <span class="material-icons favorite-indicator">favorite</span>
+                <span class="radio-card-chat-badge radio-badge-${station.id}" style="display: none;">0</span>
+                <span class="radio-card-listeners-badge listeners-badge-${station.id}" style="display: ${listenersCount > 0 ? 'flex' : 'none'};">
+                    <span class="material-icons" style="font-size: 12px;">headphones</span>
+                    <span class="listeners-count">${listenersCount}</span>
+                </span>
+            </div>
         `;
 
         card.addEventListener('click', () => this.playRadio(station));
@@ -1918,6 +1944,34 @@ class RadioPlayerApp {
         this.renderFavorites();
     }
 
+	// =====================================================
+    // MODE D'AFFICHAGE - applyViewMode()
+    // =====================================================
+    applyViewMode(mode) {
+        const radiosGrid = document.getElementById('radiosGrid');
+        const favorisGrid = document.getElementById('favorisGrid');
+        
+        // Appliquer aux deux grilles
+        [radiosGrid, favorisGrid].forEach(grid => {
+            if (grid) {
+                if (mode === 'list') {
+                    grid.classList.add('list-view');
+                } else {
+                    grid.classList.remove('list-view');
+                }
+            }
+        });
+        
+        // Mettre à jour le bouton actif
+        document.querySelectorAll('.view-btn').forEach(btn => {
+            if (btn.dataset.view === mode) {
+                btn.classList.add('active');
+            } else {
+                btn.classList.remove('active');
+            }
+        });
+    }
+	
 	// =====================================================
     // THÈME COULEUR - applyColorTheme()
     // =====================================================
