@@ -114,7 +114,31 @@
             </button>
         </nav>
 
-        <!-- Filtre par catégorie -->
+        <!-- Filtre par catégorie et mode d'affichage -->
+        <div class="category-filter glass-effect" id="categoryFilter">
+            <div class="filter-left">
+                <label for="categorySelect">
+                    <span class="material-icons" aria-hidden="true">filter_list</span>
+                    <span>Catégorie :</span>
+                </label>
+                <select id="categorySelect" class="glass-select" aria-label="Filtrer par catégorie">
+                    <option value="toutes">Toutes les radios</option>
+                    <option value="generaliste">Généralistes</option>
+                    <option value="rock">Rock</option>
+                    <option value="info">Info / Talk</option>
+                    <option value="thematique">Thématiques</option>
+                    <option value="locale">Locales</option>
+                </select>
+            </div>
+            <div class="view-toggle" id="viewToggle">
+                <button class="view-btn active" data-view="grid" title="Vue grille" aria-label="Affichage en grille">
+                    <span class="material-icons">grid_view</span>
+                </button>
+                <button class="view-btn" data-view="list" title="Vue liste" aria-label="Affichage en liste">
+                    <span class="material-icons">view_list</span>
+                </button>
+            </div>
+        </div>
 		
         <!-- Conteneur des onglets -->
         <main class="tabs-container" role="main">
