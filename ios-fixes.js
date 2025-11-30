@@ -243,6 +243,34 @@
                 .ios-device .visualizer {
                     margin-bottom: 8px !important;
                 }
+                
+                /* ========== MODE LISTE - FIX DÉBORDEMENT ========== */
+                .ios-device .radios-grid.list-view {
+                    padding-left: 8px !important;
+                    padding-right: 8px !important;
+                }
+                
+                .ios-device .radios-grid.list-view .radio-card {
+                    padding: 10px 12px !important;
+                    margin-left: 0 !important;
+                    margin-right: 0 !important;
+                    width: 100% !important;
+                    box-sizing: border-box !important;
+                }
+                
+                .ios-device .radios-grid.list-view .radio-logo {
+                    width: 48px !important;
+                    height: 48px !important;
+                    min-width: 48px !important;
+                }
+                
+                .ios-device .radios-grid.list-view .radio-name {
+                    font-size: 0.95rem !important;
+                }
+                
+                .ios-device .radios-grid.list-view .radio-description {
+                    font-size: 0.75rem !important;
+                }
             `;
             document.head.appendChild(style);
             
