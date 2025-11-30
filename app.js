@@ -278,7 +278,7 @@ class RadioPlayerApp {
                 id: 'FIP',
                 name: 'FIP',
                 url: 'https://icecast.radiofrance.fr/fip-midfi.mp3',
-                logo: 'images/radio-logos/FIP.png',
+                logo: 'images/radio-logos/Radio-Fip.png',
                 description: 'Éclectique & sans pub',
                 category: 'thematique'
             },
@@ -286,7 +286,7 @@ class RadioPlayerApp {
                 id: 'Mouv',
                 name: 'Mouv\'',
                 url: 'https://icecast.radiofrance.fr/mouv-midfi.mp3',
-                logo: 'images/radio-logos/Mouv.png',
+                logo: 'images/radio-logos/Radio-mouv.png',
                 description: 'Hip-hop & urbain',
                 category: 'thematique'
             },
@@ -294,7 +294,7 @@ class RadioPlayerApp {
                 id: 'Radio-Nova',
                 name: 'Radio Nova',
                 url: 'https://novazz.ice.infomaniak.ch/novazz-128.mp3',
-                logo: 'images/radio-logos/Radio-Nova.png',
+                logo: 'images/radio-logos/Radio-nova.png',
                 description: 'Soul Funk World',
                 category: 'thematique'
             }
