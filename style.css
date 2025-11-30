@@ -581,43 +581,60 @@ input[type="time"].glass-select::-webkit-calendar-picker-indicator {
 .radios-grid.list-view {
     grid-template-columns: 1fr;
     gap: 8px;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .radios-grid.list-view .radio-card {
     flex-direction: row;
     align-items: center;
-    padding: 10px 14px;
-    gap: 12px;
+    padding: 12px 16px;
+    gap: 14px;
+    transition: all 0.2s ease;
+}
+
+.radios-grid.list-view .radio-card:hover {
+    transform: translateX(5px);
+    background: rgba(255, 255, 255, 0.2);
 }
 
 .radios-grid.list-view .radio-logo {
-    width: 50px;
-    height: 50px;
-    min-width: 50px;
+    width: 55px;
+    height: 55px;
+    min-width: 55px;
     margin-bottom: 0;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 }
 
 .radios-grid.list-view .radio-info {
     flex: 1;
     text-align: left;
     min-width: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
 }
 
 .radios-grid.list-view .radio-name {
-    font-size: 0.95rem;
+    font-size: 1rem;
+    font-weight: 600;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    max-width: 100%;
 }
 
 .radios-grid.list-view .radio-description {
     display: block;
-    font-size: 0.75rem;
+    font-size: 0.8rem;
     color: var(--text-muted);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    margin-top: 2px;
+    margin-top: 3px;
+    max-width: 100%;
 }
 
 .radios-grid.list-view .radio-badges {
@@ -625,11 +642,45 @@ input[type="time"].glass-select::-webkit-calendar-picker-indicator {
     align-items: center;
     gap: 8px;
     margin-left: auto;
+    position: static;
+    flex-direction: row;
+}
+
+/* Icône play au survol en mode liste */
+.radios-grid.list-view .radio-card::after {
+    content: 'play_circle';
+    font-family: 'Material Icons';
+    font-size: 28px;
+    color: var(--text-muted);
+    opacity: 0;
+    transition: opacity 0.2s ease;
+    margin-left: 8px;
+}
+
+.radios-grid.list-view .radio-card:hover::after {
+    opacity: 1;
+    color: var(--primary-color);
 }
 
 /* Cacher l'astuce en mode liste */
 .radios-grid.list-view::before {
     display: none;
+}
+
+/* Mode liste sur grand écran : 2 colonnes */
+@media (min-width: 900px) {
+    .radios-grid.list-view {
+        max-width: 100%;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+    }
+}
+
+/* Mode liste sur très grand écran : 3 colonnes */
+@media (min-width: 1400px) {
+    .radios-grid.list-view {
+        grid-template-columns: repeat(3, 1fr);
+    }
 }
 
 /* === BOUTONS VUE GRILLE/LISTE === */
