@@ -575,6 +575,7 @@ input[type="time"].glass-select::-webkit-calendar-picker-indicator {
     gap: var(--spacing-md);
     padding: 0 var(--spacing-md);
     padding-bottom: 320px;
+	justify-content: center;
 }
 
 /* === MODE LISTE === */
