@@ -1689,7 +1689,7 @@ body.dark-theme .theme-toggle-btn {
         grid-template-columns: repeat(4, 1fr);
         gap: 12px;
         padding: 0 12px;
-        padding-bottom: 180px;
+        padding-bottom: 320px;
     }
     
     /* Cartes radio optimisées */
@@ -1918,7 +1918,7 @@ body.dark-theme .theme-toggle-btn {
    ======================================== */
 @media (max-width: 768px) {
     .radios-grid {
-        padding-bottom: 180px;
+        padding-bottom: 320px;
     }
     
     #settingsPanel .glass-button {
