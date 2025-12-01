@@ -2562,13 +2562,13 @@ body.dark-theme .theme-toggle-btn {
 /* === BADGE AUDITEURS SUR CARTE RADIO === */
 .radio-card-listeners-badge {
     position: absolute;
-    bottom: 8px;
-    right: 8px;
+    bottom: 1px;
+    right: 1px;
     background: rgba(76, 175, 80, 0.9);
     color: white;
-    font-size: 0.7rem;
+    font-size: 0.7rem !important;
     font-weight: 600;
-    padding: 3px 6px;
+    padding: 3px 6px !important;
     border-radius: 10px;
     display: flex;
     align-items: center;
