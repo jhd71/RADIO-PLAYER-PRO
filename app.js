@@ -2703,6 +2703,9 @@ class RadioPlayerApp {
             return;
         }
 
+        // Utiliser le nom admin si connecté en admin, sinon le username normal
+        const displayUsername = this.isAdmin ? 'Admin_RadioFM' : this.username;
+
         try {
             const { error } = await supabase
                 .from('radio_chat_messages')
@@ -2710,7 +2713,7 @@ class RadioPlayerApp {
                     {
                         radio_id: this.currentStation.id,
                         radio_name: this.currentStation.name,
-                        username: this.username,
+                        username: displayUsername,
                         message: message,
                         user_id: this.getUserId()
                     }
