@@ -639,12 +639,23 @@ input[type="time"].glass-select::-webkit-calendar-picker-indicator {
 }
 
 .radios-grid.list-view .radio-badges {
-    display: flex;
+    display: flex !important;
     align-items: center;
     gap: 8px;
     margin-left: auto;
-    position: static;
+    position: static !important;
     flex-direction: row;
+    top: auto !important;
+    right: auto !important;
+}
+
+.radios-grid.list-view .radio-card-listeners-badge {
+    display: flex !important;
+    position: static !important;
+}
+
+.radios-grid.list-view .favorite-indicator {
+    position: static !important;
 }
 
 /* Icône play au survol en mode liste */
