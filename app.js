@@ -403,6 +403,22 @@ class RadioPlayerApp {
             }
         }, 30000);
 		
+		// Fix pour le rendu des cartes au scroll (bug mobile)
+        const tabsSlider = document.getElementById('tabsSlider');
+        if (tabsSlider) {
+            let scrollTimeout;
+            tabsSlider.addEventListener('scroll', () => {
+                clearTimeout(scrollTimeout);
+                scrollTimeout = setTimeout(() => {
+                    // Forcer le re-rendu des cartes
+                    document.querySelectorAll('.radio-card').forEach(card => {
+                        card.style.transform = 'translateZ(0)';
+                        void card.offsetHeight; // Force reflow
+                    });
+                }, 100);
+            }, { passive: true });
+        }
+		
         // Gérer le bouton retour Android
         this.setupAndroidBackButton();
         
@@ -1283,7 +1299,8 @@ class RadioPlayerApp {
 
         card.innerHTML = `
             <img class="radio-logo" src="${station.logo}" alt="${station.name}" 
-                 loading="lazy"
+                 loading="eager"
+                 decoding="async"
                  onerror="this.src='images/radio-logos/default.png'">
             <div class="radio-info">
                 <span class="radio-name">${station.name}</span>
