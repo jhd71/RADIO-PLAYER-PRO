@@ -66,6 +66,14 @@ class RadioPlayerApp {
                 description: 'A plein tubes, Chalon',
                 category: 'locale'
             },
+			{
+                id: 'RFM',
+                name: 'RFM',
+                url: 'https://rfm.lmn.fm/rfm.mp3',
+                logo: 'images/radio-logos/RFM.png',
+                description: ' Le meillleur de la musique',
+                category: 'generaliste'
+            },
             {
                 id: 'Cerise-FM',
                 name: 'Cerise FM',
@@ -104,7 +112,7 @@ class RadioPlayerApp {
                 url: 'https://icecast.skyrock.net/s/natio_aac_128k?tvr_name=tunein16&tvr_section1=64aac',
                 logo: 'images/radio-logos/Skyrock.png',
                 description: 'Skyrock 1er sur le rap',
-                category: 'thematique'
+                category: 'generaliste'
             },
             {
                 id: 'Fun-Radio',
