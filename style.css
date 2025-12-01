@@ -2562,8 +2562,8 @@ body.dark-theme .theme-toggle-btn {
 /* === BADGE AUDITEURS SUR CARTE RADIO === */
 .radio-card-listeners-badge {
     position: absolute;
-    bottom: 1px;
-    right: 1px;
+    bottom: 3px;
+    right: 5px;
     background: rgba(76, 175, 80, 0.9);
     color: white;
     font-size: 0.7rem !important;
