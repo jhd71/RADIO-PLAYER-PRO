@@ -1004,10 +1004,6 @@ body.dark-theme .player-container {
     transition: transform var(--transition-normal);
 }
 
-.player-container.minimized .toggle-player-btn .material-icons {
-    transform: rotate(180deg);
-}
-
 .player-info {
     display: flex;
     align-items: center;

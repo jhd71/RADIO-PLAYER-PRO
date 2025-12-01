@@ -42,6 +42,22 @@ class RadioPlayerApp {
                 description: 'Chalon Sur Saône',
                 category: 'locale'
             },
+			{
+                id: 'La-Radio-Sans-pub',
+                name: 'La Radio Sans pub',
+                url: 'https://live1.jupinfo.fr:8443/play',
+                logo: 'images/radio-logos/La-Radio-Sans-pub.png',
+                description: '100% Hits 24/24',
+                category: 'generaliste'
+            },
+			{
+                id: 'M-Radio',
+                name: 'M Radio',
+                url: 'https://mradio-lyon.ice.infomaniak.ch/mradio-lyon.mp3',
+                logo: 'images/radio-logos/M-Radio.png',
+                description: 'Numéro 1 sur la chanson française',
+                category: 'thematique'
+            },
             {
                 id: 'Frequence-Plus',
                 name: 'Fréquence Plus',
@@ -74,18 +90,6 @@ class RadioPlayerApp {
                 description: '1ère Radio Régionale de France',
                 category: 'locale'
             },
-
-            // =====================================================
-            // GÉNÉRALISTES
-            // =====================================================
-            {
-                id: 'La-Radio-Sans-pub',
-                name: 'La Radio Sans pub',
-                url: 'https://live1.jupinfo.fr:8443/play',
-                logo: 'images/radio-logos/La-Radio-Sans-pub.png',
-                description: '100% Hits 24/24',
-                category: 'generaliste'
-            },
             {
                 id: 'NRJ',
                 name: 'NRJ',
@@ -93,6 +97,14 @@ class RadioPlayerApp {
                 logo: 'images/radio-logos/nrj.png',
                 description: 'Hits & musique',
                 category: 'generaliste'
+            },
+			{
+                id: 'Skyrock',
+                name: 'Skyrock',
+                url: 'https://icecast.skyrock.net/s/natio_aac_128k?tvr_name=tunein16&tvr_section1=64aac',
+                logo: 'images/radio-logos/Skyrock.png',
+                description: 'Skyrock 1er sur le rap',
+                category: 'thematique'
             },
             {
                 id: 'Fun-Radio',
@@ -117,6 +129,102 @@ class RadioPlayerApp {
                 logo: 'images/radio-logos/Voltage.png',
                 description: 'Pop-rock français',
                 category: 'generaliste'
+            },
+			{
+                id: 'RTL2',
+                name: 'RTL2',
+                url: 'https://streamer-02.rtl.fr/rtl2-1-44-128',
+                logo: 'images/radio-logos/RTL2.png',
+                description: 'Le Son Pop-Rock',
+                category: 'rock'
+            },
+            {
+                id: 'Virage-Radio',
+                name: 'Virage Radio',
+                url: 'https://virageradio.ice.infomaniak.ch/virageradio-high.mp3',
+                logo: 'images/radio-logos/Virage-Radio.png',
+                description: 'Rock & pop',
+                category: 'rock'
+            },
+            {
+                id: 'OUI-FM',
+                name: 'OUI FM',
+                url: 'https://ouifm.ice.infomaniak.ch/ouifm-high.mp3',
+                logo: 'images/radio-logos/OUI-FM.png',
+                description: 'Rock indé & alternatif',
+                category: 'rock'
+            },
+            {
+                id: 'Nostalgie',
+                name: 'Nostalgie',
+                url: 'https://streaming.nrjaudio.fm/oug7girb92oc?origine=fluxradios',
+                logo: 'images/radio-logos/nostalgie.png',
+                description: 'Oldies & classics',
+                category: 'thematique'
+            },
+            {
+                id: 'Cherie-FM',
+                name: 'Chérie FM',
+                url: 'https://streaming.nrjaudio.fm/ouuku85n3nje?origine=fluxradios',
+                logo: 'images/radio-logos/cherie-fm.png',
+                description: 'Love songs',
+                category: 'thematique'
+            },
+            {
+                id: 'Voltage-80s',
+                name: 'Voltage 80s',
+                url: 'https://voltage80s.ice.infomaniak.ch/voltage80s-128.mp3',
+                logo: 'images/radio-logos/Voltage-80s.png',
+                description: 'Hits années 80',
+                category: 'thematique'
+            },
+            {
+                id: 'Voltage-90s',
+                name: 'Voltage 90s',
+                url: 'https://voltage90s.ice.infomaniak.ch/voltage90s-128.mp3',
+                logo: 'images/radio-logos/Voltage-90s.png',
+                description: 'Hits années 90',
+                category: 'thematique'
+            },
+            {
+                id: 'Voltage-2000',
+                name: 'Voltage 2000',
+                url: 'https://voltage2000.ice.infomaniak.ch/voltage2000-128.mp3',
+                logo: 'images/radio-logos/Voltage-2000.png',
+                description: 'Hits années 2000',
+                category: 'thematique'
+            },
+            {
+                id: 'Kiss-FM',
+                name: 'Kiss FM',
+                url: 'https://kissfm2.ice.infomaniak.ch/kissfm2-128.mp3',
+                logo: 'images/radio-logos/Kiss-fm.png',
+                description: 'Urban & R&B',
+                category: 'thematique'
+            },
+            {
+                id: 'FIP',
+                name: 'FIP',
+                url: 'https://icecast.radiofrance.fr/fip-midfi.mp3',
+                logo: 'images/radio-logos/Radio-Fip.png',
+                description: 'Éclectique & sans pub',
+                category: 'thematique'
+            },
+            {
+                id: 'Mouv',
+                name: 'Mouv\'',
+                url: 'https://icecast.radiofrance.fr/mouv-midfi.mp3',
+                logo: 'images/radio-logos/Radio-mouv.png',
+                description: 'Hip-hop & urbain',
+                category: 'thematique'
+            },
+            {
+                id: 'Radio-Nova',
+                name: 'Radio Nova',
+                url: 'https://novazz.ice.infomaniak.ch/novazz-128.mp3',
+                logo: 'images/radio-logos/Radio-nova.png',
+                description: 'Soul Funk World',
+                category: 'thematique'
             },
 
             // =====================================================
@@ -177,126 +285,6 @@ class RadioPlayerApp {
                 logo: 'images/radio-logos/Sud-Radio.png',
                 description: 'Talk & débats',
                 category: 'info'
-            },
-
-            // =====================================================
-            // ROCK
-            // =====================================================
-            {
-                id: 'RTL2',
-                name: 'RTL2',
-                url: 'https://streamer-02.rtl.fr/rtl2-1-44-128',
-                logo: 'images/radio-logos/RTL2.png',
-                description: 'Le Son Pop-Rock',
-                category: 'rock'
-            },
-            {
-                id: 'Virage-Radio',
-                name: 'Virage Radio',
-                url: 'https://virageradio.ice.infomaniak.ch/virageradio-high.mp3',
-                logo: 'images/radio-logos/Virage-Radio.png',
-                description: 'Rock & pop',
-                category: 'rock'
-            },
-            {
-                id: 'OUI-FM',
-                name: 'OUI FM',
-                url: 'https://ouifm.ice.infomaniak.ch/ouifm-high.mp3',
-                logo: 'images/radio-logos/OUI-FM.png',
-                description: 'Rock indé & alternatif',
-                category: 'rock'
-            },
-
-            // =====================================================
-            // THÉMATIQUES
-            // =====================================================
-            {
-                id: 'Skyrock',
-                name: 'Skyrock',
-                url: 'https://icecast.skyrock.net/s/natio_aac_128k?tvr_name=tunein16&tvr_section1=64aac',
-                logo: 'images/radio-logos/Skyrock.png',
-                description: 'Skyrock 1er sur le rap',
-                category: 'thematique'
-            },
-            {
-                id: 'Nostalgie',
-                name: 'Nostalgie',
-                url: 'https://streaming.nrjaudio.fm/oug7girb92oc?origine=fluxradios',
-                logo: 'images/radio-logos/nostalgie.png',
-                description: 'Oldies & classics',
-                category: 'thematique'
-            },
-            {
-                id: 'Cherie-FM',
-                name: 'Chérie FM',
-                url: 'https://streaming.nrjaudio.fm/ouuku85n3nje?origine=fluxradios',
-                logo: 'images/radio-logos/cherie-fm.png',
-                description: 'Love songs',
-                category: 'thematique'
-            },
-            {
-                id: 'M-Radio',
-                name: 'M Radio',
-                url: 'https://mradio-lyon.ice.infomaniak.ch/mradio-lyon.mp3',
-                logo: 'images/radio-logos/M-Radio.png',
-                description: 'Numéro 1 sur la chanson française',
-                category: 'thematique'
-            },
-            {
-                id: 'Voltage-80s',
-                name: 'Voltage 80s',
-                url: 'https://voltage80s.ice.infomaniak.ch/voltage80s-128.mp3',
-                logo: 'images/radio-logos/Voltage-80s.png',
-                description: 'Hits années 80',
-                category: 'thematique'
-            },
-            {
-                id: 'Voltage-90s',
-                name: 'Voltage 90s',
-                url: 'https://voltage90s.ice.infomaniak.ch/voltage90s-128.mp3',
-                logo: 'images/radio-logos/Voltage-90s.png',
-                description: 'Hits années 90',
-                category: 'thematique'
-            },
-            {
-                id: 'Voltage-2000',
-                name: 'Voltage 2000',
-                url: 'https://voltage2000.ice.infomaniak.ch/voltage2000-128.mp3',
-                logo: 'images/radio-logos/Voltage-2000.png',
-                description: 'Hits années 2000',
-                category: 'thematique'
-            },
-            {
-                id: 'Kiss-FM',
-                name: 'Kiss FM',
-                url: 'https://kissfm2.ice.infomaniak.ch/kissfm2-128.mp3',
-                logo: 'images/radio-logos/Kiss-fm.png',
-                description: 'Urban & R&B',
-                category: 'thematique'
-            },
-            {
-                id: 'FIP',
-                name: 'FIP',
-                url: 'https://icecast.radiofrance.fr/fip-midfi.mp3',
-                logo: 'images/radio-logos/Radio-Fip.png',
-                description: 'Éclectique & sans pub',
-                category: 'thematique'
-            },
-            {
-                id: 'Mouv',
-                name: 'Mouv\'',
-                url: 'https://icecast.radiofrance.fr/mouv-midfi.mp3',
-                logo: 'images/radio-logos/Radio-mouv.png',
-                description: 'Hip-hop & urbain',
-                category: 'thematique'
-            },
-            {
-                id: 'Radio-Nova',
-                name: 'Radio Nova',
-                url: 'https://novazz.ice.infomaniak.ch/novazz-128.mp3',
-                logo: 'images/radio-logos/Radio-nova.png',
-                description: 'Soul Funk World',
-                category: 'thematique'
             }
         ];
 
