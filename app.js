@@ -231,14 +231,6 @@ class RadioPlayerApp {
             // INFO / TALK
             // =====================================================
             {
-                id: 'France-Info',
-                name: 'France Info',
-                url: 'https://icecast.radiofrance.fr/franceinfo-midfi.mp3',
-                logo: 'images/radio-logos/france-info.png',
-                description: 'Info en continu',
-                category: 'info'
-            },
-            {
                 id: 'France-Inter',
                 name: 'France Inter',
                 url: 'https://icecast.radiofrance.fr/franceinter-midfi.mp3',
@@ -268,6 +260,14 @@ class RadioPlayerApp {
                 url: 'https://audio.bfmtv.com/rmcradio_128.mp3',
                 logo: 'images/radio-logos/rmc.png',
                 description: 'Sport & info',
+                category: 'info'
+            },
+			{
+                id: 'France-Info',
+                name: 'France Info',
+                url: 'https://icecast.radiofrance.fr/franceinfo-midfi.mp3',
+                logo: 'images/radio-logos/france-info.png',
+                description: 'Info en continu',
                 category: 'info'
             },
             {
