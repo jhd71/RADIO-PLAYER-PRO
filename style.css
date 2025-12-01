@@ -639,14 +639,12 @@ input[type="time"].glass-select::-webkit-calendar-picker-indicator {
 }
 
 .radios-grid.list-view .radio-badges {
-    display: flex !important;
+    display: flex;
     align-items: center;
     gap: 8px;
     margin-left: auto;
-    position: static !important;
+    position: static;
     flex-direction: row;
-    top: auto !important;
-    right: auto !important;
 }
 
 /* Icône play au survol en mode liste */
@@ -738,16 +736,11 @@ input[type="time"].glass-select::-webkit-calendar-picker-indicator {
 }
 
 /* === RADIO CARD STRUCTURE === */
-.radio-card {
-    position: relative;
-}
-
 .radio-card .radio-info {
     display: flex;
     flex-direction: column;
     align-items: center;
     min-width: 0;
-    width: 100%;
 }
 
 .radio-card .radio-description {
@@ -761,23 +754,6 @@ input[type="time"].glass-select::-webkit-calendar-picker-indicator {
     display: flex;
     flex-direction: column;
     gap: 4px;
-    z-index: 5;
-}
-
-.radio-card .radio-card-listeners-badge {
-    display: flex;
-    align-items: center;
-    gap: 2px;
-    background: rgba(0, 0, 0, 0.6);
-    padding: 2px 6px;
-    border-radius: 10px;
-    font-size: 0.7rem;
-    color: #fff;
-}
-
-.radio-card .favorite-indicator {
-    color: #ff6b6b;
-    font-size: 18px;
 }
 
 @media (min-width: 400px) {
@@ -790,6 +766,7 @@ input[type="time"].glass-select::-webkit-calendar-picker-indicator {
 .radios-grid::before {
     content: '💡 Astuce : Appui long sur une radio pour les options';
     grid-column: 1 / -1;
+    order: -1;
     text-align: center;
     padding: 12px;
     font-size: 0.85rem;
@@ -807,6 +784,8 @@ input[type="time"].glass-select::-webkit-calendar-picker-indicator {
     padding: var(--spacing-sm);
     display: flex;
     flex-direction: column;
+	visibility: visible !important;
+    opacity: 1 !important;
     align-items: center;
     gap: var(--spacing-sm);
     cursor: pointer;
