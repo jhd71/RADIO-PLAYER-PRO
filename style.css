@@ -649,15 +649,6 @@ input[type="time"].glass-select::-webkit-calendar-picker-indicator {
     right: auto !important;
 }
 
-.radios-grid.list-view .radio-card-listeners-badge {
-    display: flex !important;
-    position: static !important;
-}
-
-.radios-grid.list-view .favorite-indicator {
-    position: static !important;
-}
-
 /* Icône play au survol en mode liste */
 .radios-grid.list-view .radio-card::after {
     content: 'play_circle';
