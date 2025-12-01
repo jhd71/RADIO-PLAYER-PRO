@@ -766,7 +766,6 @@ input[type="time"].glass-select::-webkit-calendar-picker-indicator {
 .radios-grid::before {
     content: '💡 Astuce : Appui long sur une radio pour les options';
     grid-column: 1 / -1;
-    order: -1;
     text-align: center;
     padding: 12px;
     font-size: 0.85rem;
@@ -784,8 +783,6 @@ input[type="time"].glass-select::-webkit-calendar-picker-indicator {
     padding: var(--spacing-sm);
     display: flex;
     flex-direction: column;
-	visibility: visible !important;
-    opacity: 1 !important;
     align-items: center;
     gap: var(--spacing-sm);
     cursor: pointer;
