@@ -1313,7 +1313,7 @@ body.dark-theme .player-container {
 
 .theme-default-badge {
     font-size: 0.6rem;
-    position: absolute;
+    position: relative;
     top: 4px;
     right: 4px;
 }
