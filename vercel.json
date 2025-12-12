@@ -1,0 +1,8 @@
+{
+  "cron": {
+    "daily-ping": {
+      "schedule": "0 0 * * *",
+      "path": "/api/keepalive"
+    }
+  }
+}
