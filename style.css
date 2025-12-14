@@ -2544,16 +2544,16 @@ body.dark-theme .theme-toggle-btn {
 
 /* === BADGE MESSAGES SUR CARTE RADIO === */
 .radio-card-chat-badge {
-    position: absolute;
-    top: 8px;
-    left: 8px;
+    position: fixed;
+    top: 6px;
+    left: 6px;
     background: var(--accent-color);
     color: white;
-    font-size: 0.7rem;
+    font-size: 0.9rem;
     font-weight: 600;
     padding: 2px 6px;
     border-radius: 10px;
-    min-width: 18px;
+    min-width: 20px;
     text-align: center;
     animation: pulse 2s infinite;
     z-index: 2;
