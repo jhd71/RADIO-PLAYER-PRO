@@ -10,7 +10,7 @@ const SUPABASE_URL = 'https://ylkypleeljhvearzkllk.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inlsa3lwbGVlbGpodmVhcnprbGxrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQwOTc4NjQsImV4cCI6MjA3OTY3Mzg2NH0.3FnT2mmjljyIaeFvJrA_BJIjB7hxDCOW4AWtKaAlF7A';
 
 // Initialiser Supabase
-const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 // =====================================================
 // B. CLASSE PRINCIPALE RadioPlayerApp
@@ -2527,7 +2527,7 @@ class RadioPlayerApp {
         this.leavePresence();
 
         // Créer un canal de présence pour cette radio
-        this.presenceChannel = supabase.channel(`presence_${radioId}`, {
+        this.presenceChannel = supabaseClient.channel(`presence_${radioId}`, {
             config: {
                 presence: {
                     key: this.getUserId()
@@ -2567,7 +2567,7 @@ class RadioPlayerApp {
     leavePresence() {
         if (this.presenceChannel) {
             this.presenceChannel.untrack();
-            supabase.removeChannel(this.presenceChannel);
+            supabaseClient.removeChannel(this.presenceChannel);
             this.presenceChannel = null;
             this.onlineUsers = 0;
             this.updateOnlineCount();
@@ -2589,7 +2589,7 @@ class RadioPlayerApp {
     // =====================================================
     unsubscribeFromChat() {
         if (this.chatSubscription) {
-            supabase.removeChannel(this.chatSubscription);
+            supabaseClient.removeChannel(this.chatSubscription);
             this.chatSubscription = null;
             console.log('🔌 Désabonné du chat');
         }
@@ -3064,7 +3064,7 @@ class RadioPlayerApp {
     subscribeToAllChats() {
         // Se désabonner si déjà abonné
         if (this.globalChatSubscription) {
-            supabase.removeChannel(this.globalChatSubscription);
+            supabaseClient.removeChannel(this.globalChatSubscription);
         }
 
         // S'abonner à TOUS les nouveaux messages (sans filtre sur radio_id)
@@ -3207,11 +3207,11 @@ class RadioPlayerApp {
     joinGlobalPresence() {
         // Se désabonner si déjà abonné
         if (this.globalPresenceChannel) {
-            supabase.removeChannel(this.globalPresenceChannel);
+            supabaseClient.removeChannel(this.globalPresenceChannel);
         }
 
         // Créer un canal de présence global pour TOUS les auditeurs
-        this.globalPresenceChannel = supabase.channel('global_listeners', {
+        this.globalPresenceChannel = supabaseClient.channel('global_listeners', {
             config: {
                 presence: {
                     key: this.getUserId()
