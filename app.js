@@ -2497,7 +2497,7 @@ class RadioPlayerApp {
         this.unsubscribeFromChat();
 
         // S'abonner aux nouveaux messages
-        this.chatSubscription = supabase
+        this.chatSubscription = supabaseClient
             .channel(`radio_chat_${radioId}`)
             .on(
                 'postgres_changes',
@@ -3068,7 +3068,7 @@ class RadioPlayerApp {
         }
 
         // S'abonner à TOUS les nouveaux messages (sans filtre sur radio_id)
-        this.globalChatSubscription = supabase
+        this.globalChatSubscription = supabaseClient
             .channel('global_chat_messages')
             .on(
                 'postgres_changes',
