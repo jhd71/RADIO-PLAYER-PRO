@@ -2603,7 +2603,7 @@ class RadioPlayerApp {
     // =====================================================
     async loadChatMessages(radioId) {
         try {
-            const { data, error } = await supabase
+            const { data, error } = await supabaseClient
                 .from('radio_chat_messages')
                 .select('*')
                 .eq('radio_id', radioId)
@@ -2703,7 +2703,7 @@ class RadioPlayerApp {
         const displayUsername = this.isAdmin ? 'Admin_RadioFM' : this.username;
 
         try {
-            const { error } = await supabase
+            const { error } = await supabaseClient
                 .from('radio_chat_messages')
                 .insert([
                     {
@@ -2746,7 +2746,7 @@ class RadioPlayerApp {
         }
 
         try {
-            const { error } = await supabase
+            const { error } = await supabaseClient
                 .from('radio_chat_messages')
                 .delete()
                 .eq('id', messageId);
@@ -2865,7 +2865,7 @@ class RadioPlayerApp {
         try {
             const passwordHash = await this.hashPassword(password);
 
-            const { data, error } = await supabase
+            const { data, error } = await supabaseClient
                 .from('radio_admins')
                 .select('*')
                 .eq('username', username)
@@ -3001,7 +3001,7 @@ class RadioPlayerApp {
                     continue;
                 }
 
-                const { count, error } = await supabase
+                const { count, error } = await supabaseClient
                     .from('radio_chat_messages')
                     .select('*', { count: 'exact', head: true })
                     .eq('radio_id', station.id)
