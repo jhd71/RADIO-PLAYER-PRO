@@ -2822,6 +2822,7 @@ body.dark-theme .chat-input:focus {
 
         #pwaInstallBanner {
             bottom: calc(env(safe-area-inset-bottom) + 16px) !important;
+			z-index: 10000;
         }
 
         #settingsPanel {
